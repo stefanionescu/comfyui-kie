@@ -1,0 +1,26 @@
+{
+    "name": "comfyui-kie",
+    "description": "Use any KIE model in ComfyUI with your own API key: images, video, audio, and chat.",
+    "private": true,
+    "type": "module",
+    "packageManager": "bun@1.4.3",
+    "scripts": {
+        "build": "esbuild web/scripts/extension.ts --outfile=web/extension.js --bundle --platform=browser --format=esm --target=es2022 --charset=utf8 --legal-comments=inline --external:../../scripts/app.js --external:../../scripts/api.js"
+    },
+    "dependencies": {
+        "valibot": "1.5.0"
+    },
+    "devDependencies": {
+        "@comfyorg/comfyui-frontend-types": "1.48.3",
+        "@gspothq/cli": "0.3.6",
+        "esbuild": "0.28.2",
+        "typescript": "6.0.3"
+    },
+    "imports": {
+        "#web/*": "./web/scripts/*",
+        "#styles/*": "./web/styles/*"
+    },
+    "overrides": {
+        "zod": "4.6.7"
+    }
+}

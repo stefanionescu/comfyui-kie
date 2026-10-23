@@ -1,0 +1,32 @@
+# Browser source; the built bundle ships
+/web/scripts/
+/web/styles/
+
+# Development tools, plans, and instructions
+/.mise/
+/.gspot/
+/gspot.toml
+/AGENTS.md
+/plans/
+/scripts/
+
+# Development dependencies and configuration
+/package.json
+/bun.lock
+/bunfig.toml
+/tsconfig.json
+/uv.lock
+/mise.toml
+/.gitignore
+/.gitattributes
+/.comfyignore
+
+# Tool files that gspot writes from gspot.toml
+/.editorconfig
+/.markdownlint.jsonc
+/.prettierignore
+/.stylelintrc.json
+/eslint.config.mjs
+/prettier.config.mjs
+/pyrightconfig.json
+/ruff.toml

@@ -1,0 +1,31 @@
+#:schema ./.gspot/gspot.schema.json
+# gspot settings for this repository. Change them with gspot set, unset, add, remove, ignore, and unignore.
+
+level = "all"
+configurations = ["bash", "javascript", "licenses", "python", "typescript", "css", "markdown"]
+
+[hooks]
+enabled = true
+
+[ci]
+enabled = true
+
+[format]
+quotes = "single"
+
+[spelling.allowed_words]
+KIE = "KIE is the vendor's own name, written in capitals; it is not an acronym to spell out."
+
+[python]
+externals = ["comfy", "comfy_api", "comfy_api_nodes", "comfy_execution", "folder_paths", "server"]
+
+[tools.eslint]
+import_extension = "extensionless"
+
+[tools.commitlint]
+scopes = ["nodes", "frontend", "workflows", "docs", "hooks", "quality", "root", "deps"]
+
+[[ignore]]
+check = "prose/vale"
+rule = "write-good.E-Prime"
+reason = "E-Prime bans every form of 'to be'; rewriting every such sentence makes the docs harder to read, not plainer."

@@ -1,0 +1,19 @@
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+
+# esbuild writes these bundles from web/scripts and web/styles: bun run build
+/web/extension.js linguist-generated
+/web/extension.css linguist-generated
+
+# >>> gspot managed >>>
+.gspot/** linguist-generated
+/.editorconfig linguist-generated
+/.github/workflows/gspot.yml linguist-generated
+/.markdownlint.jsonc linguist-generated
+/.prettierignore linguist-generated
+/eslint.config.mjs linguist-generated
+/prettier.config.mjs linguist-generated
+# <<< gspot managed <<<

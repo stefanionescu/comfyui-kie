@@ -1,0 +1,38 @@
+[project]
+name = "kie"
+version = "0.1.0"
+description = "Use any KIE model in ComfyUI with your own API key: images, video, audio, and chat."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE.md"]
+authors = [{ name = "Stefan Ionescu" }]
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "aiohttp>=3.12,<4",
+]
+
+[tool.deptry]
+ignore_notebooks = true
+# ComfyUI supplies these modules. mise run deps puts the ComfyUI install on the project path, so deptry finds them there.
+per_rule_ignores.DEP003 = [
+    "aiohttp",
+    "av",
+    "comfy",
+    "comfy_api",
+    "comfy_api_nodes",
+    "comfy_execution",
+    "folder_paths",
+    "server",
+    "torch",
+    "yarl",
+]
+per_rule_ignores.DEP004 = ["aiohttp"]
+known_first_party = ["src"]
+
+[tool.comfy]
+DisplayName = "KIE"
+Icon = "https://raw.githubusercontent.com/stefanionescu/comfyui-kie/main/docs/images/brand/logo.png"
+requires-comfyui = ">=0.37.2"
