@@ -28,7 +28,7 @@ REQUEST_REJECTED = 'KIE refused the request: {reason} Change what it names, then
 
 RESULT_LATE = 'The model made no result for over 10 minutes: {reason} Run again later.'
 
-SERVER_FAILED = 'KIE failed to answer: {reason} Run again in a minute.'
+SERVER_FAILED = 'KIE did not run the request: {reason} Fix what it names, or run again in a minute.'
 
 SWITCHED_OFF = 'KIE has switched off what this request uses: {reason}'
 

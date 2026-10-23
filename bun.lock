@@ -9,7 +9,7 @@
       },
       "devDependencies": {
         "@comfyorg/comfyui-frontend-types": "1.48.3",
-        "@gspothq/cli": "0.3.6",
+        "@gspothq/cli": "0.3.7",
         "esbuild": "0.28.2",
         "typescript": "6.0.3",
       },
@@ -103,7 +103,7 @@
 
     "@gar/promise-retry": ["@gar/promise-retry@1.0.3", "", {}, "sha512-GmzA9ckNokPypTg10pgpeHNQe7ph+iIKKmhKu3Ob9ANkswreCx7R3cKmY781K8QK3AqVL3xVh9A42JvIAbkkSA=="],
 
-    "@gspothq/cli": ["@gspothq/cli@0.3.6", "", { "dependencies": { "@clack/prompts": "1.8.0", "@commander-js/extra-typings": "15.0.0", "@decimalturn/toml-patch": "3.0.5", "@formatjs/icu-messageformat-parser": "2.11.4", "@manypkg/tools": "2.1.2", "@npmcli/config": "10.12.0", "@yarnpkg/parsers": "3.1.0", "commander": "15.0.0", "diff": "9.0.0", "entities": "7.0.1", "env-paths": "4.0.0", "execa": "9.6.1", "fastest-levenshtein": "1.0.16", "ignore": "7.0.9", "jsonc-parser": "3.3.1", "libpg-query": "18.1.4", "mdast-util-from-markdown": "2.0.3", "nypm": "0.6.10", "p-limit": "7.3.2", "picocolors": "1.1.1", "picomatch": "4.0.7", "scule": "1.3.0", "semver": "7.8.5", "signal-exit": "4.1.0", "spdx-expression-parse": "5.0.0", "spdx-satisfies": "6.0.0", "std-env": "4.2.0", "typescript": "5.9.3", "unist-util-visit": "5.1.0", "web-tree-sitter": "0.27.0", "which": "7.0.0", "yaml": "2.9.0", "zod": "4.6.2" }, "bin": { "gspot": "dist/gspot.js" } }, "sha512-epmp6JAnOk4b8Q0olzlGU0+i2bJjtSJw1I5bKMzwPdkGIj8l9jb2SeOFD7iXPklXGN1XEYlaUg/gVsF3xX5qTw=="],
+    "@gspothq/cli": ["@gspothq/cli@0.3.7", "", { "dependencies": { "@clack/prompts": "1.8.0", "@commander-js/extra-typings": "15.0.0", "@decimalturn/toml-patch": "3.0.5", "@formatjs/icu-messageformat-parser": "2.11.4", "@manypkg/tools": "2.1.2", "@npmcli/config": "10.12.0", "@yarnpkg/parsers": "3.1.0", "commander": "15.0.0", "diff": "9.0.0", "entities": "7.0.1", "env-paths": "4.0.0", "execa": "9.6.1", "fastest-levenshtein": "1.0.16", "ignore": "7.0.9", "jsonc-parser": "3.3.1", "libpg-query": "18.1.4", "mdast-util-from-markdown": "2.0.3", "nypm": "0.6.10", "p-limit": "7.3.2", "picocolors": "1.1.1", "picomatch": "4.0.7", "scule": "1.3.0", "semver": "7.8.5", "signal-exit": "4.1.0", "spdx-expression-parse": "5.0.0", "spdx-satisfies": "6.0.0", "std-env": "4.2.0", "typescript": "5.9.3", "unist-util-visit": "5.1.0", "web-tree-sitter": "0.27.0", "which": "7.0.0", "yaml": "2.9.0", "zod": "4.6.7" }, "bin": { "gspot": "dist/gspot.js" } }, "sha512-ABRjH/VWRdOP9ue0W6U7IB/rEsAEX143MQrH5gIKhCMIGUnWR7dxZZRcoS+/L55api7zBiJk4OsKYGxc+OVohA=="],
 
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.6.0", "", {}, "sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw=="],
 

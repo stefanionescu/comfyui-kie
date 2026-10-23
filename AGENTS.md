@@ -16,7 +16,7 @@ A more specific rule wins over a general one.
 
 - `.gspot/configurations/language/bash/rules/BASH.md`: when you write or change a shell script.
 - `.gspot/configurations/language/bash/rules/OPERATIONS.md`: when you write a deployment, publishing, or remote shell script.
-- `.gspot/configurations/language/bash/rules/SAFETY.md`: when a shell script deletes files, downloads, uses `sudo`, starts background jobs, or parses JSON or
+- `.gspot/configurations/language/bash/rules/SAFETY.md`: when a shell script deletes files, downloads, uses `sudo`, starts background jobs, or parses JSON or YAML.
 - `.gspot/configurations/language/javascript/rules/BUN.md`: when code runs on Bun.
 - `.gspot/configurations/language/javascript/rules/JAVASCRIPT.md`: when you change JavaScript or TypeScript code.
 - `.gspot/configurations/language/python/rules/PACKAGING.md`: when you change Python dependencies, lockfiles, or package layout.

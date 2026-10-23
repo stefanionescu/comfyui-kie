@@ -14,6 +14,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "aiohttp>=3.12,<4",
+    "import-linter==2.15",
 ]
 
 [tool.deptry]
@@ -38,3 +39,14 @@ known_first_party = ["src"]
 DisplayName = "KIE"
 Icon = "https://raw.githubusercontent.com/stefanionescu/comfyui-kie/main/docs/images/brand/logo.png"
 requires-comfyui = ">=0.37.2"
+
+[tool.importlinter]
+root_packages = ["src"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Only the ComfyUI boundary and the nodes import ComfyUI's modules"
+type = "forbidden"
+allow_indirect_imports = true
+source_modules = ["src.config", "src.state", "src.storage", "src.kie", "src.settings"]
+forbidden_modules = ["comfy", "comfy_api", "comfy_api_nodes", "comfy_execution", "folder_paths", "server"]

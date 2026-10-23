@@ -6,12 +6,13 @@ HOSTS = {
     'UPLOAD': 'kieai.redpandaai.co',
 }
 
-# KIE's routes, under the API host.
+# KIE's routes: the upload route on the upload host, and the rest on the API host.
 ROUTES = {
     'MODELS': '/api/v1/models',
     'SCHEMA': '/api/v1/models/{model}/schema',
     'CREATE_TASK': '/api/v1/jobs/createTask',
     'RECORD_INFO': '/api/v1/jobs/recordInfo',
+    'UPLOAD': '/api/file-stream-upload',
 }
 
 # The extension reads reply bodies in chunks of this size.

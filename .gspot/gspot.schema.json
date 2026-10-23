@@ -153,7 +153,7 @@
             "description": "Whether gspot writes a CI workflow, for which provider, and on which systems it runs."
         },
         "rules": {
-            "$ref": "#/$defs/__schema319",
+            "$ref": "#/$defs/__schema321",
             "description": "Whether gspot writes rules for coding agents, and which rule files it leaves out."
         }
     },
@@ -4855,7 +4855,8 @@
                     "then": {
                         "type": "object",
                         "properties": {
-                            "operating_systems": false
+                            "operating_systems": false,
+                            "linux_runner": false
                         }
                     }
                 }
@@ -4876,6 +4877,9 @@
                 },
                 "operating_systems": {
                     "$ref": "#/$defs/__schema316"
+                },
+                "linux_runner": {
+                    "$ref": "#/$defs/__schema319"
                 }
             },
             "additionalProperties": false
@@ -4927,26 +4931,35 @@
             ]
         },
         "__schema319": {
+            "description": "The GitHub runner label of the Linux job, such as a larger or self-hosted runner. GitHub only; refused with provider = \"gitlab\".",
+            "default": "ubuntu-24.04",
+            "$ref": "#/$defs/__schema320"
+        },
+        "__schema320": {
+            "type": "string",
+            "minLength": 1
+        },
+        "__schema321": {
             "default": {},
             "type": "object",
             "properties": {
                 "enabled": {
                     "default": true,
                     "description": "Write the rules and the AGENTS.md block.",
-                    "$ref": "#/$defs/__schema320"
+                    "$ref": "#/$defs/__schema322"
                 },
                 "exclude": {
                     "default": [],
                     "description": "Rule files or folders under .gspot/configurations/ to leave out, such as .gspot/configurations/general/engineering/rules/PLANNING.md.",
-                    "$ref": "#/$defs/__schema321"
+                    "$ref": "#/$defs/__schema323"
                 }
             },
             "additionalProperties": false
         },
-        "__schema320": {
+        "__schema322": {
             "type": "boolean"
         },
-        "__schema321": {
+        "__schema323": {
             "type": "array",
             "items": {
                 "type": "string"

@@ -25,9 +25,16 @@ FILE_NAMES = {
     'CREDENTIAL': 'credential',
 }
 
-# The largest settings file the extension reads.
+# The largest settings file and task record the extension reads.
 MAX_FILE_BYTES = {
     'SETTINGS': 65_536,
+    'TASK': 16_384,
+}
+
+# The task records: one file per task ID, in this folder of the state folder.
+TASK_FILES = {
+    'FOLDER': 'tasks',
+    'SUFFIX': '.json',
 }
 
 __all__ = [
@@ -36,5 +43,6 @@ __all__ = [
     'MAX_FILE_BYTES',
     'PRIVATE_FOLDER_MODE',
     'STATE_FOLDER_NAMES',
+    'TASK_FILES',
     'TEMPORARY_PREFIX',
 ]

@@ -31,6 +31,7 @@ eslint-plugin-unicorn
 gitleaks
 globals
 gspot
+ISO
 JavaScript
 jscpd
 JSON
@@ -49,6 +50,7 @@ npm
 osv-scanner
 picomatch
 pip-licenses
+PNG
 pnpm
 postcss-html
 prettier
@@ -72,11 +74,13 @@ tsc
 TypeScript
 typescript-eslint
 typos
+UTC
 uv
 v8r
 vale
 Vale
 vulture
+WAV
 Windows
 xmllint
 YAML

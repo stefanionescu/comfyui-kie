@@ -12,7 +12,7 @@
     },
     "devDependencies": {
         "@comfyorg/comfyui-frontend-types": "1.48.3",
-        "@gspothq/cli": "0.3.6",
+        "@gspothq/cli": "0.3.7",
         "esbuild": "0.28.2",
         "typescript": "6.0.3"
     },

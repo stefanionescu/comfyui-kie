@@ -19,6 +19,10 @@ reason = "The node class is named after its display name, Model: Info, as in the
 
 [spelling.allowed_words]
 KIE = "KIE is the vendor's own name, written in capitals; it is not an acronym to spell out."
+PNG = "PNG is the image file format's name, which readers know."
+WAV = "WAV is the audio file format's name, which readers know."
+UTC = "UTC is the time standard's name, which readers know."
+ISO = "ISO names the date format standard, ISO 8601, which readers know."
 
 [python]
 externals = ["comfy", "comfy_api", "comfy_api_nodes", "comfy_execution", "folder_paths", "server"]
@@ -36,36 +40,44 @@ scopes = ["nodes", "frontend", "workflows", "docs", "hooks", "quality", "root", 
 [tools.knip]
 entry = ["web/scripts/extension.ts"]
 
-# The browser code in layers. A file may import its own layer and the layers listed above it.
+# The browser code in layers. Each rule lists exactly what its files may import, besides their own folder.
 [[import_rule]]
 name = "page"
 paths = ["web/scripts/browser.ts", "web/scripts/dom.ts", "web/scripts/host.d.ts", "web/scripts/routes.ts", "web/scripts/schema.ts", "web/scripts/text.ts"]
+can_import = []
 
 [[import_rule]]
 name = "settings-dialog"
 paths = ["web/scripts/settings/**"]
+can_import = ["page"]
 
 [[import_rule]]
 name = "extension"
 paths = ["web/scripts/extension.ts"]
+can_import = ["page", "settings-dialog"]
 
-# The Python packages in layers. A file may import its own layer and the layers listed above it. The settings package
-# and the KIE package, when it arrives, share a layer, so neither imports the other.
+# The Python packages in layers, the same way. config holds fixed values and imports nothing; state holds the records;
+# storage holds the private files; kie talks to KIE and settings serves the settings routes, and neither imports the
+# other; comfy is the boundary with ComfyUI; nodes are the nodes; entry is the package's own __init__.py files.
 [[import_rule]]
 name = "config"
 paths = ["src/config/**"]
+can_import = []
 
 [[import_rule]]
 name = "state"
 paths = ["src/state/**"]
+can_import = ["config"]
 
 [[import_rule]]
 name = "storage"
 paths = ["src/storage/**"]
+can_import = ["config", "state"]
 
 [[import_rule]]
 name = "kie"
 paths = ["src/kie/**"]
+can_import = ["config", "state", "storage"]
 
 [[import_rule]]
 name = "settings"
@@ -75,14 +87,29 @@ can_import = ["config", "state", "storage"]
 [[import_rule]]
 name = "comfy"
 paths = ["src/comfy/**"]
+can_import = ["config", "state", "storage", "kie", "settings"]
 
 [[import_rule]]
 name = "nodes"
 paths = ["src/nodes/**"]
+can_import = ["config", "state", "kie", "comfy"]
 
 [[import_rule]]
 name = "entry"
 paths = ["__init__.py", "src/__init__.py"]
+can_import = ["comfy", "nodes"]
+
+# Import rules skip modules that the host provides, so import-linter checks the one rule they cannot hold: only the
+# ComfyUI boundary and the nodes import ComfyUI's modules. The contract is in pyproject.toml.
+[[command_check]]
+id = "comfy-boundary"
+command = ["uv", "run", "--no-sync", "lint-imports"]
+paths = ["src/**", "pyproject.toml"]
+stage = "commit"
+summary = "Checks that only src/comfy and src/nodes import ComfyUI's modules."
+help = "Move the import into src/comfy or src/nodes, and pass the value it gives to the other package."
+exit_codes = [1]
+output = { format = "regex", pattern = "^-\\s+(?<message>\\S+ -> \\S+) \\(l\\.(?<line>\\d+)\\)$" }
 
 [[ignore]]
 check = "javascript/eslint"

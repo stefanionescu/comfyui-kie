@@ -89,6 +89,10 @@ exceptions:
   - CSRF
   - typos
   - KIE
+  - PNG
+  - WAV
+  - UTC
+  - ISO
   - API
   - CLI
   - HTML
@@ -98,6 +102,7 @@ exceptions:
   - UI
   - URL
   - ASCII
+  - ASD
   - BSD
   - CPU
   - CRLF
@@ -122,7 +127,6 @@ exceptions:
   - TODO
   - TSX
   - USD
-  - UTC
   - UTF
   - WASM
   - XML
