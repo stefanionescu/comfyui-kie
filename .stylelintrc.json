@@ -1,0 +1,3 @@
+{
+    "extends": "./.gspot/configurations/language/css/stylelint.json"
+}

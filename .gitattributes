@@ -14,6 +14,9 @@
 /.github/workflows/gspot.yml linguist-generated
 /.markdownlint.jsonc linguist-generated
 /.prettierignore linguist-generated
+/.stylelintrc.json linguist-generated
 /eslint.config.mjs linguist-generated
 /prettier.config.mjs linguist-generated
+/pyrightconfig.json linguist-generated
+/ruff.toml linguist-generated
 # <<< gspot managed <<<

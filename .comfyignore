@@ -1,6 +1,5 @@
 # Browser source; the built bundle ships
 /web/scripts/
-/web/styles/
 
 # Development tools, plans, and instructions
 /.mise/

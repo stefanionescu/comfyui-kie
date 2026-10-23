@@ -18,8 +18,11 @@ node_modules/
 /.editorconfig
 /.markdownlint.jsonc
 /.prettierignore
+/.stylelintrc.json
 /eslint.config.mjs
 /prettier.config.mjs
+/pyrightconfig.json
+/ruff.toml
 
 # Generator outputs
 web/extension.css

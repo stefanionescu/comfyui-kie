@@ -17,8 +17,7 @@
         "typescript": "6.0.3"
     },
     "imports": {
-        "#web/*": "./web/scripts/*",
-        "#styles/*": "./web/styles/*"
+        "#web/*": "./web/scripts/*"
     },
     "overrides": {
         "zod": "4.6.7"

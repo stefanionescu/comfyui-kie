@@ -18,8 +18,7 @@
         "types": [],
         "skipLibCheck": true,
         "paths": {
-            "#web/*": ["./web/scripts/*"],
-            "#styles/*": ["./web/styles/*"]
+            "#web/*": ["./web/scripts/*"]
         }
     },
     "include": ["web/scripts/**/*.ts"]

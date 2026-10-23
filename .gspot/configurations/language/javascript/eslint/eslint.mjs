@@ -31,6 +31,14 @@ const runtimeDeclarations = [
             "**/*.{cjs,cts}"
         ],
         "excludes": []
+    },
+    {
+        "scope": "",
+        "runtime": "browser",
+        "includes": [
+            "web/scripts/**"
+        ],
+        "excludes": []
     }
 ];
 export default [
@@ -48,6 +56,9 @@ export default [
             "plans/**",
             ".gspot/**",
             "eslint.config.mjs",
+            "ruff.toml",
+            "pyrightconfig.json",
+            ".stylelintrc.json",
             ".markdownlint.jsonc",
             ".editorconfig",
             "prettier.config.mjs",
@@ -431,8 +442,7 @@ export default [
                         "*/*"
                     ],
                     "aliases": {
-                        "#web/*": "web/scripts/*",
-                        "#styles/*": "web/styles/*"
+                        "#web/*": "web/scripts/*"
                     }
                 }
             ],
@@ -542,8 +552,7 @@ export default [
                         "*/*"
                     ],
                     "aliases": {
-                        "#web/*": "web/scripts/*",
-                        "#styles/*": "web/styles/*"
+                        "#web/*": "web/scripts/*"
                     }
                 }
             ]
@@ -573,6 +582,66 @@ export default [
                             "**/*Tests.swift"
                         ],
                         "stopMatching": true
+                    },
+                    {
+                        "category": "import-rule:page",
+                        "pattern": [
+                            "web/scripts/browser.ts",
+                            "web/scripts/dom.ts",
+                            "web/scripts/host.d.ts",
+                            "web/scripts/routes.ts",
+                            "web/scripts/schema.ts",
+                            "web/scripts/text.ts"
+                        ]
+                    },
+                    {
+                        "category": "import-rule:settings-dialog",
+                        "pattern": [
+                            "web/scripts/settings/**"
+                        ]
+                    },
+                    {
+                        "category": "import-rule:extension",
+                        "pattern": [
+                            "web/scripts/extension.ts"
+                        ]
+                    },
+                    {
+                        "category": "import-rule:config",
+                        "pattern": [
+                            "src/config/**"
+                        ]
+                    },
+                    {
+                        "category": "import-rule:state",
+                        "pattern": [
+                            "src/state/**"
+                        ]
+                    },
+                    {
+                        "category": "import-rule:storage",
+                        "pattern": [
+                            "src/storage/**"
+                        ]
+                    },
+                    {
+                        "category": "import-rule:settings",
+                        "pattern": [
+                            "src/settings/**"
+                        ]
+                    },
+                    {
+                        "category": "import-rule:comfy",
+                        "pattern": [
+                            "src/comfy/**"
+                        ]
+                    },
+                    {
+                        "category": "import-rule:entry",
+                        "pattern": [
+                            "__init__.py",
+                            "src/__init__.py"
+                        ]
                     },
                     {
                         "category": "other",
@@ -628,8 +697,341 @@ export default [
             "boundaries/dependencies": [
                 "error",
                 {
-                    "default": "allow",
+                    "default": "disallow",
                     "policies": [
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:page"
+                                }
+                            },
+                            "disallow": {
+                                "to": {
+                                    "file": {
+                                        "path": "**/*"
+                                    }
+                                }
+                            },
+                            "message": "Import rule \"page\" may import only its own files, not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:page"
+                                }
+                            },
+                            "allow": {
+                                "to": {
+                                    "file": {
+                                        "categories": {
+                                            "anyOf": [
+                                                "import-rule:page"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:settings-dialog"
+                                }
+                            },
+                            "disallow": {
+                                "to": {
+                                    "file": {
+                                        "path": "**/*"
+                                    }
+                                }
+                            },
+                            "message": "Import rule \"settings-dialog\" may import its own files and \"page\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:settings-dialog"
+                                }
+                            },
+                            "allow": {
+                                "to": {
+                                    "file": {
+                                        "categories": {
+                                            "anyOf": [
+                                                "import-rule:settings-dialog",
+                                                "import-rule:page"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:extension"
+                                }
+                            },
+                            "disallow": {
+                                "to": {
+                                    "file": {
+                                        "path": "**/*"
+                                    }
+                                }
+                            },
+                            "message": "Import rule \"extension\" may import its own files and \"page\", \"settings-dialog\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:extension"
+                                }
+                            },
+                            "allow": {
+                                "to": {
+                                    "file": {
+                                        "categories": {
+                                            "anyOf": [
+                                                "import-rule:extension",
+                                                "import-rule:page",
+                                                "import-rule:settings-dialog"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:config"
+                                }
+                            },
+                            "disallow": {
+                                "to": {
+                                    "file": {
+                                        "path": "**/*"
+                                    }
+                                }
+                            },
+                            "message": "Import rule \"config\" may import its own files and \"page\", \"settings-dialog\", \"extension\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:config"
+                                }
+                            },
+                            "allow": {
+                                "to": {
+                                    "file": {
+                                        "categories": {
+                                            "anyOf": [
+                                                "import-rule:config",
+                                                "import-rule:page",
+                                                "import-rule:settings-dialog",
+                                                "import-rule:extension"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:state"
+                                }
+                            },
+                            "disallow": {
+                                "to": {
+                                    "file": {
+                                        "path": "**/*"
+                                    }
+                                }
+                            },
+                            "message": "Import rule \"state\" may import its own files and \"page\", \"settings-dialog\", \"extension\", \"config\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:state"
+                                }
+                            },
+                            "allow": {
+                                "to": {
+                                    "file": {
+                                        "categories": {
+                                            "anyOf": [
+                                                "import-rule:state",
+                                                "import-rule:page",
+                                                "import-rule:settings-dialog",
+                                                "import-rule:extension",
+                                                "import-rule:config"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:storage"
+                                }
+                            },
+                            "disallow": {
+                                "to": {
+                                    "file": {
+                                        "path": "**/*"
+                                    }
+                                }
+                            },
+                            "message": "Import rule \"storage\" may import its own files and \"page\", \"settings-dialog\", \"extension\", \"config\", \"state\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:storage"
+                                }
+                            },
+                            "allow": {
+                                "to": {
+                                    "file": {
+                                        "categories": {
+                                            "anyOf": [
+                                                "import-rule:storage",
+                                                "import-rule:page",
+                                                "import-rule:settings-dialog",
+                                                "import-rule:extension",
+                                                "import-rule:config",
+                                                "import-rule:state"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:settings"
+                                }
+                            },
+                            "disallow": {
+                                "to": {
+                                    "file": {
+                                        "path": "**/*"
+                                    }
+                                }
+                            },
+                            "message": "Import rule \"settings\" may import its own files and \"page\", \"settings-dialog\", \"extension\", \"config\", \"state\", \"storage\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:settings"
+                                }
+                            },
+                            "allow": {
+                                "to": {
+                                    "file": {
+                                        "categories": {
+                                            "anyOf": [
+                                                "import-rule:settings",
+                                                "import-rule:page",
+                                                "import-rule:settings-dialog",
+                                                "import-rule:extension",
+                                                "import-rule:config",
+                                                "import-rule:state",
+                                                "import-rule:storage"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:comfy"
+                                }
+                            },
+                            "disallow": {
+                                "to": {
+                                    "file": {
+                                        "path": "**/*"
+                                    }
+                                }
+                            },
+                            "message": "Import rule \"comfy\" may import its own files and \"page\", \"settings-dialog\", \"extension\", \"config\", \"state\", \"storage\", \"settings\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:comfy"
+                                }
+                            },
+                            "allow": {
+                                "to": {
+                                    "file": {
+                                        "categories": {
+                                            "anyOf": [
+                                                "import-rule:comfy",
+                                                "import-rule:page",
+                                                "import-rule:settings-dialog",
+                                                "import-rule:extension",
+                                                "import-rule:config",
+                                                "import-rule:state",
+                                                "import-rule:storage",
+                                                "import-rule:settings"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:entry"
+                                }
+                            },
+                            "disallow": {
+                                "to": {
+                                    "file": {
+                                        "path": "**/*"
+                                    }
+                                }
+                            },
+                            "message": "Import rule \"entry\" may import its own files and \"page\", \"settings-dialog\", \"extension\", \"config\", \"state\", \"storage\", \"settings\", \"comfy\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:entry"
+                                }
+                            },
+                            "allow": {
+                                "to": {
+                                    "file": {
+                                        "categories": {
+                                            "anyOf": [
+                                                "import-rule:entry",
+                                                "import-rule:page",
+                                                "import-rule:settings-dialog",
+                                                "import-rule:extension",
+                                                "import-rule:config",
+                                                "import-rule:state",
+                                                "import-rule:storage",
+                                                "import-rule:settings",
+                                                "import-rule:comfy"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         {
                             "from": {
                                 "file": {
@@ -702,7 +1104,17 @@ export default [
                             "from": {
                                 "file": {
                                     "categories": {
-                                        "noneOf": []
+                                        "noneOf": [
+                                            "import-rule:page",
+                                            "import-rule:settings-dialog",
+                                            "import-rule:extension",
+                                            "import-rule:config",
+                                            "import-rule:state",
+                                            "import-rule:storage",
+                                            "import-rule:settings",
+                                            "import-rule:comfy",
+                                            "import-rule:entry"
+                                        ]
                                     }
                                 }
                             },
@@ -719,7 +1131,17 @@ export default [
                                 "to": {
                                     "file": {
                                         "categories": {
-                                            "noneOf": []
+                                            "noneOf": [
+                                                "import-rule:page",
+                                                "import-rule:settings-dialog",
+                                                "import-rule:extension",
+                                                "import-rule:config",
+                                                "import-rule:state",
+                                                "import-rule:storage",
+                                                "import-rule:settings",
+                                                "import-rule:comfy",
+                                                "import-rule:entry"
+                                            ]
                                         }
                                     }
                                 }
@@ -877,6 +1299,19 @@ export default [
             [
                 "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}",
                 runtimeMatches(1, runtimeDeclarations)
+            ]
+        ]
+    },
+    // javascript
+    {
+        languageOptions: {
+            sourceType: "module",
+            globals: globals["browser"]
+        },
+        files: [
+            [
+                "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}",
+                runtimeMatches(2, runtimeDeclarations)
             ]
         ]
     },
@@ -1197,6 +1632,44 @@ export default [
                 "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}",
                 "**/*",
                 "**/*.{ts,mts,cts,tsx,vue,svelte,astro}"
+            ]
+        ]
+    },
+    // javascript
+    {
+        "ignores": [],
+        rules: {
+            "gspot/import-boundaries": "off"
+        },
+        files: [
+            [
+                "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}",
+                "**/*",
+                "web/scripts/extension.ts"
+            ],
+            [
+                "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}",
+                "**/*",
+                "web/scripts/extension.ts/**"
+            ]
+        ]
+    },
+    // javascript
+    {
+        "ignores": [],
+        rules: {
+            "n/file-extension-in-import": "off"
+        },
+        files: [
+            [
+                "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}",
+                "**/*",
+                "web/scripts/extension.ts"
+            ],
+            [
+                "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}",
+                "**/*",
+                "web/scripts/extension.ts/**"
             ]
         ]
     },

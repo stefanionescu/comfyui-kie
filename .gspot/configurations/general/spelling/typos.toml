@@ -20,6 +20,9 @@ extend-exclude = [
   # Files that gspot generates
   ".gspot/**",
   "eslint.config.mjs",
+  "ruff.toml",
+  "pyrightconfig.json",
+  ".stylelintrc.json",
   ".markdownlint.jsonc",
   ".editorconfig",
   "prettier.config.mjs",
