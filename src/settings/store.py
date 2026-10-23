@@ -3,6 +3,7 @@
 import json
 import hashlib
 from pathlib import Path
+import secrets
 import threading
 from dataclasses import field, asdict, dataclass
 
@@ -12,11 +13,11 @@ from ..state.errors import KIEError, ErrorCode
 from ..state.parsing import parse_fields
 from ..storage.files import read_file, save_file
 from ..config.storage import FILE_NAMES, MAX_FILE_BYTES
-from ..state.settings import Settings
-from ..config.security import MAX_CREDENTIAL_CHARACTERS
+from ..state.settings import Settings, Configuration
+from ..config.security import GENERATION_TOKEN_BYTES, MAX_CREDENTIAL_CHARACTERS
 from ..config.settings import SETTING_RANGES
-from ..storage.credentials import parse_credential, read_credential_source
-from ..config.messages.settings import SETTINGS_CHANGED, SETTING_READ_ONLY
+from ..storage.credentials import read_credential, parse_credential, read_credential_source
+from ..config.messages.settings import SETTINGS_CHANGED, SETTING_READ_ONLY, SETTINGS_UNREADABLE
 
 
 @dataclass(slots=True)
@@ -31,6 +32,8 @@ class ConfigurationStore:
 
     directory: Path
     lock: threading.Lock = field(default_factory=threading.Lock)
+    # The last configuration a request read; None after the key changes, or after a read fails.
+    _previous: Configuration | None = field(default=None, init=False, repr=False)
 
     def _read_settings(self) -> tuple[Settings, str]:
         """Read the settings and their revision, and create no file or folder.
@@ -44,6 +47,29 @@ class ConfigurationStore:
             settings = parse_settings(parse_fields(read_file(path, max_bytes=MAX_FILE_BYTES['SETTINGS']).decode()))
         encoded = json.dumps(asdict(settings), sort_keys=True, separators=(',', ':')).encode()
         return settings, hashlib.sha256(encoded).hexdigest()
+
+    def read_configuration(self) -> Configuration:
+        """Read the settings and the key together for one request.
+
+        The cache token stays while the key stays, and changes with the key, so a new key runs nodes again. No
+        setting changes a successful result, and ComfyUI never caches a failed run, so a settings change keeps it.
+        """
+        with self.lock:
+            try:
+                settings, _revision = self._read_settings()
+                credential = read_credential(self.directory)
+            except (OSError, UnicodeError):
+                self._previous = None
+                raise KIEError(ErrorCode.CONFIGURATION, SETTINGS_UNREADABLE) from None
+            except KIEError:
+                self._previous = None
+                raise
+            previous = self._previous
+            generation = secrets.token_hex(GENERATION_TOKEN_BYTES)
+            if previous is not None and previous.credential == credential:
+                generation = previous.generation
+            self._previous = Configuration(settings, credential, generation)
+            return self._previous
 
     def read_status(self) -> dict[str, Json]:
         """Describe the settings in effect and where the key comes from, without returning the key."""
@@ -78,12 +104,16 @@ class ConfigurationStore:
         credential = parse_credential(value)
         with self.lock:
             save_file(self.directory / FILE_NAMES['CREDENTIAL'], credential.value.encode('utf-8'))
+            # A key saved again unchanged keeps the cache token, so it sends no second paid request.
+            if self._previous is not None and self._previous.credential != credential:
+                self._previous = None
         return self.read_status()
 
     def delete_credential(self) -> dict[str, Json]:
         """Remove only the saved API key; a key in the server's environment stays in effect."""
         with self.lock:
             (self.directory / FILE_NAMES['CREDENTIAL']).unlink(missing_ok=True)
+            self._previous = None
         return self.read_status()
 
 

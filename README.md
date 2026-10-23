@@ -10,6 +10,7 @@ Run any KIE model in ComfyUI with your own API key.
 ## Contents
 
 - [Requirements](#requirements)
+- [Nodes](#nodes)
 - [License](#license)
 
 ## Requirements
@@ -17,6 +18,12 @@ Run any KIE model in ComfyUI with your own API key.
 - Python 3.12 or later.
 - ComfyUI 0.37.2 or later, with frontend 1.52.7 or later.
 - A KIE API key.
+
+## Nodes
+
+| Node                                    | What it does                                   | Paid |
+| --------------------------------------- | ---------------------------------------------- | ---- |
+| [Model: Info](web/docs/KIEModelInfo.md) | Shows the inputs any KIE model takes, as JSON. | No   |
 
 ## License
 

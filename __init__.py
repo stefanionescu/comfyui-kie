@@ -6,6 +6,7 @@ from typing import override
 
 from comfy_api.latest import ComfyExtension, io
 
+from .src.nodes import NODE_TYPES
 from .src.comfy.routes import register_routes
 
 WEB_DIRECTORY = './web'
@@ -22,7 +23,7 @@ class Extension(ComfyExtension):
     @override
     async def get_node_list(self) -> list[type[io.ComfyNode]]:
         """Return the node classes in menu order."""
-        return []
+        return list(NODE_TYPES)
 
 
 async def comfy_entrypoint() -> Extension:

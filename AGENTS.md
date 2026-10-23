@@ -79,7 +79,8 @@ browser code in `web/scripts/` ships as the built `web/extension.js` and `web/ex
 - After a change in `web/scripts/`, run `bun run build` and commit both built files.
 - In every node, sockets come first, then choices, numbers and toggles, and free-text fields come last. Subgraphs
   promote their inputs in the same order.
-- A registered node ID never changes. A display label can change, but it changes no saved key.
+- A registered node ID never changes. A display label can change, but it changes no saved key. The help page of a node
+  is `web/docs/<node ID>.md`, named with the exact registered ID.
 - The type checker reads the ComfyUI install that `.mise.local.toml` names in `COMFYUI_PATH` and `COMFYUI_PYTHON`.
   `mise run deps` puts that install on the path of the project environment.
 - Send no paid request to KIE without the owner's approval, and state its cost first.

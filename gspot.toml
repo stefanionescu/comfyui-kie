@@ -13,6 +13,10 @@ enabled = true
 [format]
 quotes = "single"
 
+[[naming.override]]
+allowed_names = ["ModelInfo"]
+reason = "The node class is named after its display name, Model: Info, as in the OpenRouter, BytePlus, fal, and Dreamina packs; its node ID KIEModelInfo is fixed once released."
+
 [spelling.allowed_words]
 KIE = "KIE is the vendor's own name, written in capitals; it is not an acronym to spell out."
 
@@ -60,12 +64,21 @@ name = "storage"
 paths = ["src/storage/**"]
 
 [[import_rule]]
+name = "kie"
+paths = ["src/kie/**"]
+
+[[import_rule]]
 name = "settings"
 paths = ["src/settings/**"]
+can_import = ["config", "state", "storage"]
 
 [[import_rule]]
 name = "comfy"
 paths = ["src/comfy/**"]
+
+[[import_rule]]
+name = "nodes"
+paths = ["src/nodes/**"]
 
 [[import_rule]]
 name = "entry"
@@ -90,6 +103,11 @@ paths = ["web/scripts/extension.ts"]
 reason = "ComfyUI serves ../../scripts/app.js and ../../scripts/api.js at runtime; esbuild leaves them external."
 
 [[ignore]]
+check = "naming/paths"
+paths = ["web/docs/**"]
+reason = "ComfyUI reads each node's help page from web/docs/<node id>.md, so the file name must equal the registered node ID."
+
+[[ignore]]
 check = "prose/vale"
 rule = "write-good.E-Prime"
 reason = "E-Prime bans every form of 'to be'; rewriting every such sentence makes the docs harder to read, not plainer."
@@ -101,10 +119,22 @@ paths = ["__init__.py"]
 reason = "ComfyUI calls the extension's on_load and get_node_list by name."
 
 [[ignore]]
+check = "python/vulture"
+names = ["define_schema", "execute", "validate_inputs", "fingerprint_inputs"]
+paths = ["src/nodes/**"]
+reason = "ComfyUI calls each node's define_schema, execute, validate_inputs, and fingerprint_inputs by name."
+
+[[ignore]]
 check = "structure/trivial-functions"
 names = ["on_load", "get_node_list", "comfy_entrypoint"]
 paths = ["__init__.py"]
 reason = "ComfyUI calls the extension's on_load, get_node_list, and comfy_entrypoint by name, so they cannot be inlined."
+
+[[ignore]]
+check = "structure/trivial-functions"
+names = ["define_schema", "execute", "validate_inputs", "fingerprint_inputs"]
+paths = ["src/nodes/**"]
+reason = "ComfyUI calls each node's define_schema, execute, validate_inputs, and fingerprint_inputs by name, so they cannot be inlined."
 
 [[ignore]]
 check = "structure/trivial-functions"

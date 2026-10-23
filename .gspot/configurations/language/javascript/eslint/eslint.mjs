@@ -625,6 +625,12 @@ export default [
                         ]
                     },
                     {
+                        "category": "import-rule:kie",
+                        "pattern": [
+                            "src/kie/**"
+                        ]
+                    },
+                    {
                         "category": "import-rule:settings",
                         "pattern": [
                             "src/settings/**"
@@ -634,6 +640,12 @@ export default [
                         "category": "import-rule:comfy",
                         "pattern": [
                             "src/comfy/**"
+                        ]
+                    },
+                    {
+                        "category": "import-rule:nodes",
+                        "pattern": [
+                            "src/nodes/**"
                         ]
                     },
                     {
@@ -915,6 +927,45 @@ export default [
                         {
                             "from": {
                                 "file": {
+                                    "categories": "import-rule:kie"
+                                }
+                            },
+                            "disallow": {
+                                "to": {
+                                    "file": {
+                                        "path": "**/*"
+                                    }
+                                }
+                            },
+                            "message": "Import rule \"kie\" may import its own files and \"page\", \"settings-dialog\", \"extension\", \"config\", \"state\", \"storage\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:kie"
+                                }
+                            },
+                            "allow": {
+                                "to": {
+                                    "file": {
+                                        "categories": {
+                                            "anyOf": [
+                                                "import-rule:kie",
+                                                "import-rule:page",
+                                                "import-rule:settings-dialog",
+                                                "import-rule:extension",
+                                                "import-rule:config",
+                                                "import-rule:state",
+                                                "import-rule:storage"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "from": {
+                                "file": {
                                     "categories": "import-rule:settings"
                                 }
                             },
@@ -925,7 +976,7 @@ export default [
                                     }
                                 }
                             },
-                            "message": "Import rule \"settings\" may import its own files and \"page\", \"settings-dialog\", \"extension\", \"config\", \"state\", \"storage\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                            "message": "Import rule \"settings\" may import its own files and \"config\", \"state\", \"storage\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
                         },
                         {
                             "from": {
@@ -939,9 +990,6 @@ export default [
                                         "categories": {
                                             "anyOf": [
                                                 "import-rule:settings",
-                                                "import-rule:page",
-                                                "import-rule:settings-dialog",
-                                                "import-rule:extension",
                                                 "import-rule:config",
                                                 "import-rule:state",
                                                 "import-rule:storage"
@@ -964,7 +1012,7 @@ export default [
                                     }
                                 }
                             },
-                            "message": "Import rule \"comfy\" may import its own files and \"page\", \"settings-dialog\", \"extension\", \"config\", \"state\", \"storage\", \"settings\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                            "message": "Import rule \"comfy\" may import its own files and \"page\", \"settings-dialog\", \"extension\", \"config\", \"state\", \"storage\", \"kie\", \"settings\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
                         },
                         {
                             "from": {
@@ -984,7 +1032,50 @@ export default [
                                                 "import-rule:config",
                                                 "import-rule:state",
                                                 "import-rule:storage",
+                                                "import-rule:kie",
                                                 "import-rule:settings"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:nodes"
+                                }
+                            },
+                            "disallow": {
+                                "to": {
+                                    "file": {
+                                        "path": "**/*"
+                                    }
+                                }
+                            },
+                            "message": "Import rule \"nodes\" may import its own files and \"page\", \"settings-dialog\", \"extension\", \"config\", \"state\", \"storage\", \"kie\", \"settings\", \"comfy\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:nodes"
+                                }
+                            },
+                            "allow": {
+                                "to": {
+                                    "file": {
+                                        "categories": {
+                                            "anyOf": [
+                                                "import-rule:nodes",
+                                                "import-rule:page",
+                                                "import-rule:settings-dialog",
+                                                "import-rule:extension",
+                                                "import-rule:config",
+                                                "import-rule:state",
+                                                "import-rule:storage",
+                                                "import-rule:kie",
+                                                "import-rule:settings",
+                                                "import-rule:comfy"
                                             ]
                                         }
                                     }
@@ -1004,7 +1095,7 @@ export default [
                                     }
                                 }
                             },
-                            "message": "Import rule \"entry\" may import its own files and \"page\", \"settings-dialog\", \"extension\", \"config\", \"state\", \"storage\", \"settings\", \"comfy\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                            "message": "Import rule \"entry\" may import its own files and \"page\", \"settings-dialog\", \"extension\", \"config\", \"state\", \"storage\", \"kie\", \"settings\", \"comfy\", \"nodes\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
                         },
                         {
                             "from": {
@@ -1024,8 +1115,10 @@ export default [
                                                 "import-rule:config",
                                                 "import-rule:state",
                                                 "import-rule:storage",
+                                                "import-rule:kie",
                                                 "import-rule:settings",
-                                                "import-rule:comfy"
+                                                "import-rule:comfy",
+                                                "import-rule:nodes"
                                             ]
                                         }
                                     }
@@ -1111,8 +1204,10 @@ export default [
                                             "import-rule:config",
                                             "import-rule:state",
                                             "import-rule:storage",
+                                            "import-rule:kie",
                                             "import-rule:settings",
                                             "import-rule:comfy",
+                                            "import-rule:nodes",
                                             "import-rule:entry"
                                         ]
                                     }
@@ -1138,8 +1233,10 @@ export default [
                                                 "import-rule:config",
                                                 "import-rule:state",
                                                 "import-rule:storage",
+                                                "import-rule:kie",
                                                 "import-rule:settings",
                                                 "import-rule:comfy",
+                                                "import-rule:nodes",
                                                 "import-rule:entry"
                                             ]
                                         }
