@@ -131,7 +131,7 @@
                         "properties": {
                             "Node name for S&R": "KIEFileAdd"
                         },
-                        "widgets_values": ["image_url", ""]
+                        "widgets_values": ["image", ""]
                     },
                     {
                         "id": 102,
@@ -273,7 +273,7 @@
                             "Node name for S&R": "KIEImageGenerate"
                         },
                         "widgets_values": [
-                            "topaz/image-upscale",
+                            "recraft/crisp-upscale",
                             "default",
                             "default",
                             "default",
@@ -284,7 +284,7 @@
                             0,
                             "",
                             "",
-                            "{\n  \"upscale_factor\": \"2\"\n}"
+                            ""
                         ],
                         "color": "#432",
                         "bgcolor": "#653"

@@ -11,7 +11,7 @@ from scripts.workflows.descriptions.texts import SHARED_TEXTS
 
 NANO_BANANA_PRO = 'nano-banana-pro'
 QWEN_IMAGE = 'qwen/text-to-image'
-TOPAZ_UPSCALE = 'topaz/image-upscale'
+RECRAFT_UPSCALE = 'recraft/crisp-upscale'
 RECRAFT_CUT_OUT = 'recraft/remove-background'
 FLUX_KLEIN = 'flux-3/klein-text-to-image'
 # A portrait frame for the host, as a named setting set to custom.
@@ -115,13 +115,8 @@ PHOTO = Subgraph(
 UPSCALE = Subgraph(
     name=SHARED_TEXTS['upscale'],
     nodes=(
-        Node('add', FILE_ADD, {'field': 'image_url'}),
-        Node(
-            'up',
-            IMAGE_GENERATE,
-            {'model': TOPAZ_UPSCALE, 'prompt': '', 'arguments': json.dumps({'upscale_factor': '2'}, indent=2)},
-            is_paid=True,
-        ),
+        Node('add', FILE_ADD, {'field': 'image'}),
+        Node('up', IMAGE_GENERATE, {'model': RECRAFT_UPSCALE, 'prompt': ''}, is_paid=True),
         Node('save', HostNode.SAVE_IMAGE, {'filename_prefix': 'image/kie/product-large'}),
     ),
     links=(('add.files', 'up.files'), ('up.images', 'save.images')),

@@ -81,7 +81,7 @@
                 "Node name for S&R": "MarkdownNote"
             },
             "widgets_values": [
-                "**File: Add** gives Topaz the photo as `image_url`, the input where it takes its image. Topaz enlarges the photo two times and keeps the edges sharp. Set `\"upscale_factor\"` in `arguments` to `\"4\"` for print."
+                "**File: Add** gives Recraft Crisp Upscale the photo as `image`, its only input. It enlarges the photo and keeps the edges sharp, with no settings to choose."
             ],
             "title": "Note"
         },
@@ -639,7 +639,7 @@
                         "properties": {
                             "Node name for S&R": "KIEFileAdd"
                         },
-                        "widgets_values": ["image_url", ""]
+                        "widgets_values": ["image", ""]
                     },
                     {
                         "id": 202,
@@ -781,7 +781,7 @@
                             "Node name for S&R": "KIEImageGenerate"
                         },
                         "widgets_values": [
-                            "topaz/image-upscale",
+                            "recraft/crisp-upscale",
                             "default",
                             "default",
                             "default",
@@ -792,7 +792,7 @@
                             0,
                             "",
                             "",
-                            "{\n  \"upscale_factor\": \"2\"\n}"
+                            ""
                         ],
                         "color": "#432",
                         "bgcolor": "#653"

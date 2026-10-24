@@ -41,8 +41,8 @@ WORKFLOW_TEXTS = {
         ),
         'photo_description': 'Draws the product photo.',
         'upscale': (
-            '**File: Add** gives Topaz the photo as `image_url`, the input where it takes its image. Topaz enlarges '
-            'the photo two times and keeps the edges sharp. Set `"upscale_factor"` in `arguments` to `"4"` for print.'
+            '**File: Add** gives Recraft Crisp Upscale the photo as `image`, its only input. It enlarges the photo and '
+            'keeps the edges sharp, with no settings to choose.'
         ),
         'upscale_description': 'Enlarges the product photo and saves it.',
         'cut_out': (
