@@ -8,18 +8,14 @@ from __future__ import annotations
 
 import sys
 import json
-from typing import TYPE_CHECKING, cast
+from typing import cast
 import asyncio
-import importlib
 
-from comfy.cli_args import args as host_args
 from comfy_api.latest import io
 
+import nodes as host
+from src.nodes import NODE_TYPES
 from scripts.nodes.host import HostNode
-
-if TYPE_CHECKING:
-    from types import ModuleType
-    from collections.abc import Sequence
 
 
 def _build_node_schema(schema: io.Schema) -> dict[str, object]:
@@ -45,8 +41,8 @@ def _build_node_schema(schema: io.Schema) -> dict[str, object]:
     }
 
 
-def _build_host_schema(host: ModuleType, name: str) -> dict[str, object]:
-    """Describe a ComfyUI node by its schema or input table, from ComfyUI's nodes module."""
+def _build_host_schema(name: str) -> dict[str, object]:
+    """Describe a ComfyUI node by its schema or input table."""
     node_class = cast('type[object]', host.NODE_CLASS_MAPPINGS[name])
     define_schema = getattr(node_class, 'define_schema', None)
     if callable(define_schema):
@@ -75,10 +71,10 @@ def _build_host_schema(host: ModuleType, name: str) -> dict[str, object]:
     return {'inputs': inputs, 'outputs': outputs}
 
 
-def _build_registered_schemas(node_types: Sequence[type[io.ComfyNode]]) -> dict[str, dict[str, object]]:
+def _build_registered_schemas() -> dict[str, dict[str, object]]:
     """Describe every registered node, refusing a node ID registered twice."""
     schemas: dict[str, dict[str, object]] = {}
-    for node_type in node_types:
+    for node_type in NODE_TYPES:
         schema = node_type.define_schema()
         if schema.node_id in schemas:
             message = f'Register {schema.node_id} once.'
@@ -91,17 +87,12 @@ def main() -> None:
     """Print the node descriptions of this extension and of the host nodes the workflows use.
 
     The check that runs this script gives the extension a new, empty state folder, so Task: Download lists no tasks
-    and the export is the same on every machine. The export runs no model, so ComfyUI loads on the CPU, as its --cpu
-    flag asks; the CI runner, which has no graphics card, needs that. ComfyUI reads the flag when its device code
-    loads, which the nodes of the extension and of ComfyUI both load, so main sets it before it imports them.
+    and the export is the same on every machine.
     """
-    host_args.cpu = True
-    node_types = cast('tuple[type[io.ComfyNode], ...]', importlib.import_module('src.nodes').NODE_TYPES)
-    host = importlib.import_module('nodes')
-    asyncio.run(host.init_extra_nodes(init_custom_nodes=False))
+    asyncio.run(host.init_extra_nodes(init_custom_nodes=False))  # pyright: ignore[reportUnknownArgumentType] # reason: the host loader has no type annotations.
     export: dict[str, object] = {
-        'nodes': _build_registered_schemas(node_types),
-        'host': {name: _build_host_schema(host, name) for name in HostNode},
+        'nodes': _build_registered_schemas(),
+        'host': {name: _build_host_schema(name) for name in HostNode},
     }
     sys.stdout.write(json.dumps(export) + '\n')
 

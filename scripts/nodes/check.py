@@ -11,7 +11,7 @@ import asyncio
 from pathlib import Path
 import tempfile
 
-from scripts.paths import HELP_DIR, REPO_ROOT, SCHEMA_SCRIPT_PATH
+from scripts.paths import HELP_DIR, REPO_ROOT, EXPORT_SCRIPT_PATH
 from src.config.storage import ENVIRONMENT_VARIABLES
 from src.config.namespace import MENUS
 
@@ -25,7 +25,7 @@ async def _read_schema_export(interpreter: Path, environment: dict[str, str]) ->
     """Run the schema script in ComfyUI's interpreter."""
     process = await asyncio.create_subprocess_exec(
         str(interpreter),
-        str(SCHEMA_SCRIPT_PATH),
+        str(EXPORT_SCRIPT_PATH),
         cwd=REPO_ROOT,
         env=environment,
         stdout=asyncio.subprocess.PIPE,
