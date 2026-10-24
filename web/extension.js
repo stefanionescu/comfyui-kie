@@ -855,6 +855,67 @@ function openSettings(fetcher) {
   current.show();
 }
 
+// web/scripts/nodes.ts
+var dynamicControlInputs = /* @__PURE__ */ new Map([
+  [
+    "KIEImageGenerate",
+    ["aspect_ratio", "resolution", "num_images", "output_format", "guidance_scale", "num_inference_steps", "seed"]
+  ],
+  ["KIEVideoGenerate", ["duration", "resolution", "aspect_ratio", "generate_audio", "seed"]],
+  ["KIEAudioGenerate", ["output_format", "seed"]]
+]);
+
+// web/scripts/controls.ts
+var controlRestorers = /* @__PURE__ */ new WeakMap();
+function keepChildValue(app2, canvasNode, child, key, restore) {
+  const saved = canvasNode.properties.conditionalValues;
+  if (restore && saved && Object.hasOwn(saved, key)) child.value = saved[key];
+  const removed = child.onRemove?.bind(child);
+  child.onRemove = () => {
+    if (!app2.configuringGraph) {
+      canvasNode.properties.conditionalValues ??= {};
+      canvasNode.properties.conditionalValues[key] = child.value;
+    }
+    removed?.();
+  };
+}
+function preserveControlValues(app2, canvasNode, widget) {
+  const restoredWidgets = /* @__PURE__ */ new WeakSet();
+  const restoreValues = (restore = false) => {
+    const selected = widget.value;
+    for (const child of canvasNode.widgets ?? []) {
+      if (!child.name.startsWith(`${widget.name}.`) || restoredWidgets.has(child)) continue;
+      restoredWidgets.add(child);
+      keepChildValue(app2, canvasNode, child, `${selected}/${child.name}`, restore);
+    }
+  };
+  restoreValues();
+  return restoreValues;
+}
+function watchControl(app2, canvasNode, widget) {
+  const restoreValues = preserveControlValues(app2, canvasNode, widget);
+  const previous = widget.callback?.bind(widget);
+  widget.callback = (...args) => {
+    previous?.(...args);
+    restoreValues(true);
+    app2.canvas.onSelectionChange?.(app2.canvas.selected_nodes);
+  };
+  return restoreValues;
+}
+function addNodeControls(app2, canvasNode) {
+  const restorers = [];
+  for (const name of dynamicControlInputs.get(canvasNode.comfyClass ?? "") ?? []) {
+    const widget = canvasNode.widgets?.find((candidate) => candidate.name === name);
+    if (widget) restorers.push(watchControl(app2, canvasNode, widget));
+  }
+  controlRestorers.set(canvasNode, restorers);
+}
+function refreshGraph(app2) {
+  for (const canvasNode of app2.rootGraph.nodes) {
+    for (const restoreValues of controlRestorers.get(canvasNode) ?? []) restoreValues();
+  }
+}
+
 // web/scripts/extension.ts
 function selectLocale() {
   const value = app.extensionManager.setting.get("Comfy.Locale");
@@ -880,6 +941,12 @@ app.registerExtension({
       stylesheets.add(link.getAttribute("href"));
     }
     if (!stylesheets.has(stylesheet.href)) document.head.append(stylesheet);
+  },
+  nodeCreated: (canvasNode) => {
+    addNodeControls(app, canvasNode);
+  },
+  afterConfigureGraph: () => {
+    refreshGraph(app);
   },
   commands: [
     {

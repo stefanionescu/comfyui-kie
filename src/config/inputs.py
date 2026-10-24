@@ -18,18 +18,30 @@ CHOICE = {
     'VALUE': 'value',
 }
 
-# The named settings of each job node, in node order, by KIE's input name, with the value custom starts at. Each runs
-# only on a model that has an input of that name; Model: Info shows the values a model takes.
-SETTINGS: dict[str, dict[str, str | int]] = {
-    'image': {'aspect_ratio': '1:1', 'resolution': '1K', 'output_format': 'png', 'seed': 42},
-    'video': {'duration': 5, 'resolution': '720p', 'aspect_ratio': '16:9', 'seed': 42},
-    'audio': {},
+# The named settings of each job node, in node order, by KIE's input name, with the value custom starts at. They are
+# the inputs most models of the kind share, the same in the fal pack. Each runs only on a model that has an input of
+# that name; Model: Info shows the values a model takes.
+SETTINGS: dict[str, dict[str, str | int | float | bool]] = {
+    'image': {
+        'aspect_ratio': '1:1',
+        'resolution': '1K',
+        'num_images': 1,
+        'output_format': 'png',
+        'guidance_scale': 3.5,
+        'num_inference_steps': 28,
+        'seed': 42,
+    },
+    'video': {'duration': 5, 'resolution': '720p', 'aspect_ratio': '16:9', 'generate_audio': True, 'seed': 42},
+    'audio': {'output_format': 'mp3', 'seed': 42},
 }
 
-# The range of each named setting that takes a number.
-NUMBER_RANGES = {
-    'duration': (1, 120),
-    'seed': (0, 2**31 - 1),
+# The least value of each named setting that takes a number; KIE checks the range of each model itself, free.
+NUMBER_MINIMUMS = {
+    'num_images': 1,
+    'guidance_scale': 0.0,
+    'num_inference_steps': 1,
+    'duration': 1,
+    'seed': 0,
 }
 
 # The one-line text inputs of each job node, by KIE's input name, with the text they start with. They come first among
@@ -58,9 +70,15 @@ TOOLTIPS = {
     ),
     'aspect_ratio': 'The shape of the result, such as 16:9. Choose custom to send one.',
     'resolution': 'The size of the result, such as 1K or 720p. Choose custom to send one.',
+    'num_images': 'How many images to make. Choose custom to send a number.',
     'output_format': 'The file format of the result, such as png. Choose custom to send one.',
+    'guidance_scale': 'How closely the image follows the prompt; higher follows it more. Choose custom to send one.',
+    'num_inference_steps': (
+        'How many steps the model takes; more is slower and often finer. Choose custom to send a number.'
+    ),
     'seed': 'Number the model uses to vary its output. Choose custom to send one.',
     'duration': 'The length in seconds. Choose custom to send one.',
+    'generate_audio': 'Whether the video has sound. Choose custom to turn it on or off.',
     'prompt': (
         "Sent as the model's prompt input. Leave it empty when the model has none or takes its text under another "
         'name, and put that text in arguments.'
@@ -74,7 +92,7 @@ __all__ = [
     'CHOICE',
     'INPUT_NAMES',
     'LINES',
-    'NUMBER_RANGES',
+    'NUMBER_MINIMUMS',
     'RUN_NUMBER',
     'SETTINGS',
     'TEXTS',

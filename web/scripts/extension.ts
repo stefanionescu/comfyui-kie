@@ -3,6 +3,7 @@ import { message } from '#web/text';
 import { api } from '../../scripts/api.js';
 import { app } from '../../scripts/app.js';
 import { openSettings } from '#web/settings/dialog';
+import { refreshGraph, addNodeControls } from '#web/controls';
 
 /**
  * Read the language ComfyUI shows, which the server's messages follow.
@@ -42,6 +43,12 @@ app.registerExtension({
             stylesheets.add(link.getAttribute('href'));
         }
         if (!stylesheets.has(stylesheet.href)) document.head.append(stylesheet);
+    },
+    nodeCreated: (canvasNode) => {
+        addNodeControls(app, canvasNode);
+    },
+    afterConfigureGraph: () => {
+        refreshGraph(app);
     },
     commands: [
         {

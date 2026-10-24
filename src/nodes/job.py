@@ -12,7 +12,7 @@ from .outputs import build_node_outputs
 from ..comfy.media import encode_local_file
 from ..state.tasks import TaskRequest
 from ..comfy.runtime import TASKS
-from ..config.inputs import LINES, TEXTS, CHOICE, SETTINGS, TOOLTIPS, RUN_NUMBER, INPUT_NAMES, NUMBER_RANGES
+from ..config.inputs import LINES, TEXTS, CHOICE, SETTINGS, TOOLTIPS, RUN_NUMBER, INPUT_NAMES, NUMBER_MINIMUMS
 from ..config.models import KIND_NODES, DEFAULT_MODELS
 from ..kie.arguments import parse_input
 from ..comfy.execution import send_request
@@ -25,15 +25,20 @@ if TYPE_CHECKING:
     from ..state.models import Kind, KIEModel
 
 
-def _build_setting(name: str, start: str | int) -> io.Input:
-    """Build one named setting: default sends nothing, and custom shows its value."""
-    if isinstance(start, int):
-        low, high = NUMBER_RANGES[name]
-        value: io.Input = io.Int.Input(CHOICE['VALUE'], default=start, min=low, max=high, tooltip=TOOLTIPS[name])
+def _build_setting(name: str, *, start: str | float | bool) -> io.Input:
+    """Build one named setting: default sends nothing, and custom shows a value of the type the setting takes."""
+    tooltip = TOOLTIPS[name]
+    value: io.Input
+    if isinstance(start, bool):
+        value = io.Boolean.Input(CHOICE['VALUE'], default=start, tooltip=tooltip)
+    elif isinstance(start, int):
+        value = io.Int.Input(CHOICE['VALUE'], default=start, min=int(NUMBER_MINIMUMS[name]), tooltip=tooltip)
+    elif isinstance(start, float):
+        value = io.Float.Input(CHOICE['VALUE'], default=start, min=NUMBER_MINIMUMS[name], step=0.1, tooltip=tooltip)
     else:
-        value = io.String.Input(CHOICE['VALUE'], default=start, tooltip=TOOLTIPS[name])
+        value = io.String.Input(CHOICE['VALUE'], default=start, tooltip=tooltip)
     options = [io.DynamicCombo.Option(CHOICE['DEFAULT'], []), io.DynamicCombo.Option(CHOICE['CUSTOM'], [value])]
-    return io.DynamicCombo.Input(name, options=options, tooltip=TOOLTIPS[name])
+    return io.DynamicCombo.Input(name, options=options, tooltip=tooltip)
 
 
 def _read_settings(kind: Kind, values: dict[str, object]) -> dict[str, Json]:
@@ -72,7 +77,7 @@ class JobNode(PaidNode):
         inputs: list[io.Input] = [
             io.Custom(SOCKET_TYPES['FILES']).Input(INPUT_NAMES['FILES'], optional=True, tooltip=TOOLTIPS['FILES']),
             io.String.Input(INPUT_NAMES['MODEL'], default=DEFAULT_MODELS[cls.kind], tooltip=TOOLTIPS['MODEL']),
-            *(_build_setting(name, start) for name, start in SETTINGS[cls.kind].items()),
+            *(_build_setting(name, start=start) for name, start in SETTINGS[cls.kind].items()),
             io.Int.Input(
                 INPUT_NAMES['RUN_NUMBER'],
                 default=RUN_NUMBER['DEFAULT'],

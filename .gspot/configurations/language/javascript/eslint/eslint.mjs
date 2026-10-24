@@ -589,9 +589,16 @@ export default [
                             "web/scripts/browser.ts",
                             "web/scripts/dom.ts",
                             "web/scripts/host.d.ts",
+                            "web/scripts/nodes.ts",
                             "web/scripts/routes.ts",
                             "web/scripts/schema.ts",
                             "web/scripts/text.ts"
+                        ]
+                    },
+                    {
+                        "category": "import-rule:controls",
+                        "pattern": [
+                            "web/scripts/controls.ts"
                         ]
                     },
                     {
@@ -747,6 +754,40 @@ export default [
                         {
                             "from": {
                                 "file": {
+                                    "categories": "import-rule:controls"
+                                }
+                            },
+                            "disallow": {
+                                "to": {
+                                    "file": {
+                                        "path": "**/*"
+                                    }
+                                }
+                            },
+                            "message": "Import rule \"controls\" may import its own files and \"page\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:controls"
+                                }
+                            },
+                            "allow": {
+                                "to": {
+                                    "file": {
+                                        "categories": {
+                                            "anyOf": [
+                                                "import-rule:controls",
+                                                "import-rule:page"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "from": {
+                                "file": {
                                     "categories": "import-rule:settings-dialog"
                                 }
                             },
@@ -791,7 +832,7 @@ export default [
                                     }
                                 }
                             },
-                            "message": "Import rule \"extension\" may import its own files and \"page\", \"settings-dialog\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                            "message": "Import rule \"extension\" may import its own files and \"page\", \"settings-dialog\", \"controls\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
                         },
                         {
                             "from": {
@@ -806,7 +847,8 @@ export default [
                                             "anyOf": [
                                                 "import-rule:extension",
                                                 "import-rule:page",
-                                                "import-rule:settings-dialog"
+                                                "import-rule:settings-dialog",
+                                                "import-rule:controls"
                                             ]
                                         }
                                     }
@@ -1171,6 +1213,7 @@ export default [
                                     "categories": {
                                         "noneOf": [
                                             "import-rule:page",
+                                            "import-rule:controls",
                                             "import-rule:settings-dialog",
                                             "import-rule:extension",
                                             "import-rule:config",
@@ -1200,6 +1243,7 @@ export default [
                                         "categories": {
                                             "noneOf": [
                                                 "import-rule:page",
+                                                "import-rule:controls",
                                                 "import-rule:settings-dialog",
                                                 "import-rule:extension",
                                                 "import-rule:config",

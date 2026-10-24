@@ -13,6 +13,7 @@ outputs the video and the link of every file the model made.
 | `duration`        | `default`, or `custom` and the length in seconds.                                                |
 | `resolution`      | `default`, or `custom` and a size, such as `480P` or `720p`, as the model writes it.             |
 | `aspect_ratio`    | `default`, or `custom` and a shape, such as `9:16`.                                              |
+| `generate_audio`  | `default`, or `custom` and on or off: whether the video has sound.                               |
 | `seed`            | `default`, or `custom` and a number.                                                             |
 | `run_number`      | Change this number to send the same request again.                                               |
 | `prompt`          | The text sent as the model's `prompt`. Leave it empty for a model without one.                   |
