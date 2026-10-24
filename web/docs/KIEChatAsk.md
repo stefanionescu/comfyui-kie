@@ -6,18 +6,18 @@ conversation so far.
 
 ## Inputs
 
-| Input              | What it takes                                                                                                                        |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `model`            | Any chat model ID from kie.ai/market; the default is `gpt-6-luna`.                                                                   |
-| `conversation`     | Earlier turns, from another **Chat: Ask**.                                                                                           |
-| `documents`        | Files from **Chat: Attach Document**. PDFs need a GPT model; text files go to any model.                                             |
-| `images`           | Images: one, a batch, or a list. Each goes as lossless WebP at its own size.                                                         |
-| `reasoning_effort` | How much the model thinks: `none`, `low`, `medium`, `high`, `xhigh`, or `max` for GPT models, and `low` or `high` for Gemini models. |
-| `run_number`       | Change this number to send the same request again.                                                                                   |
-| `answer_schema`    | A JSON schema the answer must follow, for GPT models. Leave it empty for free text.                                                  |
-| `prompt`           | The question or instruction.                                                                                                         |
-| `system_prompt`    | The system prompt: instructions for the whole answer.                                                                                |
-| `extra_fields`     | Other request fields as a JSON object, in the format of the model, added to the request as written.                                  |
+| Input              | What it takes                                                                                                                                                  |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `model`            | Any chat model ID from kie.ai/market; the default is `gpt-6-luna`.                                                                                             |
+| `conversation`     | Earlier turns, from another **Chat: Ask**.                                                                                                                     |
+| `documents`        | Files from **Chat: Attach Document**. PDFs need a GPT model; text files go to any model.                                                                       |
+| `images`           | Images: one, a batch, or a list. Each goes as lossless WebP at its own size.                                                                                   |
+| `reasoning_effort` | How much the model thinks: `none`, `low`, `medium`, `high`, `xhigh`, or `max` for GPT models, and `low` or `high` for Gemini models.                           |
+| `run_number`       | Change this number to send the same request again.                                                                                                             |
+| `json_schema`      | For GPT models, the `json_schema` format object: a `name` and the `schema` the answer must follow, with `strict` if you want it. Leave it empty for free text. |
+| `prompt`           | The question or instruction.                                                                                                                                   |
+| `system_prompt`    | The system prompt: instructions for the whole answer.                                                                                                          |
+| `extra_fields`     | Other request fields as a JSON object, in the format of the model, added to the request as written.                                                            |
 
 ## Outputs
 
@@ -40,7 +40,7 @@ KIE serves GPT, Claude, and Gemini models, each in its own request format, and
 drops temperature, top_p, top_k, and token limits on all of them, so the node
 offers none.
 
-Before it pays, the node refuses a `reasoning_effort` or an `answer_schema` that
+Before it pays, the node refuses a `reasoning_effort` or a `json_schema` that
 the model does not take. It also refuses a PDF for a model other than GPT, and
 a field in `extra_fields` that the node sets itself.
 

@@ -61,7 +61,7 @@ class ChatRequest:
         documents: The attached documents, in the order of the chain.
         images: The connected images, one file for each frame.
         reasoning_effort: The chosen effort, or default.
-        texts: The text boxes by input name: answer_schema, prompt, system_prompt, and extra_fields.
+        texts: The text boxes by input name: json_schema, prompt, system_prompt, and extra_fields.
 
     """
 

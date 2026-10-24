@@ -16,7 +16,8 @@ FORMAT_EFFORTS = {
     'gemini': ('low', 'high'),
 }
 
-# The formats that honor an answer schema. Claude ignored output_config, and native Gemini failed with responseSchema.
+# The formats that honor a JSON schema for the answer. Claude ignored output_config, and native Gemini failed with
+# responseSchema.
 SCHEMA_FORMATS = ('responses', 'completions')
 
 # The formats that read a PDF. Claude ignored one in the probes, and native Gemini failed with one.
@@ -37,9 +38,6 @@ DOCUMENT_TYPES = {
     '.json': 'application/json',
 }
 
-# The name an answer schema goes under, where the format asks for one.
-ANSWER_NAME = 'answer'
-
 # The role each format gives each message. Native Gemini names the model's own turns model.
 ROLES = {
     'USER': 'user',
@@ -49,7 +47,6 @@ ROLES = {
 }
 
 __all__ = [
-    'ANSWER_NAME',
     'DOCUMENT_TEXT',
     'DOCUMENT_TYPES',
     'EFFORTS',

@@ -19,7 +19,7 @@ from .arguments import parse_arguments_text
 from .transport import send_chat
 from ..config.kie import HOSTS
 from ..state.chat import ChatResult, ChatReplyParts
-from ..config.chat import ROLES, ANSWER_NAME, PDF_FORMATS, DOCUMENT_TEXT, FORMAT_EFFORTS, SCHEMA_FORMATS
+from ..config.chat import ROLES, PDF_FORMATS, DOCUMENT_TEXT, FORMAT_EFFORTS, SCHEMA_FORMATS
 from ..state.errors import KIEError, ErrorCode
 from ..state.parsing import parse_fields
 from ..config.messages.run import REPLY_UNREADABLE
@@ -31,7 +31,7 @@ from ..config.messages.chat import (
     CHAT_FIELD_TWICE,
     CHAT_REPLY_EMPTY,
     EFFORT_NOT_TAKEN,
-    ANSWER_SCHEMA_INVALID,
+    JSON_SCHEMA_INVALID,
 )
 
 if TYPE_CHECKING:
@@ -94,9 +94,7 @@ def _build_responses(model: KIEModel, question: _Question, options: dict[str, Js
     if 'effort' in options:
         body['reasoning'] = {'effort': options['effort']}
     if 'schema' in options:
-        body['text'] = {
-            'format': {'type': 'json_schema', 'name': ANSWER_NAME, 'strict': True, 'schema': options['schema']}
-        }
+        body['text'] = {'format': {'type': 'json_schema', **cast('dict[str, Json]', options['schema'])}}
     return body
 
 
@@ -147,7 +145,7 @@ def _build_completions(_model: KIEModel, question: _Question, options: dict[str,
     if 'schema' in options:
         body['response_format'] = {
             'type': 'json_schema',
-            'json_schema': {'name': ANSWER_NAME, 'strict': True, 'schema': options['schema']},
+            'json_schema': options['schema'],
         }
     return body
 
@@ -208,8 +206,11 @@ def _read_reply(model_format: str, reply: Json) -> tuple[str, str]:
     return ''.join(text for text in answer if text), ''.join(text for text in shown if text)
 
 
-def _read_options(model: KIEModel, effort: str | None, answer_schema: str | None) -> dict[str, Json]:
-    """Check the effort and the answer schema against what KIE honors for the format, and return the ones set."""
+def _read_options(model: KIEModel, effort: str | None, json_schema: str | None) -> dict[str, Json]:
+    """Check the effort and the JSON schema against what KIE honors for the format, and return the ones set.
+
+    The JSON schema object goes as written: its name, its schema, and strict when the person sets it.
+    """
     model_format = cast('str', model.model_format)
     options: dict[str, Json] = {}
     if effort is not None and effort != _DEFAULT_EFFORT:
@@ -218,20 +219,20 @@ def _read_options(model: KIEModel, effort: str | None, answer_schema: str | None
             names = {'model': model.entry.model, 'efforts': ', '.join(efforts)}
             raise KIEError(ErrorCode.INVALID_INPUT, (EFFORT_REFUSED if efforts else EFFORT_NOT_TAKEN).format(**names))
         options['effort'] = effort
-    if answer_schema is not None and answer_schema.strip():
+    if json_schema is not None and json_schema.strip():
         if model_format not in SCHEMA_FORMATS:
             raise KIEError(ErrorCode.INVALID_INPUT, SCHEMA_REFUSED.format(model=model.entry.model))
         try:
-            options['schema'] = parse_fields(answer_schema)
+            options['schema'] = parse_fields(json_schema)
         except KIEError:
-            raise KIEError(ErrorCode.INVALID_INPUT, ANSWER_SCHEMA_INVALID.format()) from None
+            raise KIEError(ErrorCode.INVALID_INPUT, JSON_SCHEMA_INVALID.format()) from None
     return options
 
 
 def parse_chat(
     model: KIEModel, texts: Mapping[str, str | None], effort: str | None, documents: Sequence[Document]
 ) -> tuple[dict[str, Json], dict[str, Json]]:
-    """Make the checks that need no images: the prompt, the effort, the answer schema, the documents, and extra_fields.
+    """Make the checks that need no images: the prompt, the effort, json_schema, the documents, and extra_fields.
 
     A None text or effort is an input fed by a link, known only when the node runs, so its checks wait until then.
     Returns the options of the format and the extra fields.
@@ -242,7 +243,7 @@ def parse_chat(
     model_format = cast('str', model.model_format)
     if model_format not in PDF_FORMATS and any(document.file_url is not None for document in documents):
         raise KIEError(ErrorCode.INVALID_INPUT, PDF_REFUSED.format(model=model.entry.model))
-    options = _read_options(model, effort, texts['answer_schema'])
+    options = _read_options(model, effort, texts['json_schema'])
     extra_fields = parse_arguments_text(texts['extra_fields']) if texts['extra_fields'] is not None else {}
     # The node sets the same fields whatever the turns, documents, and images; a box fed by a link counts as empty.
     question = _Question({name: text or '' for name, text in texts.items()}, (), (), ())

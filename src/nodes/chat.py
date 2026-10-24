@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from ..state.models import KIEModel
 
 # The text inputs, in node order: free text comes last.
-_TEXTS = ('answer_schema', 'prompt', 'system_prompt', 'extra_fields')
+_TEXTS = ('json_schema', 'prompt', 'system_prompt', 'extra_fields')
 # The effort that sends nothing.
 _DEFAULT_EFFORT = EFFORTS[0]
 
@@ -50,11 +50,12 @@ _SOCKETS = (
 # The text boxes, in the order of _TEXTS.
 _TEXT_INPUTS = (
     io.String.Input(
-        'answer_schema',
+        'json_schema',
         default='',
         multiline=True,
         advanced=True,
-        tooltip='A JSON schema the answer must follow, for GPT models; leave it empty for free text.',
+        tooltip='Sent as the json_schema format of GPT models: a JSON object with a name and a schema. Leave it empty '
+        'for free text.',
     ),
     io.String.Input('prompt', default='', multiline=True, tooltip='The question or instruction.'),
     io.String.Input(
