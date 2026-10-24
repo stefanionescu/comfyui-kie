@@ -3,18 +3,15 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, cast, override
-import asyncio
 from functools import partial
 
 from comfy_api.latest import io
 
 from .base import PaidNode
 from .outputs import build_node_outputs
-from ..kie.models import read_kie_model
 from ..comfy.media import encode_local_file
 from ..state.tasks import TaskRequest
-from ..state.errors import KIEError
-from ..comfy.runtime import TASKS, CONFIGURATION
+from ..comfy.runtime import TASKS
 from ..config.inputs import LINES, TEXTS, CHOICE, SETTINGS, TOOLTIPS, RUN_NUMBER, INPUT_NAMES, NUMBER_RANGES
 from ..config.models import KIND_NODES, DEFAULT_MODELS
 from ..kie.arguments import parse_input
@@ -25,7 +22,7 @@ from ..kie.tasks.operation import run_task
 if TYPE_CHECKING:
     from ..state import Json
     from ..state.files import KIEFile
-    from ..state.models import Kind
+    from ..state.models import Kind, KIEModel
 
 
 def _build_setting(name: str, start: str | int) -> io.Input:
@@ -56,13 +53,11 @@ class JobNode(PaidNode):
     """Run one task on any KIE model of the kind of the node, and fill the outputs of the node.
 
     Attributes:
-        kind: What the models of the node make; the node refuses a model of another kind before paying.
         description: The description ComfyUI shows for the node.
         outputs: The output sockets of the node in order; build_node_outputs fills them by ID.
 
     """
 
-    kind: ClassVar[Kind]
     description: ClassVar[str]
     outputs: ClassVar[tuple[io.Output, ...]]
 
@@ -101,34 +96,17 @@ class JobNode(PaidNode):
 
     @classmethod
     @override
-    async def validate_inputs(cls, **inputs: object) -> bool | str:  # pyright: ignore[reportIncompatibleMethodOverride] # reason: ComfyUI passes every input by name, the dynamic settings included.
-        """Make the free checks a typed model allows when ComfyUI queues the workflow, before any node runs, and bills.
-
-        A value fed by a link is None until the workflow runs, and send makes its checks then.
-        """
-        model = inputs.get(INPUT_NAMES['MODEL'])
-        if not isinstance(model, str):
-            return True
+    def check(cls, model: KIEModel, inputs: dict[str, object]) -> None:
+        """Check the text boxes, the named settings, and the arguments that the workflow sets, against the model."""
         names = (*LINES[cls.kind], *TEXTS[cls.kind])
         texts = {name: value if isinstance(value := inputs.get(name), str) else None for name in names}
         arguments = inputs.get(INPUT_NAMES['ARGUMENTS'])
-        try:
-            configuration = await asyncio.to_thread(CONFIGURATION.read_configuration)
-            kie_model = await read_kie_model(model.strip(), cls.kind, configuration)
-            settings = _read_settings(cls.kind, inputs)
-            parse_input(kie_model, texts, settings, arguments if isinstance(arguments, str) else None)
-        except KIEError as error:
-            return str(error)
-        return True
+        parse_input(model, texts, _read_settings(cls.kind, inputs), arguments if isinstance(arguments, str) else None)
 
     @classmethod
     @override
-    async def send(cls, **inputs: object) -> io.NodeOutput:
-        """Send one task and fill the outputs; the task makes every check again, because a link skips them.
-
-        ComfyUI sets hidden on the class it runs; a direct call from another pack has no node ID and no progress bar.
-        """
-        node_id = cls.hidden.unique_id if cls.hidden is not None else None  # pyright: ignore[reportUnnecessaryComparison] # reason: a direct call runs the class itself, whose hidden is None.
+    async def send(cls, node_id: str | None, **inputs: object) -> io.NodeOutput:
+        """Send one task and fill the outputs; the task makes every check again, because a link skips them."""
         output_ids = tuple(output.id for output in cls.outputs if output.id is not None)
         files = cast('tuple[KIEFile, ...] | None', inputs.get(INPUT_NAMES['FILES']))
         request = TaskRequest(

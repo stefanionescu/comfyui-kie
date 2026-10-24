@@ -9,11 +9,11 @@ outputs every audio file and the link of every file the model made.
 | ------------ | ---------------------------------------------------------------------------------------------------- |
 | `files`      | Audio or other files from **File: Add**, each under its input name.                                  |
 | `model`      | The model ID, such as `ai-music-api/generate`. The default is `elevenlabs/text-to-speech-turbo-2-5`. |
-| `run_number` | Change it to send the same request again.                                                            |
+| `run_number` | Change this number to send the same request again.                                                   |
 | `voice`      | The voice ID, for a voice model. The default is James, on ElevenLabs. Empty sends nothing.           |
-| `prompt`     | What to make, for a music or sound model. Sent as the input named `prompt`.                          |
+| `prompt`     | The text sent as the model's `prompt`. Leave it empty for a model without one.                       |
 | `text`       | The words to speak, for a voice model. Sent as the input named `text`.                               |
-| `arguments`  | Other inputs of the model as JSON, such as `{"speed": 1.1}`.                                         |
+| `arguments`  | The model's other inputs as JSON, under KIE's names, such as `{"speed": 1.1}`.                       |
 
 Each text input goes under its own name, and only a model with an input of
 that name takes it. Clear `voice` for a model without one. **Model: Info** lists

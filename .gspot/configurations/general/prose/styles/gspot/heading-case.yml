@@ -90,6 +90,8 @@ exceptions:
   - KIE
   - PNG
   - WAV
+  - PDF
+  - GPT
   - UTC
   - ISO
   - API

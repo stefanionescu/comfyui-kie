@@ -6,6 +6,8 @@ extend-ignore-re = ["\\b[0-9a-f]{7,40}\\b", "\\b[A-Za-z0-9+/]{40,}={0,2}\\b"]
 KIE = "KIE"
 PNG = "PNG"
 WAV = "WAV"
+PDF = "PDF"
+GPT = "GPT"
 UTC = "UTC"
 ISO = "ISO"
 

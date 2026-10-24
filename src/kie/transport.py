@@ -18,7 +18,7 @@ from .failures import build_failure
 from ..config.kie import HOSTS, PAGES, REPLY_BYTES, SUCCESS_CODE
 from ..config.units import BYTES_PER_MEGABYTE
 from ..state.errors import KIEError, ErrorCode
-from ..state.models import Envelope
+from ..state.models import Envelope, ChatReply
 from ..config.messages.run import READ_TIMEOUT, DOWNLOAD_LIMIT, KIE_UNREACHABLE, REPLY_UNREADABLE
 from ..config.messages.tasks import CREATE_UNCERTAIN, OUTPUT_DOWNLOAD_FAILED
 
@@ -111,11 +111,11 @@ async def send_lookup(url: URL, configuration: Configuration) -> Json:
     return _read_envelope(status, content)
 
 
-async def send_json(url: URL, body: Mapping[str, Json], configuration: Configuration) -> Json:
-    """Send the one paid request, which creates a task, once, and return the result inside KIE's envelope.
+async def _send_paid_request(url: URL, body: Mapping[str, Json], configuration: Configuration) -> tuple[int, bytes]:
+    """Send one paid request once, and return its HTTP status and body.
 
     A connection that fails before the request leaves bills nothing. A connection that breaks after it may have
-    created the task, so the message names the logs page to check before running again.
+    billed, so the message names the logs page to check before running again.
     """
     settings = configuration.settings
     headers = _build_headers(url, configuration.credential)
@@ -128,7 +128,36 @@ async def send_json(url: URL, body: Mapping[str, Json], configuration: Configura
         raise KIEError(ErrorCode.TRANSPORT, KIE_UNREACHABLE) from None
     except (aiohttp.ClientError, TimeoutError):
         raise KIEError(ErrorCode.UNCERTAIN, CREATE_UNCERTAIN.format(logs=PAGES['LOGS'])) from None
-    return _read_envelope(status, content)
+    return status, content
+
+
+async def send_task(url: URL, body: Mapping[str, Json], configuration: Configuration) -> str:
+    """Send the request that creates a task, once, and return the ID of the task.
+
+    A success without a task ID may still have created the task, so the message names the logs page too.
+    """
+    status, content = await _send_paid_request(url, body, configuration)
+    reply = _read_envelope(status, content)
+    task_id = reply.get('taskId') if isinstance(reply, dict) else None
+    if not isinstance(task_id, str):
+        raise KIEError(ErrorCode.UNCERTAIN, CREATE_UNCERTAIN.format(logs=PAGES['LOGS']))
+    return task_id
+
+
+async def send_chat(url: URL, body: Mapping[str, Json], configuration: Configuration) -> Json:
+    """Send one paid chat request once, and return the reply as the format of the model writes it.
+
+    A chat reply is not in KIE's envelope. A failure comes either as KIE's envelope with an error code, or, from Claude,
+    as an error object with an HTTP status.
+    """
+    status, content = await _send_paid_request(url, body, configuration)
+    try:
+        reply = ChatReply.model_validate_json(content)
+    except ValidationError:
+        raise KIEError(ErrorCode.TRANSPORT, REPLY_UNREADABLE) from None
+    if status >= HTTPStatus.MULTIPLE_CHOICES or (reply.code is not None and reply.code != SUCCESS_CODE):
+        raise build_failure(reply.code or status, reply.msg or (reply.error.message if reply.error else None))
+    return reply.model_dump(by_alias=True, exclude_unset=True)
 
 
 async def send_upload(url: URL, form: aiohttp.FormData, configuration: Configuration) -> Json:
@@ -151,4 +180,4 @@ async def download_output(url: str, settings: Settings) -> bytes:
         return await _read_body(response, settings)
 
 
-__all__ = ['download_output', 'send_json', 'send_lookup', 'send_upload']
+__all__ = ['download_output', 'send_chat', 'send_lookup', 'send_task', 'send_upload']

@@ -30,6 +30,7 @@ eslint-plugin-sonarjs
 eslint-plugin-unicorn
 gitleaks
 globals
+GPT
 gspot
 ISO
 JavaScript
@@ -48,6 +49,7 @@ node
 Node
 npm
 osv-scanner
+PDF
 picomatch
 pip-licenses
 PNG

@@ -21,6 +21,8 @@ reason = "The node class is named after its display name, Model: Info, as in the
 KIE = "KIE is the vendor's own name, written in capitals; it is not an acronym to spell out."
 PNG = "PNG is the image file format's name, which readers know."
 WAV = "WAV is the audio file format's name, which readers know."
+PDF = "PDF is the document file format's name, which readers know."
+GPT = "GPT is the name of OpenAI's model family, which readers know."
 UTC = "UTC is the time standard's name, which readers know."
 ISO = "ISO names the date format standard, ISO 8601, which readers know."
 

@@ -42,7 +42,7 @@ _SHAPES: tuple[tuple[type, str], ...] = ((bool, 'boolean'), (list, 'array'), (st
 _FILE_SOURCE = 'File: Add'
 
 
-def _parse_arguments_text(text: str) -> dict[str, Json]:
+def parse_arguments_text(text: str) -> dict[str, Json]:
     """Read the arguments box as one JSON object; empty text is an empty object."""
     if not text.strip():
         return {}
@@ -94,7 +94,7 @@ def parse_input(
     A None text or arguments is an input fed by a link, known only when the node runs, so its checks wait until then.
     Returns the arguments first, then the text boxes and the named inputs.
     """
-    values = _parse_arguments_text(arguments) if arguments is not None else {}
+    values = parse_arguments_text(arguments) if arguments is not None else {}
     fields = {field.name: field for field in model.fields}
     unknown = next((name for name in values if name not in fields), None)
     if unknown is not None:
@@ -165,4 +165,4 @@ def build_input(
     return built
 
 
-__all__ = ['build_input', 'parse_input']
+__all__ = ['build_input', 'parse_arguments_text', 'parse_input']

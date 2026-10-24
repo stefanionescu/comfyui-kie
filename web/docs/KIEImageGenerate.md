@@ -14,10 +14,10 @@ every file the model made.
 | `resolution`      | `default`, or `custom` and a size, such as `2K`.                                                |
 | `output_format`   | `default`, or `custom` and a file type, such as `png`.                                          |
 | `seed`            | `default`, or `custom` and a number. The same seed repeats a result.                            |
-| `run_number`      | Change it to send the same request again.                                                       |
-| `prompt`          | What to make. Sent as the input named `prompt`.                                                 |
+| `run_number`      | Change this number to send the same request again.                                              |
+| `prompt`          | The text sent as the model's `prompt`. Leave it empty for a model without one.                  |
 | `negative_prompt` | What to leave out, for a model that takes it. Empty sends nothing.                              |
-| `arguments`       | Other inputs of the model as JSON, such as `{"background": "opaque"}`.                          |
+| `arguments`       | The model's other inputs as JSON, under KIE's names, such as `{"background": "opaque"}`.        |
 
 Each setting at `default` sends nothing, so the model uses its own default. A
 setting at `custom` goes under its own name, and only a model with an input of

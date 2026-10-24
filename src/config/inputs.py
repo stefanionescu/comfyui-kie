@@ -50,21 +50,24 @@ TEXTS = {
 # Tooltips of the shared inputs, the named settings, and the text boxes, in plain words.
 TOOLTIPS = {
     'FILES': 'Files for the model, each for the input its File: Add names.',
-    'MODEL': "The KIE model to run: its model ID, such as wan/3-0-video. Each model's page on kie.ai/market shows it.",
-    'RUN_NUMBER': 'Change it to send the same request again.',
+    'MODEL': 'Any KIE model ID, such as wan/3-0-video. Copy one from its page on kie.ai/market.',
+    'RUN_NUMBER': 'Change this number to send the same request again.',
     'ARGUMENTS': (
-        'Other inputs of the model as a JSON object, under the names Model: Info lists, such as {"background": '
-        '"opaque"}. Leave it empty to use the defaults of the model.'
+        'The model\'s other inputs as a JSON object, under the names Model: Info lists, such as {"resolution": '
+        '"480p"}. Leave it empty to use the model\'s defaults.'
     ),
-    'aspect_ratio': 'The shape of the result, such as 16:9. Choose custom to set it.',
-    'resolution': 'The size of the result, such as 1K or 720p. Choose custom to set it.',
-    'output_format': 'The file type of the result, such as png. Choose custom to set it.',
-    'seed': 'The number the model starts from; the same seed repeats a result. Choose custom to set it.',
-    'duration': 'The length of the video, in seconds. Choose custom to set it.',
-    'prompt': 'What to make. Sent as the input named prompt.',
-    'negative_prompt': 'What to leave out. Sent as the input named negative_prompt; leave it empty to send nothing.',
-    'text': 'The words to speak, for a voice model. Sent as the input named text; leave it empty to send nothing.',
-    'voice': 'The voice ID, for a voice model. Sent as the input named voice; leave it empty to send nothing.',
+    'aspect_ratio': 'The shape of the result, such as 16:9. Choose custom to send one.',
+    'resolution': 'The size of the result, such as 1K or 720p. Choose custom to send one.',
+    'output_format': 'The file format of the result, such as png. Choose custom to send one.',
+    'seed': 'Number the model uses to vary its output. Choose custom to send one.',
+    'duration': 'The length in seconds. Choose custom to send one.',
+    'prompt': (
+        "Sent as the model's prompt input. Leave it empty when the model has none or takes its text under another "
+        'name, and put that text in arguments.'
+    ),
+    'negative_prompt': 'What to leave out. Leave it empty to send nothing.',
+    'text': 'The words to speak, for a voice model. Leave it empty to send nothing.',
+    'voice': 'The voice ID, for a voice model. Leave it empty to send nothing.',
 }
 
 __all__ = [

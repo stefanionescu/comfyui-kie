@@ -15,6 +15,8 @@ MENUS = {
 # The socket types more than one node shares, prefixed so no other pack's socket of the same name connects.
 SOCKET_TYPES = {
     'FILES': 'KIE_FILES',
+    'CONVERSATION': 'KIE_CONVERSATION',
+    'DOCUMENTS': 'KIE_DOCUMENTS',
 }
 
 __all__ = ['MENUS', 'NODE_PREFIX', 'SOCKET_TYPES']

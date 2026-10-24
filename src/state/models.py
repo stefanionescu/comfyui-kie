@@ -3,7 +3,7 @@
 from typing import Literal
 from dataclasses import dataclass
 
-from pydantic import Field
+from pydantic import Field, BaseModel, ConfigDict
 
 from . import Json, Reply
 
@@ -64,6 +64,36 @@ class Envelope(Reply):
     payload: Json = Field(default=None, alias='data')
 
 
+class ChatError(Reply):
+    """The error object of a failed Claude reply.
+
+    Attributes:
+        message: The reason.
+
+    """
+
+    message: str | None = None
+
+
+class ChatReply(BaseModel):
+    """A chat reply: the model's own document, or KIE's envelope with an error code, or a Claude error object.
+
+    It keeps every field, because the reply goes to the result output whole.
+
+    Attributes:
+        code: KIE's error code, when KIE wrapped the reply.
+        msg: KIE's message, when KIE wrapped the reply.
+        error: Claude's error object, when Claude refused.
+
+    """
+
+    model_config = ConfigDict(extra='allow', frozen=True)
+
+    code: int | None = None
+    msg: str | None = None
+    error: ChatError | None = None
+
+
 class CatalogEntry(Reply):
     """One model in KIE's catalog.
 
@@ -113,4 +143,4 @@ class KIEModel:
 
 
 # Other modules import the type aliases by name; __all__ lists the runtime names.
-__all__ = ['CatalogEntry', 'CatalogPage', 'Envelope', 'KIEModel', 'ModelField']
+__all__ = ['CatalogEntry', 'CatalogPage', 'ChatError', 'ChatReply', 'Envelope', 'KIEModel', 'ModelField']

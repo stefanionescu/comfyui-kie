@@ -21,13 +21,13 @@ from ..outputs import list_output_files
 from ..uploads import upload_files
 from ..failures import clean_reason
 from ..arguments import build_input
-from ..transport import send_json, send_lookup, download_output
-from ...config.kie import HOSTS, PAGES, ROUTES
+from ..transport import send_task, send_lookup, download_output
+from ...config.kie import HOSTS, ROUTES
 from ...state.tasks import TaskState, OutputFile, TaskRecord, TaskResult
 from ...config.tasks import STATES, POLL_SECONDS, PROGRESS_STEPS, RECORD_VERSION, RECORD_RETENTION_SECONDS
 from ...state.errors import KIEError, ErrorCode
 from ...config.messages.run import REPLY_UNREADABLE
-from ...config.messages.tasks import TASK_GONE, WAIT_LIMIT, TASK_FAILED, CREATE_UNCERTAIN
+from ...config.messages.tasks import TASK_GONE, WAIT_LIMIT, TASK_FAILED
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -67,17 +67,14 @@ async def _create_task(model: KIEModel, task_input: dict[str, Json], kind: Kind,
     task, and only then lets the cancel through, so Task: Download can still collect the task.
     """
     body: dict[str, Json] = {'model': model.entry.model, 'input': task_input}
-    sending = asyncio.ensure_future(send_json(_API.with_path(ROUTES['CREATE_TASK']), body, wait.configuration))
+    sending = asyncio.ensure_future(send_task(_API.with_path(ROUTES['CREATE_TASK']), body, wait.configuration))
     is_cancelled = False
     while not sending.done():
         try:
             await asyncio.shield(sending)
         except asyncio.CancelledError:
             is_cancelled = True
-    reply = sending.result()
-    task_id = reply.get('taskId') if isinstance(reply, dict) else None
-    if not isinstance(task_id, str):
-        raise KIEError(ErrorCode.UNCERTAIN, CREATE_UNCERTAIN.format(logs=PAGES['LOGS']))
+    task_id = sending.result()
     submitted_at = datetime.now(UTC).isoformat(timespec='seconds')
     record = TaskRecord(
         version=RECORD_VERSION, task_id=task_id, model=model.entry.model, kind=kind, submitted_at=submitted_at

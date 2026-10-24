@@ -1,0 +1,27 @@
+# Chat: Attach Document
+
+Attaches a PDF or text file from the input folder of ComfyUI to **Chat: Ask**.
+Chain several of these nodes to attach several files.
+
+## Inputs
+
+| Input       | What it takes                                                                  |
+| ----------- | ------------------------------------------------------------------------------ |
+| `file`      | A PDF, text, Markdown, CSV, or JSON file at the top of ComfyUI's input folder. |
+| `documents` | Documents from another **Chat: Attach Document**.                              |
+
+## Outputs
+
+| Output      | What it carries                                         |
+| ----------- | ------------------------------------------------------- |
+| `documents` | The earlier documents plus this one, for **Chat: Ask**. |
+
+## Use
+
+1. Put the file in the input folder of ComfyUI, and press R to refresh the list.
+2. Choose it in `file`.
+3. Connect `documents` to **Chat: Ask**.
+
+A PDF goes only to GPT models; KIE drops it for Claude and fails with it for
+Gemini, so **Chat: Ask** refuses it there before paying. A text file goes to
+any model as text and must be UTF-8. The next run reads an edited file again.

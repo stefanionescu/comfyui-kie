@@ -18,7 +18,7 @@ NO_REASON = 'KIE gave no reason.'
 
 NOT_FOUND = 'KIE does not know what this request names: {reason}'
 
-RATE_LIMITED = 'KIE got too many requests from this account. Wait a few seconds, then run again.'
+RATE_LIMITED = 'KIE is limiting requests: {reason} Wait a moment before running again.'
 
 READ_TIMEOUT = 'KIE did not answer within {seconds} seconds. Run again, or raise the request timeout in KIE Settings.'
 
