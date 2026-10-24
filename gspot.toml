@@ -9,6 +9,7 @@ enabled = true
 
 [ci]
 enabled = true
+setup_command = ["mise", "run", "ci:setup"]
 
 [format]
 quotes = "single"
@@ -16,6 +17,9 @@ quotes = "single"
 [[naming.override]]
 allowed_names = ["ModelInfo", "MODEL_INFO"]
 reason = "The node class is named after its display name, Model: Info, as in the OpenRouter, BytePlus, fal, and Dreamina packs; its node ID KIEModelInfo is fixed once released."
+
+[docs]
+allowed_urls = { value = ["^https://kie\\.ai/"], reason = "kie.ai answers 403 to requests from CI runners; the pages load from a normal connection." }
 
 [spelling.allowed_words]
 KIE = "KIE is the vendor's own name, written in capitals; it is not an acronym to spell out."
@@ -178,19 +182,14 @@ reason = "ComfyUI serves ../../scripts/app.js and ../../scripts/api.js at runtim
 
 [[ignore]]
 check = "naming/paths"
-rule = "banned-word"
-paths = ["ADVANCED.md"]
-reason = "ADVANCED.md is the advanced guide of every pack in the family, the name its readers and the README link know."
-
-[[ignore]]
-check = "structure/shared-prefixes"
-paths = ["example_workflows/**"]
-reason = "ComfyUI's template browser reads one flat example_workflows folder, and the owner names each workflow <family>-<two-digit number>-<task>."
+paths = ["web/docs/**"]
+reason = "ComfyUI reads each node's help page from web/docs/<node id>.md, so the file name must equal the registered node ID."
 
 [[ignore]]
 check = "naming/paths"
-paths = ["web/docs/**"]
-reason = "ComfyUI reads each node's help page from web/docs/<node id>.md, so the file name must equal the registered node ID."
+rule = "banned-word"
+paths = ["ADVANCED.md"]
+reason = "ADVANCED.md is the advanced guide of every pack in the family, the name its readers and the README link know."
 
 [[ignore]]
 check = "prose/vale"
@@ -208,6 +207,11 @@ check = "python/vulture"
 names = ["define_schema", "execute", "validate_inputs", "fingerprint_inputs"]
 paths = ["src/nodes/**"]
 reason = "ComfyUI calls each node's define_schema, execute, validate_inputs, and fingerprint_inputs by name."
+
+[[ignore]]
+check = "structure/shared-prefixes"
+paths = ["example_workflows/**"]
+reason = "ComfyUI's template browser reads one flat example_workflows folder, and the owner names each workflow <family>-<two-digit number>-<task>."
 
 [[ignore]]
 check = "structure/trivial-functions"
