@@ -15,11 +15,11 @@ import importlib
 from comfy.cli_args import args as host_args
 from comfy_api.latest import io
 
-from src.nodes import NODE_TYPES
 from scripts.nodes.host import HostNode
 
 if TYPE_CHECKING:
     from types import ModuleType
+    from collections.abc import Sequence
 
 
 def _build_node_schema(schema: io.Schema) -> dict[str, object]:
@@ -75,10 +75,10 @@ def _build_host_schema(host: ModuleType, name: str) -> dict[str, object]:
     return {'inputs': inputs, 'outputs': outputs}
 
 
-def _build_registered_schemas() -> dict[str, dict[str, object]]:
+def _build_registered_schemas(node_types: Sequence[type[io.ComfyNode]]) -> dict[str, dict[str, object]]:
     """Describe every registered node, refusing a node ID registered twice."""
     schemas: dict[str, dict[str, object]] = {}
-    for node_type in NODE_TYPES:
+    for node_type in node_types:
         schema = node_type.define_schema()
         if schema.node_id in schemas:
             message = f'Register {schema.node_id} once.'
@@ -92,14 +92,15 @@ def main() -> None:
 
     The check that runs this script gives the extension a new, empty state folder, so Task: Download lists no tasks
     and the export is the same on every machine. The export runs no model, so ComfyUI loads on the CPU, as its --cpu
-    flag asks; the CI runner, which has no graphics card, needs that. ComfyUI reads the flag when its nodes module
-    loads, so main sets it first.
+    flag asks; the CI runner, which has no graphics card, needs that. ComfyUI reads the flag when its device code
+    loads, which the nodes of the extension and of ComfyUI both load, so main sets it before it imports them.
     """
     host_args.cpu = True
+    node_types = cast('tuple[type[io.ComfyNode], ...]', importlib.import_module('src.nodes').NODE_TYPES)
     host = importlib.import_module('nodes')
     asyncio.run(host.init_extra_nodes(init_custom_nodes=False))
     export: dict[str, object] = {
-        'nodes': _build_registered_schemas(),
+        'nodes': _build_registered_schemas(node_types),
         'host': {name: _build_host_schema(host, name) for name in HostNode},
     }
     sys.stdout.write(json.dumps(export) + '\n')
