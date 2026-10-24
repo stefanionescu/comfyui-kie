@@ -79,7 +79,7 @@
                         "id": 101,
                         "type": "KIEImageGenerate",
                         "pos": [200, 140],
-                        "size": [340, 544],
+                        "size": [340, 520],
                         "flags": {},
                         "order": 100,
                         "mode": 0,
@@ -100,7 +100,7 @@
                             },
                             {
                                 "name": "aspect_ratio",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "aspect_ratio"
@@ -108,10 +108,18 @@
                             },
                             {
                                 "name": "resolution",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "resolution"
+                                }
+                            },
+                            {
+                                "name": "output_format",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "output_format"
                                 }
                             },
                             {
@@ -120,14 +128,6 @@
                                 "link": null,
                                 "widget": {
                                     "name": "num_images"
-                                }
-                            },
-                            {
-                                "name": "output_format",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
-                                "link": null,
-                                "widget": {
-                                    "name": "output_format"
                                 }
                             },
                             {
@@ -216,12 +216,11 @@
                         },
                         "widgets_values": [
                             "flux-3/klein-text-to-image",
-                            "custom",
                             "3:4",
-                            "default",
+                            "",
+                            "",
                             "custom",
                             4,
-                            "default",
                             "default",
                             "default",
                             "custom",

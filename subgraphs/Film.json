@@ -182,7 +182,7 @@
                         "id": 103,
                         "type": "KIEVideoGenerate",
                         "pos": [580, 140],
-                        "size": [340, 476],
+                        "size": [340, 428],
                         "flags": {},
                         "order": 102,
                         "mode": 0,
@@ -202,16 +202,8 @@
                                 }
                             },
                             {
-                                "name": "duration",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
-                                "link": null,
-                                "widget": {
-                                    "name": "duration"
-                                }
-                            },
-                            {
                                 "name": "resolution",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "resolution"
@@ -219,7 +211,7 @@
                             },
                             {
                                 "name": "aspect_ratio",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "aspect_ratio"
@@ -227,10 +219,18 @@
                             },
                             {
                                 "name": "generate_audio",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "COMBO",
                                 "link": null,
                                 "widget": {
                                     "name": "generate_audio"
+                                }
+                            },
+                            {
+                                "name": "duration",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "duration"
                                 }
                             },
                             {
@@ -297,13 +297,11 @@
                         },
                         "widgets_values": [
                             "wan/3-0-video",
-                            "custom",
-                            5,
-                            "custom",
                             "480P",
-                            "custom",
                             "9:16",
                             "default",
+                            "custom",
+                            5,
                             "default",
                             0,
                             "A live-shopping host holds up the product from the reference image, looks at the camera, and says the line from the reference audio.",

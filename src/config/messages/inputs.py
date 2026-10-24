@@ -42,8 +42,8 @@ FILE_LINK = 'Type a public https:// link into file, or connect the file instead.
 FILE_LINK_LENGTH = 'Use a link of at most {maximum} characters in file.'
 
 SETTING_UNKNOWN = (
-    'The model {model} has no input named {field}. Set {field} to default, and put the setting in arguments under the '
-    "model's own name. Model: Info lists its inputs."
+    'The model {model} has no input named {field}. Empty {field} or set it to default, and put the setting in '
+    "arguments under the model's own name. Model: Info lists its inputs."
 )
 
 SINGLE_VALUE = 'Connect one value to {name}, not a list.'

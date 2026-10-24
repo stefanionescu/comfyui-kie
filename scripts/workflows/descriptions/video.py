@@ -20,7 +20,7 @@ from scripts.workflows.descriptions.texts import SHARED_TEXTS
 Z_IMAGE = 'z-image'
 WAN_VIDEO = 'wan/3-0-video'
 # Wan makes 1080P by default; the examples ask for five seconds at 480P.
-WAN_SETTINGS = {'resolution': 'custom', 'resolution.value': '480P', 'duration': 'custom', 'duration.value': 5}
+WAN_SETTINGS = {'resolution': '480P', 'duration': 'custom', 'duration.value': 5}
 QUIET = json.dumps({'audio': False}, indent=2)
 ANIMATE_TEXTS = WORKFLOW_TEXTS['video-01-animate-a-photo']
 PRODUCT_TEXTS = WORKFLOW_TEXTS['video-02-show-a-product-with-a-voice']
@@ -37,7 +37,7 @@ PORTRAIT = Subgraph(
         Node(
             'draw',
             IMAGE_GENERATE,
-            {'model': Z_IMAGE, 'aspect_ratio': 'custom', 'aspect_ratio.value': '9:16'},
+            {'model': Z_IMAGE, 'aspect_ratio': '9:16'},
             is_paid=True,
         ),
         Node('look', HostNode.PREVIEW_IMAGE),
@@ -120,8 +120,7 @@ FILM = Subgraph(
             {
                 'model': WAN_VIDEO,
                 **WAN_SETTINGS,
-                'aspect_ratio': 'custom',
-                'aspect_ratio.value': '9:16',
+                'aspect_ratio': '9:16',
                 'prompt': (
                     'A live-shopping host holds up the product from the reference image, looks at the camera, and '
                     'says the line from the reference audio.'

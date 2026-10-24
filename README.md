@@ -95,11 +95,12 @@ Each job node runs any KIE model of its kind, and **Chat: Ask** asks any KIE
 chat model. Type the model ID in `model`, such as `wan/3-0-video`. The page of
 each model on [kie.ai/market](https://kie.ai/market) shows its ID.
 
-![Video: Generate on the canvas: the files input; model set to wan/3-0-video; duration, resolution, and aspect_ratio set to custom with 5, 480P, and 9:16; generate_audio and seed at default; run_number; and a prompt about a host waving at the camera.](docs/images/screenshots/video-generate-node.png)
+![Video: Generate on the canvas: the files input; model set to wan/3-0-video; resolution 480P; aspect_ratio 9:16; generate_audio at default; duration set to custom with 5; seed at default; run_number; and a prompt about a host waving at the camera.](docs/images/screenshots/video-generate-node.png)
 
 Each job node has its own inputs for the settings most models of a kind share,
-such as `aspect_ratio`, `seed`, and `num_images`. At `default`, a setting sends
-nothing, and at `custom`, it sends the value you set. Write any other input in
+such as `aspect_ratio`, `seed`, and `num_images`. A text setting sends nothing
+while empty, and an on/off or number setting sends nothing at `default`. A
+number setting at `custom` sends the value you set. Write any other input in
 `arguments` as JSON, under the name the model uses, such as `{"audio": false}`.
 **Model: Info** lists every input a model takes, and bills nothing.
 

@@ -207,7 +207,7 @@
                             },
                             {
                                 "name": "output_format",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "output_format"
@@ -285,7 +285,7 @@
                         },
                         "widgets_values": [
                             "ai-music-api/generate",
-                            "default",
+                            "",
                             "default",
                             0,
                             "",

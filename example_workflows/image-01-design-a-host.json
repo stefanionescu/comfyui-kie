@@ -54,7 +54,7 @@
                 "Node name for S&R": "MarkdownNote"
             },
             "widgets_values": [
-                "Nano Banana Pro draws the host from the waist up. `aspect_ratio` is set to `custom` and `3:4`, so the picture is a portrait. A setting left at `default` sends nothing, and the model uses its own value.\n\nTo draw with another model, open **Design** and type another `model`, its ID on kie.ai/market."
+                "Nano Banana Pro draws the host from the waist up. `aspect_ratio` is `3:4`, so the picture is a portrait. A setting left empty or at `default` sends nothing, and the model uses its own value.\n\nTo draw with another model, open **Design** and type another `model`, its ID on kie.ai/market."
             ],
             "title": "Note"
         },
@@ -314,7 +314,7 @@
                         "id": 102,
                         "type": "KIEImageGenerate",
                         "pos": [580, 140],
-                        "size": [340, 496],
+                        "size": [340, 472],
                         "flags": {},
                         "order": 101,
                         "mode": 0,
@@ -335,7 +335,7 @@
                             },
                             {
                                 "name": "aspect_ratio",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "aspect_ratio"
@@ -343,10 +343,18 @@
                             },
                             {
                                 "name": "resolution",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "resolution"
+                                }
+                            },
+                            {
+                                "name": "output_format",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "output_format"
                                 }
                             },
                             {
@@ -355,14 +363,6 @@
                                 "link": null,
                                 "widget": {
                                     "name": "num_images"
-                                }
-                            },
-                            {
-                                "name": "output_format",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
-                                "link": null,
-                                "widget": {
-                                    "name": "output_format"
                                 }
                             },
                             {
@@ -451,10 +451,9 @@
                         },
                         "widgets_values": [
                             "nano-banana-pro",
-                            "custom",
                             "3:4",
-                            "default",
-                            "default",
+                            "",
+                            "",
                             "default",
                             "default",
                             "default",
@@ -622,7 +621,7 @@
                         "id": 202,
                         "type": "KIEImageGenerate",
                         "pos": [580, 140],
-                        "size": [340, 496],
+                        "size": [340, 472],
                         "flags": {},
                         "order": 201,
                         "mode": 0,
@@ -643,7 +642,7 @@
                             },
                             {
                                 "name": "aspect_ratio",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "aspect_ratio"
@@ -651,10 +650,18 @@
                             },
                             {
                                 "name": "resolution",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "resolution"
+                                }
+                            },
+                            {
+                                "name": "output_format",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "output_format"
                                 }
                             },
                             {
@@ -663,14 +670,6 @@
                                 "link": null,
                                 "widget": {
                                     "name": "num_images"
-                                }
-                            },
-                            {
-                                "name": "output_format",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
-                                "link": null,
-                                "widget": {
-                                    "name": "output_format"
                                 }
                             },
                             {
@@ -759,10 +758,9 @@
                         },
                         "widgets_values": [
                             "nano-banana-pro",
-                            "custom",
                             "3:4",
-                            "default",
-                            "default",
+                            "",
+                            "",
                             "default",
                             "default",
                             "default",

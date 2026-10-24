@@ -10,17 +10,18 @@ outputs the video and the link of every file the model made.
 | ----------------- | ------------------------------------------------------------------------------------------------ |
 | `files`           | Frames, reference images, videos, and voice clips from **File: Add**, each under its input name. |
 | `model`           | The model ID, such as `bytedance/seedance-2-5`. The default is `wan/3-0-video`.                  |
+| `resolution`      | A size, such as `480P` or `720p`, as the model writes it. Empty sends nothing.                   |
+| `aspect_ratio`    | A shape, such as `9:16`. Empty sends nothing.                                                    |
+| `generate_audio`  | `default`, `true`, or `false`: whether the video has sound.                                      |
 | `duration`        | `default`, or `custom` and the length in seconds.                                                |
-| `resolution`      | `default`, or `custom` and a size, such as `480P` or `720p`, as the model writes it.             |
-| `aspect_ratio`    | `default`, or `custom` and a shape, such as `9:16`.                                              |
-| `generate_audio`  | `default`, or `custom` and on or off: whether the video has sound.                               |
 | `seed`            | `default`, or `custom` and a number.                                                             |
 | `run_number`      | Change this number to send the same request again.                                               |
 | `prompt`          | The text sent as the model's `prompt`. Leave it empty for a model without one.                   |
 | `negative_prompt` | What to leave out, for a model that takes it. Empty sends nothing.                               |
 | `arguments`       | The model's other inputs as JSON, under KIE's names, such as `{"audio": false}`.                 |
 
-Each setting at `default` sends nothing, so the model uses its own default.
+A setting left empty or at `default` sends nothing, so the model uses its own
+default.
 Some defaults cost more, such as 1080P on `wan/3-0-video`, so set the size you
 need. Models write their sizes differently, such as `480P` or `480p`;
 **Model: Info** lists the choices of a model. A list input, such as
@@ -37,8 +38,8 @@ need. Models write their sizes differently, such as `480P` or `480p`;
 ## Use
 
 1. Type the model ID in `model`, and write the prompt.
-2. Set `duration` and `resolution` to `custom`, and type the length and the
-   size you need.
+2. Type the size you need in `resolution`, and set `duration` to `custom`
+   with the length.
 3. Connect frames, reference images, or voice clips through **File: Add**.
 4. Connect `video` to **Save Video**, and select **Run**.
 

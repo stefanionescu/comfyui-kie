@@ -114,7 +114,7 @@
                             },
                             {
                                 "name": "aspect_ratio",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "aspect_ratio"
@@ -122,10 +122,18 @@
                             },
                             {
                                 "name": "resolution",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "resolution"
+                                }
+                            },
+                            {
+                                "name": "output_format",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "output_format"
                                 }
                             },
                             {
@@ -134,14 +142,6 @@
                                 "link": null,
                                 "widget": {
                                     "name": "num_images"
-                                }
-                            },
-                            {
-                                "name": "output_format",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
-                                "link": null,
-                                "widget": {
-                                    "name": "output_format"
                                 }
                             },
                             {
@@ -230,9 +230,9 @@
                         },
                         "widgets_values": [
                             "qwen/text-to-image",
-                            "default",
-                            "default",
-                            "default",
+                            "",
+                            "",
+                            "",
                             "default",
                             "custom",
                             4.0,

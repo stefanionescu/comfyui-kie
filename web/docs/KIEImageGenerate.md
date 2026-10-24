@@ -10,10 +10,10 @@ every file the model made.
 | --------------------- | ----------------------------------------------------------------------------------------------- |
 | `files`               | Input images from **File: Add**, each under the input name of the model, such as `image_urls`.  |
 | `model`               | The model ID, such as `nano-banana-pro`. The default is `gpt-image-2-5-sunburst-text-to-image`. |
-| `aspect_ratio`        | `default`, or `custom` and a shape, such as `16:9`.                                             |
-| `resolution`          | `default`, or `custom` and a size, such as `2K`.                                                |
+| `aspect_ratio`        | A shape, such as `16:9`. Empty sends nothing.                                                   |
+| `resolution`          | A size, such as `2K`. Empty sends nothing.                                                      |
+| `output_format`       | A file type, such as `png`. Empty sends nothing.                                                |
 | `num_images`          | `default`, or `custom` and how many images to make.                                             |
-| `output_format`       | `default`, or `custom` and a file type, such as `png`.                                          |
 | `guidance_scale`      | `default`, or `custom` and how closely the image follows the prompt; higher follows it more.    |
 | `num_inference_steps` | `default`, or `custom` and how many steps the model takes; more is slower and often finer.      |
 | `seed`                | `default`, or `custom` and a number. The same seed repeats a result.                            |
@@ -22,9 +22,9 @@ every file the model made.
 | `negative_prompt`     | What to leave out, for a model that takes it. Empty sends nothing.                              |
 | `arguments`           | The model's other inputs as JSON, under KIE's names, such as `{"background": "opaque"}`.        |
 
-Each setting at `default` sends nothing, so the model uses its own default. A
-setting at `custom` goes under its own name, and only a model with an input of
-that name takes it. A model that names it another way, such as `size` or
+A setting left empty or at `default` sends nothing, so the model uses its own
+default. A setting you set goes under its own name, and only a model with an
+input of that name takes it. A model that names it another way, such as `size` or
 `image_size`, takes it in `arguments`. **Model: Info** lists the inputs and
 choices of a model. The node checks the model and its inputs before it pays.
 
@@ -40,8 +40,8 @@ choices of a model. The node checks the model and its inputs before it pays.
 ## Use
 
 1. Type the model ID in `model`, and write the prompt.
-2. Set `aspect_ratio`, `resolution`, or other settings to `custom` where the
-   model takes them.
+2. Type `aspect_ratio` or `resolution`, or set a number to `custom`, where the
+   model takes it.
 3. To edit an image, connect **File: Add** with the image input of the model,
    such as `image_urls`, to `files`.
 4. Connect `images` to **Save Image**, and select **Run**.

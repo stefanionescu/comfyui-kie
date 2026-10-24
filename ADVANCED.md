@@ -23,7 +23,7 @@ while ComfyUI runs. They upload your images as lossless WebP, your masks as PNG,
 your audio as WAV, and your video as MP4 to the upload host of KIE.
 
 Each creates one task. The task holds `prompt`, the other text boxes, the named
-settings set to `custom`, the inputs in `arguments`, and the files from **File:
+settings you set, the inputs in `arguments`, and the files from **File:
 Add**, each under the name the model uses. The node records the task as soon as
 KIE accepts it, and reads its state every three seconds until it ends. Then the
 node downloads the files the task made, and returns them with the link of each
@@ -102,13 +102,16 @@ The named settings are the inputs most models of a kind share:
 
 | Node            | Named settings                                                                                                   |
 | --------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Image: Generate | `aspect_ratio`, `resolution`, `num_images`, `output_format`, `guidance_scale`, `num_inference_steps`, and `seed` |
-| Video: Generate | `duration`, `resolution`, `aspect_ratio`, `generate_audio`, and `seed`                                           |
+| Image: Generate | `aspect_ratio`, `resolution`, `output_format`, `num_images`, `guidance_scale`, `num_inference_steps`, and `seed` |
+| Video: Generate | `resolution`, `aspect_ratio`, `generate_audio`, `duration`, and `seed`                                           |
 | Audio: Generate | `output_format` and `seed`, with `voice` and `text` as text inputs                                               |
 
-Each named setting at `default` sends nothing. At `custom`, it goes under its
-own name, and only a model with an input of that name takes it. A number goes
-as text to an input that takes only text, such as a duration KIE lists as
+A text setting is one line that sends nothing while empty. An on/off setting
+is `default`, `true`, or `false`, and a number setting is `default`, or
+`custom` with a value; `default` sends nothing.
+
+A setting you set goes under its own name, and only a model with an input of
+that name takes it. A number goes as text to an input that takes only text, such as a duration KIE lists as
 `"5"`. A model that names a setting another way, such as `size`, takes it in
 `arguments`, under its own name. Every value is the model's to check: KIE
 checks it when it creates the task, and a refused task bills nothing.
@@ -275,8 +278,8 @@ Copy the ID from the page of the model on [kie.ai/market](https://kie.ai/market)
 
 ### The model has no input named this
 
-Set the named setting to `default`, and put the value in `arguments` under the
-name the model uses. **Model: Info** lists its inputs.
+Empty the named setting or set it to `default`, and put the value in
+`arguments` under the name the model uses. **Model: Info** lists its inputs.
 
 ### KIE is limiting requests
 

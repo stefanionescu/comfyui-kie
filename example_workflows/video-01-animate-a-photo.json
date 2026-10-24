@@ -81,7 +81,7 @@
                 "Node name for S&R": "MarkdownNote"
             },
             "widgets_values": [
-                "**File: Add** gives Wan 3.0 the host as `first_frame_url`. Wan starts on the host and makes a five-second video at 480P. `resolution` is set to `custom`, because Wan makes 1080P by default. Wan names its sound switch `audio`, so `\"audio\": false` goes in `arguments`.\n\nKIE has no cancel. If you cancel the run, ComfyUI stops waiting, but KIE still makes the video and bills it. Collect it with **video-03-recover-a-video**."
+                "**File: Add** gives Wan 3.0 the host as `first_frame_url`. Wan starts on the host and makes a five-second video. `resolution` is `480P`, because Wan makes 1080P by default. Wan names its sound switch `audio`, so `\"audio\": false` goes in `arguments`.\n\nKIE has no cancel. If you cancel the run, ComfyUI stops waiting, but KIE still makes the video and bills it. Collect it with **video-03-recover-a-video**."
             ],
             "title": "Note"
         },
@@ -314,7 +314,7 @@
                         "id": 102,
                         "type": "KIEImageGenerate",
                         "pos": [580, 140],
-                        "size": [340, 496],
+                        "size": [340, 472],
                         "flags": {},
                         "order": 101,
                         "mode": 0,
@@ -335,7 +335,7 @@
                             },
                             {
                                 "name": "aspect_ratio",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "aspect_ratio"
@@ -343,10 +343,18 @@
                             },
                             {
                                 "name": "resolution",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "resolution"
+                                }
+                            },
+                            {
+                                "name": "output_format",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "output_format"
                                 }
                             },
                             {
@@ -355,14 +363,6 @@
                                 "link": null,
                                 "widget": {
                                     "name": "num_images"
-                                }
-                            },
-                            {
-                                "name": "output_format",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
-                                "link": null,
-                                "widget": {
-                                    "name": "output_format"
                                 }
                             },
                             {
@@ -451,10 +451,9 @@
                         },
                         "widgets_values": [
                             "z-image",
-                            "custom",
                             "9:16",
-                            "default",
-                            "default",
+                            "",
+                            "",
                             "default",
                             "default",
                             "default",
@@ -614,7 +613,7 @@
                         "id": 202,
                         "type": "KIEVideoGenerate",
                         "pos": [580, 140],
-                        "size": [340, 452],
+                        "size": [340, 428],
                         "flags": {},
                         "order": 201,
                         "mode": 0,
@@ -634,16 +633,8 @@
                                 }
                             },
                             {
-                                "name": "duration",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
-                                "link": null,
-                                "widget": {
-                                    "name": "duration"
-                                }
-                            },
-                            {
                                 "name": "resolution",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "resolution"
@@ -651,7 +642,7 @@
                             },
                             {
                                 "name": "aspect_ratio",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "aspect_ratio"
@@ -659,10 +650,18 @@
                             },
                             {
                                 "name": "generate_audio",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "COMBO",
                                 "link": null,
                                 "widget": {
                                     "name": "generate_audio"
+                                }
+                            },
+                            {
+                                "name": "duration",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "duration"
                                 }
                             },
                             {
@@ -729,12 +728,11 @@
                         },
                         "widgets_values": [
                             "wan/3-0-video",
+                            "480P",
+                            "",
+                            "default",
                             "custom",
                             5,
-                            "custom",
-                            "480P",
-                            "default",
-                            "default",
                             "default",
                             0,
                             "The host smiles, waves at the camera, and starts to talk.",

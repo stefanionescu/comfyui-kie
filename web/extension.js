@@ -857,12 +857,9 @@ function openSettings(fetcher) {
 
 // web/scripts/nodes.ts
 var dynamicControlInputs = /* @__PURE__ */ new Map([
-  [
-    "KIEImageGenerate",
-    ["aspect_ratio", "resolution", "num_images", "output_format", "guidance_scale", "num_inference_steps", "seed"]
-  ],
-  ["KIEVideoGenerate", ["duration", "resolution", "aspect_ratio", "generate_audio", "seed"]],
-  ["KIEAudioGenerate", ["output_format", "seed"]]
+  ["KIEImageGenerate", ["num_images", "guidance_scale", "num_inference_steps", "seed"]],
+  ["KIEVideoGenerate", ["duration", "seed"]],
+  ["KIEAudioGenerate", ["seed"]]
 ]);
 
 // web/scripts/controls.ts

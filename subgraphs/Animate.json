@@ -123,7 +123,7 @@
                         "id": 102,
                         "type": "KIEVideoGenerate",
                         "pos": [580, 140],
-                        "size": [340, 452],
+                        "size": [340, 428],
                         "flags": {},
                         "order": 101,
                         "mode": 0,
@@ -143,16 +143,8 @@
                                 }
                             },
                             {
-                                "name": "duration",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
-                                "link": null,
-                                "widget": {
-                                    "name": "duration"
-                                }
-                            },
-                            {
                                 "name": "resolution",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "resolution"
@@ -160,7 +152,7 @@
                             },
                             {
                                 "name": "aspect_ratio",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "aspect_ratio"
@@ -168,10 +160,18 @@
                             },
                             {
                                 "name": "generate_audio",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "COMBO",
                                 "link": null,
                                 "widget": {
                                     "name": "generate_audio"
+                                }
+                            },
+                            {
+                                "name": "duration",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "duration"
                                 }
                             },
                             {
@@ -238,12 +238,11 @@
                         },
                         "widgets_values": [
                             "wan/3-0-video",
+                            "480P",
+                            "",
+                            "default",
                             "custom",
                             5,
-                            "custom",
-                            "480P",
-                            "default",
-                            "default",
                             "default",
                             0,
                             "The host smiles, waves at the camera, and starts to talk.",

@@ -13,8 +13,8 @@ WORKFLOW_TEXTS = {
             '3. Press **Run**. Both images go to `image/kie`.'
         ),
         'design': (
-            'Nano Banana Pro draws the host from the waist up. `aspect_ratio` is set to `custom` and `3:4`, so the '
-            'picture is a portrait. A setting left at `default` sends nothing, and the model uses its own value.\n\n'
+            'Nano Banana Pro draws the host from the waist up. `aspect_ratio` is `3:4`, so the picture is a portrait. '
+            'A setting left empty or at `default` sends nothing, and the model uses its own value.\n\n'
             'To draw with another model, open **Design** and type another `model`, its ID on kie.ai/market.'
         ),
         'design_description': 'Draws the host and saves the image.',
@@ -98,7 +98,7 @@ WORKFLOW_TEXTS = {
         'portrait_description': 'Draws the host.',
         'animate': (
             '**File: Add** gives Wan 3.0 the host as `first_frame_url`. Wan starts on the host and makes a five-second '
-            'video at 480P. `resolution` is set to `custom`, because Wan makes 1080P by default. Wan names its sound '
+            'video. `resolution` is `480P`, because Wan makes 1080P by default. Wan names its sound '
             'switch `audio`, so `"audio": false` goes in `arguments`.\n\n' + RECOVER_NOTE
         ),
         'animate_description': 'Turns the host into a video and saves it.',

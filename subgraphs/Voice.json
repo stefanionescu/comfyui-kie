@@ -106,7 +106,7 @@
                             },
                             {
                                 "name": "output_format",
-                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "type": "STRING",
                                 "link": null,
                                 "widget": {
                                     "name": "output_format"
@@ -184,7 +184,7 @@
                         },
                         "widgets_values": [
                             "elevenlabs/text-to-speech-turbo-2-5",
-                            "default",
+                            "",
                             "default",
                             0,
                             "EkK5I93UQWFDigLMpZcX",

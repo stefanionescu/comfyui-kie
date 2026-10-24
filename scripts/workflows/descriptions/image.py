@@ -14,8 +14,8 @@ QWEN_IMAGE = 'qwen/text-to-image'
 RECRAFT_UPSCALE = 'recraft/crisp-upscale'
 RECRAFT_CUT_OUT = 'recraft/remove-background'
 FLUX_KLEIN = 'flux-3/klein-text-to-image'
-# A portrait frame for the host, as a named setting set to custom.
-PORTRAIT = {'aspect_ratio': 'custom', 'aspect_ratio.value': '3:4'}
+# A portrait frame for the host.
+PORTRAIT = {'aspect_ratio': '3:4'}
 TURN_PROMPT = 'The same host in a three-quarter view, waving at the camera, with the same outfit, hair, and background.'
 HOST_TEXTS = WORKFLOW_TEXTS['image-01-design-a-host']
 CUT_OUT_TEXTS = WORKFLOW_TEXTS['image-02-cut-out-a-product']
