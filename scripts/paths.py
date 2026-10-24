@@ -10,7 +10,7 @@ EXAMPLES_DIR = REPO_ROOT / 'example_workflows'
 SUBGRAPHS_DIR = REPO_ROOT / 'subgraphs'
 README_PATH = REPO_ROOT / 'README.md'
 SCHEMA_SCRIPT_PATH = REPO_ROOT / 'scripts' / 'nodes' / 'schema.py'
-# The check builds the browser files here and compares them with the shipped ones.
+# The scratch folder of the bundle check, which esbuild writes a fresh build into.
 FRONTEND_CHECK_DIR = REPO_ROOT / '.artifacts' / 'frontend'
 
 __all__ = [
