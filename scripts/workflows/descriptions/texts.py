@@ -1,0 +1,35 @@
+"""The titles of the groups, subgraphs, notes, and nodes of the shipped workflows."""
+
+SHARED_TEXTS = {
+    'start': 'Start Here',
+    'note': 'Note',
+    'input': 'Input',
+    'host': 'Host',
+    'design': 'Design',
+    'turn': 'Turn',
+    'product': 'Product',
+    'photo': 'Photo',
+    'upscale': 'Upscale',
+    'cut_out': 'Cut Out',
+    'brief': 'Brief',
+    'model': 'Model',
+    'info': 'Info',
+    'series': 'Series',
+    'script': 'Script',
+    'speak': 'Speak',
+    'song': 'Song',
+    'compose': 'Compose',
+    'portrait': 'Portrait',
+    'animate': 'Animate',
+    'line': 'Line',
+    'voice': 'Voice',
+    'film': 'Film',
+    'recover': 'Recover',
+    'front': 'Front View',
+    'spec': 'Spec',
+    'listing': 'Listing',
+    'facts': 'Facts',
+    'host_script': 'Host Script',
+}
+
+__all__ = ['SHARED_TEXTS']

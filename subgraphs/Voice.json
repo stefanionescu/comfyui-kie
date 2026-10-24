@@ -1,0 +1,226 @@
+{
+    "id": "110c4bb3-5357-553e-8570-eb33444ed72d",
+    "revision": 0,
+    "last_node_id": 1,
+    "last_link_id": 0,
+    "nodes": [
+        {
+            "id": 1,
+            "type": "b627d808-8173-553a-87f8-e2002d3ea836",
+            "pos": [0, 0],
+            "size": [340, 88],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "line",
+                    "type": "STRING",
+                    "link": null,
+                    "widget": {
+                        "name": "line"
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "files",
+                    "type": "KIE_FILES",
+                    "links": []
+                }
+            ],
+            "properties": {},
+            "widgets_values": [""],
+            "title": "Voice"
+        }
+    ],
+    "links": [],
+    "groups": [],
+    "config": {},
+    "extra": {},
+    "version": 0.4,
+    "definitions": {
+        "subgraphs": [
+            {
+                "id": "b627d808-8173-553a-87f8-e2002d3ea836",
+                "version": 1,
+                "state": {
+                    "lastGroupId": 0,
+                    "lastNodeId": 101,
+                    "lastLinkId": 2,
+                    "lastRerouteId": 0
+                },
+                "revision": 0,
+                "config": {},
+                "name": "Voice",
+                "inputNode": {
+                    "id": -10,
+                    "bounding": [-10, 140, 120, 20]
+                },
+                "outputNode": {
+                    "id": -20,
+                    "bounding": [630, 140, 120, 20]
+                },
+                "inputs": [
+                    {
+                        "id": "855be77a-cf42-55a4-ba63-ae7e1d61139f",
+                        "name": "line",
+                        "type": "STRING",
+                        "linkIds": [1],
+                        "pos": [110, 140]
+                    }
+                ],
+                "outputs": [
+                    {
+                        "id": "23fc3088-9468-564c-a908-4f108e4dc73a",
+                        "name": "files",
+                        "type": "KIE_FILES",
+                        "linkIds": [2],
+                        "pos": [630, 140]
+                    }
+                ],
+                "widgets": [],
+                "nodes": [
+                    {
+                        "id": 101,
+                        "type": "KIEAudioGenerate",
+                        "pos": [200, 140],
+                        "size": [340, 356],
+                        "flags": {},
+                        "order": 100,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "link": null,
+                                "shape": 7
+                            },
+                            {
+                                "name": "model",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "model"
+                                }
+                            },
+                            {
+                                "name": "output_format",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "output_format"
+                                }
+                            },
+                            {
+                                "name": "seed",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "seed"
+                                }
+                            },
+                            {
+                                "name": "run_number",
+                                "type": "INT",
+                                "link": null,
+                                "widget": {
+                                    "name": "run_number"
+                                }
+                            },
+                            {
+                                "name": "voice",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "voice"
+                                }
+                            },
+                            {
+                                "name": "prompt",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "prompt"
+                                }
+                            },
+                            {
+                                "name": "text",
+                                "type": "STRING",
+                                "link": 1,
+                                "widget": {
+                                    "name": "text"
+                                }
+                            },
+                            {
+                                "name": "arguments",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "arguments"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "audio",
+                                "type": "AUDIO",
+                                "shape": 6,
+                                "links": []
+                            },
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "links": [2]
+                            },
+                            {
+                                "name": "result",
+                                "type": "STRING",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "KIEAudioGenerate"
+                        },
+                        "widgets_values": [
+                            "elevenlabs/text-to-speech-turbo-2-5",
+                            "default",
+                            "default",
+                            0,
+                            "EkK5I93UQWFDigLMpZcX",
+                            "",
+                            "",
+                            ""
+                        ],
+                        "color": "#432",
+                        "bgcolor": "#653"
+                    }
+                ],
+                "groups": [],
+                "links": [
+                    {
+                        "id": 1,
+                        "origin_id": -10,
+                        "origin_slot": 0,
+                        "target_id": 101,
+                        "target_slot": 7,
+                        "type": "STRING"
+                    },
+                    {
+                        "id": 2,
+                        "origin_id": 101,
+                        "origin_slot": 1,
+                        "target_id": -20,
+                        "target_slot": 0,
+                        "type": "KIE_FILES"
+                    }
+                ],
+                "extra": {
+                    "description": "Reads the line aloud."
+                },
+                "category": "KIE/Video",
+                "description": "Reads the line aloud."
+            }
+        ]
+    }
+}

@@ -1,0 +1,832 @@
+{
+    "id": "d68d3680-8d49-549c-b43d-ab421e006f00",
+    "revision": 0,
+    "last_node_id": 6,
+    "last_link_id": 2,
+    "nodes": [
+        {
+            "id": 1,
+            "type": "MarkdownNote",
+            "pos": [0, 60],
+            "size": [400, 108],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "text",
+                    "type": "STRING",
+                    "link": null,
+                    "widget": {
+                        "name": "text"
+                    }
+                }
+            ],
+            "outputs": [],
+            "properties": {
+                "Node name for S&R": "MarkdownNote"
+            },
+            "widgets_values": [
+                "1. In the ComfyUI menu, open **Extensions**, then **KIE**, then **KIE Settings**, and save your key.\n2. Describe your host in **Host**.\n3. Press **Run**. The video goes to `video/kie`."
+            ],
+            "title": "Start Here"
+        },
+        {
+            "id": 2,
+            "type": "MarkdownNote",
+            "pos": [430, 60],
+            "size": [400, 108],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "text",
+                    "type": "STRING",
+                    "link": null,
+                    "widget": {
+                        "name": "text"
+                    }
+                }
+            ],
+            "outputs": [],
+            "properties": {
+                "Node name for S&R": "MarkdownNote"
+            },
+            "widgets_values": [
+                "Z-Image draws the host in a vertical frame. This image becomes the first frame of the video. `files` passes its link on to **Animate**, so nothing goes up again."
+            ],
+            "title": "Note"
+        },
+        {
+            "id": 3,
+            "type": "MarkdownNote",
+            "pos": [860, 60],
+            "size": [400, 108],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "text",
+                    "type": "STRING",
+                    "link": null,
+                    "widget": {
+                        "name": "text"
+                    }
+                }
+            ],
+            "outputs": [],
+            "properties": {
+                "Node name for S&R": "MarkdownNote"
+            },
+            "widgets_values": [
+                "**File: Add** gives Wan 3.0 the host as `first_frame_url`. Wan starts on the host and makes a five-second video at 480P. `resolution` is set to `custom`, because Wan makes 1080P by default. Wan names its sound switch `audio`, so `\"audio\": false` goes in `arguments`.\n\nKIE has no cancel. If you cancel the run, ComfyUI stops waiting, but KIE still makes the video and bills it. Collect it with **video-03-recover-a-video**."
+            ],
+            "title": "Note"
+        },
+        {
+            "id": 4,
+            "type": "PrimitiveStringMultiline",
+            "pos": [30, 308],
+            "size": [340, 88],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "value",
+                    "type": "STRING",
+                    "link": null,
+                    "widget": {
+                        "name": "value"
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "STRING",
+                    "type": "STRING",
+                    "links": [1]
+                }
+            ],
+            "properties": {
+                "Node name for S&R": "PrimitiveStringMultiline"
+            },
+            "widgets_values": [
+                "A friendly man in his thirties with short dark hair and a navy linen shirt, in a bright studio."
+            ],
+            "title": "Host"
+        },
+        {
+            "id": 5,
+            "type": "59a61716-302d-5564-bac2-dfcbbcda23dc",
+            "pos": [460, 308],
+            "size": [340, 26],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "host",
+                    "type": "*",
+                    "link": 1
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "files",
+                    "type": "KIE_FILES",
+                    "links": [2]
+                }
+            ],
+            "properties": {
+                "previewExposures": [
+                    {
+                        "name": "$$canvas-image-preview",
+                        "sourceNodeId": "103",
+                        "sourcePreviewName": "$$canvas-image-preview"
+                    }
+                ]
+            },
+            "widgets_values": [],
+            "title": "Portrait"
+        },
+        {
+            "id": 6,
+            "type": "8cc41cc5-971e-59f7-b083-8c49c8454b60",
+            "pos": [890, 308],
+            "size": [340, 58],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "files",
+                    "type": "STRING,IMAGE,MASK,AUDIO,VIDEO,KIE_FILES",
+                    "link": 2,
+                    "widget": {
+                        "name": "files"
+                    }
+                }
+            ],
+            "outputs": [],
+            "properties": {
+                "previewExposures": [
+                    {
+                        "name": "video-preview",
+                        "sourceNodeId": "203",
+                        "sourcePreviewName": "video-preview"
+                    }
+                ]
+            },
+            "widgets_values": [""],
+            "title": "Animate"
+        }
+    ],
+    "links": [
+        [1, 4, 0, 5, 0, "STRING"],
+        [2, 5, 0, 6, 0, "KIE_FILES"]
+    ],
+    "groups": [
+        {
+            "id": 1,
+            "title": "Input",
+            "bounding": [0, 198, 400, 228],
+            "color": "#55746b",
+            "font_size": 24,
+            "flags": {}
+        },
+        {
+            "id": 2,
+            "title": "Portrait",
+            "bounding": [430, 198, 400, 166],
+            "color": "#68688c",
+            "font_size": 24,
+            "flags": {}
+        },
+        {
+            "id": 3,
+            "title": "Animate",
+            "bounding": [860, 198, 400, 198],
+            "color": "#68688c",
+            "font_size": 24,
+            "flags": {}
+        }
+    ],
+    "config": {},
+    "extra": {
+        "ds": {
+            "scale": 0.5,
+            "offset": [30, 30]
+        }
+    },
+    "version": 0.4,
+    "definitions": {
+        "subgraphs": [
+            {
+                "id": "59a61716-302d-5564-bac2-dfcbbcda23dc",
+                "version": 1,
+                "state": {
+                    "lastGroupId": 0,
+                    "lastNodeId": 103,
+                    "lastLinkId": 4,
+                    "lastRerouteId": 0
+                },
+                "revision": 0,
+                "config": {},
+                "name": "Portrait",
+                "inputNode": {
+                    "id": -10,
+                    "bounding": [-10, 140, 120, 20]
+                },
+                "outputNode": {
+                    "id": -20,
+                    "bounding": [1390, 140, 120, 20]
+                },
+                "inputs": [
+                    {
+                        "id": "c7c087f6-b5d6-57d3-ac69-412616df91b2",
+                        "name": "host",
+                        "type": "*",
+                        "linkIds": [3],
+                        "pos": [110, 140]
+                    }
+                ],
+                "outputs": [
+                    {
+                        "id": "bce1845c-28d0-5e80-8899-5cf7f2912509",
+                        "name": "files",
+                        "type": "KIE_FILES",
+                        "linkIds": [4],
+                        "pos": [1390, 140]
+                    }
+                ],
+                "widgets": [],
+                "nodes": [
+                    {
+                        "id": 101,
+                        "type": "StringFormat",
+                        "pos": [200, 140],
+                        "size": [340, 128],
+                        "flags": {},
+                        "order": 100,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "label": "a",
+                                "name": "values.a",
+                                "type": "*",
+                                "link": 3,
+                                "shape": 7
+                            },
+                            {
+                                "label": "b",
+                                "name": "values.b",
+                                "type": "*",
+                                "link": null,
+                                "shape": 7
+                            },
+                            {
+                                "name": "f_string",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "f_string"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "STRING",
+                                "type": "STRING",
+                                "links": [1]
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "StringFormat"
+                        },
+                        "widgets_values": [
+                            "Waist-up photo of a live-shopping host, vertical frame: {a} Looking at the camera."
+                        ]
+                    },
+                    {
+                        "id": 102,
+                        "type": "KIEImageGenerate",
+                        "pos": [580, 140],
+                        "size": [340, 496],
+                        "flags": {},
+                        "order": 101,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "link": null,
+                                "shape": 7
+                            },
+                            {
+                                "name": "model",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "model"
+                                }
+                            },
+                            {
+                                "name": "aspect_ratio",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "aspect_ratio"
+                                }
+                            },
+                            {
+                                "name": "resolution",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "resolution"
+                                }
+                            },
+                            {
+                                "name": "num_images",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "num_images"
+                                }
+                            },
+                            {
+                                "name": "output_format",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "output_format"
+                                }
+                            },
+                            {
+                                "name": "guidance_scale",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "guidance_scale"
+                                }
+                            },
+                            {
+                                "name": "num_inference_steps",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "num_inference_steps"
+                                }
+                            },
+                            {
+                                "name": "seed",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "seed"
+                                }
+                            },
+                            {
+                                "name": "run_number",
+                                "type": "INT",
+                                "link": null,
+                                "widget": {
+                                    "name": "run_number"
+                                }
+                            },
+                            {
+                                "name": "prompt",
+                                "type": "STRING",
+                                "link": 1,
+                                "widget": {
+                                    "name": "prompt"
+                                }
+                            },
+                            {
+                                "name": "negative_prompt",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "negative_prompt"
+                                }
+                            },
+                            {
+                                "name": "arguments",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "arguments"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "images",
+                                "type": "IMAGE",
+                                "shape": 6,
+                                "links": [2]
+                            },
+                            {
+                                "name": "masks",
+                                "type": "MASK",
+                                "shape": 6,
+                                "links": []
+                            },
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "links": [4]
+                            },
+                            {
+                                "name": "result",
+                                "type": "STRING",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "KIEImageGenerate"
+                        },
+                        "widgets_values": [
+                            "z-image",
+                            "custom",
+                            "9:16",
+                            "default",
+                            "default",
+                            "default",
+                            "default",
+                            "default",
+                            "default",
+                            0,
+                            "",
+                            "",
+                            ""
+                        ],
+                        "color": "#432",
+                        "bgcolor": "#653"
+                    },
+                    {
+                        "id": 103,
+                        "type": "PreviewImage",
+                        "pos": [960, 140],
+                        "size": [340, 26],
+                        "flags": {},
+                        "order": 102,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "images",
+                                "type": "IMAGE",
+                                "link": 2
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "images",
+                                "type": "IMAGE",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "PreviewImage"
+                        },
+                        "widgets_values": []
+                    }
+                ],
+                "groups": [],
+                "links": [
+                    {
+                        "id": 1,
+                        "origin_id": 101,
+                        "origin_slot": 0,
+                        "target_id": 102,
+                        "target_slot": 10,
+                        "type": "STRING"
+                    },
+                    {
+                        "id": 2,
+                        "origin_id": 102,
+                        "origin_slot": 0,
+                        "target_id": 103,
+                        "target_slot": 0,
+                        "type": "IMAGE"
+                    },
+                    {
+                        "id": 3,
+                        "origin_id": -10,
+                        "origin_slot": 0,
+                        "target_id": 101,
+                        "target_slot": 0,
+                        "type": "*"
+                    },
+                    {
+                        "id": 4,
+                        "origin_id": 102,
+                        "origin_slot": 2,
+                        "target_id": -20,
+                        "target_slot": 0,
+                        "type": "KIE_FILES"
+                    }
+                ],
+                "extra": {
+                    "description": "Draws the host."
+                }
+            },
+            {
+                "id": "8cc41cc5-971e-59f7-b083-8c49c8454b60",
+                "version": 1,
+                "state": {
+                    "lastGroupId": 0,
+                    "lastNodeId": 203,
+                    "lastLinkId": 3,
+                    "lastRerouteId": 0
+                },
+                "revision": 0,
+                "config": {},
+                "name": "Animate",
+                "inputNode": {
+                    "id": -10,
+                    "bounding": [-10, 140, 120, 20]
+                },
+                "outputNode": {
+                    "id": -20,
+                    "bounding": [1390, 140, 120, 20]
+                },
+                "inputs": [
+                    {
+                        "id": "3134c3b9-b2a2-5858-b6a6-8720a55e3af9",
+                        "name": "files",
+                        "type": "STRING,IMAGE,MASK,AUDIO,VIDEO,KIE_FILES",
+                        "linkIds": [3],
+                        "pos": [110, 140]
+                    }
+                ],
+                "outputs": [],
+                "widgets": [],
+                "nodes": [
+                    {
+                        "id": 201,
+                        "type": "KIEFileAdd",
+                        "pos": [200, 140],
+                        "size": [340, 82],
+                        "flags": {},
+                        "order": 200,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "link": null,
+                                "shape": 7
+                            },
+                            {
+                                "name": "field",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "field"
+                                }
+                            },
+                            {
+                                "name": "file",
+                                "type": "STRING,IMAGE,MASK,AUDIO,VIDEO,KIE_FILES",
+                                "link": 3,
+                                "widget": {
+                                    "name": "file"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "links": [1]
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "KIEFileAdd"
+                        },
+                        "widgets_values": ["first_frame_url", ""]
+                    },
+                    {
+                        "id": 202,
+                        "type": "KIEVideoGenerate",
+                        "pos": [580, 140],
+                        "size": [340, 452],
+                        "flags": {},
+                        "order": 201,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "link": 1,
+                                "shape": 7
+                            },
+                            {
+                                "name": "model",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "model"
+                                }
+                            },
+                            {
+                                "name": "duration",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "duration"
+                                }
+                            },
+                            {
+                                "name": "resolution",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "resolution"
+                                }
+                            },
+                            {
+                                "name": "aspect_ratio",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "aspect_ratio"
+                                }
+                            },
+                            {
+                                "name": "generate_audio",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "generate_audio"
+                                }
+                            },
+                            {
+                                "name": "seed",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "seed"
+                                }
+                            },
+                            {
+                                "name": "run_number",
+                                "type": "INT",
+                                "link": null,
+                                "widget": {
+                                    "name": "run_number"
+                                }
+                            },
+                            {
+                                "name": "prompt",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "prompt"
+                                }
+                            },
+                            {
+                                "name": "negative_prompt",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "negative_prompt"
+                                }
+                            },
+                            {
+                                "name": "arguments",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "arguments"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "video",
+                                "type": "VIDEO",
+                                "shape": 6,
+                                "links": [2]
+                            },
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "links": []
+                            },
+                            {
+                                "name": "result",
+                                "type": "STRING",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "KIEVideoGenerate"
+                        },
+                        "widgets_values": [
+                            "wan/3-0-video",
+                            "custom",
+                            5,
+                            "custom",
+                            "480P",
+                            "default",
+                            "default",
+                            "default",
+                            0,
+                            "The host smiles, waves at the camera, and starts to talk.",
+                            "",
+                            "{\n  \"audio\": false\n}"
+                        ],
+                        "color": "#432",
+                        "bgcolor": "#653"
+                    },
+                    {
+                        "id": 203,
+                        "type": "SaveVideo",
+                        "pos": [960, 140],
+                        "size": [340, 106],
+                        "flags": {},
+                        "order": 202,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "video",
+                                "type": "VIDEO",
+                                "link": 2
+                            },
+                            {
+                                "name": "filename_prefix",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "filename_prefix"
+                                }
+                            },
+                            {
+                                "name": "format",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "format"
+                                }
+                            },
+                            {
+                                "name": "codec",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "codec"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "video",
+                                "type": "VIDEO",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "SaveVideo"
+                        },
+                        "widgets_values": ["video/kie/host", "auto", "auto"]
+                    }
+                ],
+                "groups": [],
+                "links": [
+                    {
+                        "id": 1,
+                        "origin_id": 201,
+                        "origin_slot": 0,
+                        "target_id": 202,
+                        "target_slot": 0,
+                        "type": "KIE_FILES"
+                    },
+                    {
+                        "id": 2,
+                        "origin_id": 202,
+                        "origin_slot": 0,
+                        "target_id": 203,
+                        "target_slot": 0,
+                        "type": "VIDEO"
+                    },
+                    {
+                        "id": 3,
+                        "origin_id": -10,
+                        "origin_slot": 0,
+                        "target_id": 201,
+                        "target_slot": 2,
+                        "type": "STRING,IMAGE,MASK,AUDIO,VIDEO,KIE_FILES"
+                    }
+                ],
+                "extra": {
+                    "description": "Turns the host into a video and saves it."
+                }
+            }
+        ]
+    }
+}

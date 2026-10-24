@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Runtime: Bash 3.2+ on macOS or Linux.
+#MISE description="Build the example workflows and the subgraph blueprints from their descriptions."
+set -euo pipefail
+
+REPO_ROOT="${MISE_PROJECT_ROOT:-$(git rev-parse --show-toplevel)}"
+cd "${REPO_ROOT}" || exit 1
+
+uv run --no-sync python -m scripts.workflows.build "$@"

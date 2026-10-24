@@ -1,0 +1,368 @@
+{
+    "id": "7bcf077e-6b54-525b-a67d-cdb1f5d66ea5",
+    "revision": 0,
+    "last_node_id": 4,
+    "last_link_id": 1,
+    "nodes": [
+        {
+            "id": 1,
+            "type": "MarkdownNote",
+            "pos": [0, 60],
+            "size": [400, 88],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "text",
+                    "type": "STRING",
+                    "link": null,
+                    "widget": {
+                        "name": "text"
+                    }
+                }
+            ],
+            "outputs": [],
+            "properties": {
+                "Node name for S&R": "MarkdownNote"
+            },
+            "widgets_values": [
+                "1. In the ComfyUI menu, open **Extensions**, then **KIE**, then **KIE Settings**, and save your key.\n2. Describe the song in **Song**: its style, its mood, and what it is about.\n3. Press **Run**. Suno makes two versions, and both go to `audio/kie`."
+            ],
+            "title": "Start Here"
+        },
+        {
+            "id": 2,
+            "type": "MarkdownNote",
+            "pos": [430, 60],
+            "size": [400, 88],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "text",
+                    "type": "STRING",
+                    "link": null,
+                    "widget": {
+                        "name": "text"
+                    }
+                }
+            ],
+            "outputs": [],
+            "properties": {
+                "Node name for S&R": "MarkdownNote"
+            },
+            "widgets_values": [
+                "Suno writes the lyrics and the music from **Song**. `arguments` holds the inputs Suno needs by its own names: `\"custom_mode\": false` lets Suno write the lyrics, and `\"model\"` picks the Suno version. `voice` is empty, because Suno takes no voice ID."
+            ],
+            "title": "Note"
+        },
+        {
+            "id": 3,
+            "type": "PrimitiveStringMultiline",
+            "pos": [30, 288],
+            "size": [340, 88],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "value",
+                    "type": "STRING",
+                    "link": null,
+                    "widget": {
+                        "name": "value"
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "STRING",
+                    "type": "STRING",
+                    "links": [1]
+                }
+            ],
+            "properties": {
+                "Node name for S&R": "PrimitiveStringMultiline"
+            },
+            "widgets_values": ["An upbeat acoustic pop jingle about a cozy winter scarf, with a warm female voice."],
+            "title": "Song"
+        },
+        {
+            "id": 4,
+            "type": "36c930fa-666b-5233-ba8f-b5b8fda4cb3d",
+            "pos": [460, 288],
+            "size": [340, 88],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "song",
+                    "type": "STRING",
+                    "link": 1,
+                    "widget": {
+                        "name": "song"
+                    }
+                }
+            ],
+            "outputs": [],
+            "properties": {
+                "previewExposures": [
+                    {
+                        "name": "audioUI",
+                        "sourceNodeId": "102",
+                        "sourcePreviewName": "audioUI"
+                    }
+                ]
+            },
+            "widgets_values": [""],
+            "title": "Compose"
+        }
+    ],
+    "links": [[1, 3, 0, 4, 0, "STRING"]],
+    "groups": [
+        {
+            "id": 1,
+            "title": "Input",
+            "bounding": [0, 178, 400, 228],
+            "color": "#55746b",
+            "font_size": 24,
+            "flags": {}
+        },
+        {
+            "id": 2,
+            "title": "Compose",
+            "bounding": [430, 178, 400, 228],
+            "color": "#68688c",
+            "font_size": 24,
+            "flags": {}
+        }
+    ],
+    "config": {},
+    "extra": {
+        "ds": {
+            "scale": 0.5,
+            "offset": [30, 30]
+        }
+    },
+    "version": 0.4,
+    "definitions": {
+        "subgraphs": [
+            {
+                "id": "36c930fa-666b-5233-ba8f-b5b8fda4cb3d",
+                "version": 1,
+                "state": {
+                    "lastGroupId": 0,
+                    "lastNodeId": 102,
+                    "lastLinkId": 2,
+                    "lastRerouteId": 0
+                },
+                "revision": 0,
+                "config": {},
+                "name": "Compose",
+                "inputNode": {
+                    "id": -10,
+                    "bounding": [-10, 140, 120, 20]
+                },
+                "outputNode": {
+                    "id": -20,
+                    "bounding": [1010, 140, 120, 20]
+                },
+                "inputs": [
+                    {
+                        "id": "ccc42c48-f5e1-5778-985e-d2291023251e",
+                        "name": "song",
+                        "type": "STRING",
+                        "linkIds": [2],
+                        "pos": [110, 140]
+                    }
+                ],
+                "outputs": [],
+                "widgets": [],
+                "nodes": [
+                    {
+                        "id": 101,
+                        "type": "KIEAudioGenerate",
+                        "pos": [200, 140],
+                        "size": [340, 356],
+                        "flags": {},
+                        "order": 100,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "link": null,
+                                "shape": 7
+                            },
+                            {
+                                "name": "model",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "model"
+                                }
+                            },
+                            {
+                                "name": "output_format",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "output_format"
+                                }
+                            },
+                            {
+                                "name": "seed",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "seed"
+                                }
+                            },
+                            {
+                                "name": "run_number",
+                                "type": "INT",
+                                "link": null,
+                                "widget": {
+                                    "name": "run_number"
+                                }
+                            },
+                            {
+                                "name": "voice",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "voice"
+                                }
+                            },
+                            {
+                                "name": "prompt",
+                                "type": "STRING",
+                                "link": 2,
+                                "widget": {
+                                    "name": "prompt"
+                                }
+                            },
+                            {
+                                "name": "text",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "text"
+                                }
+                            },
+                            {
+                                "name": "arguments",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "arguments"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "audio",
+                                "type": "AUDIO",
+                                "shape": 6,
+                                "links": [1]
+                            },
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "links": []
+                            },
+                            {
+                                "name": "result",
+                                "type": "STRING",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "KIEAudioGenerate"
+                        },
+                        "widgets_values": [
+                            "ai-music-api/generate",
+                            "default",
+                            "default",
+                            0,
+                            "",
+                            "",
+                            "",
+                            "{\n  \"custom_mode\": false,\n  \"instrumental\": false,\n  \"model\": \"V4_5\"\n}"
+                        ],
+                        "color": "#432",
+                        "bgcolor": "#653"
+                    },
+                    {
+                        "id": 102,
+                        "type": "SaveAudioAdvanced",
+                        "pos": [580, 140],
+                        "size": [340, 136],
+                        "flags": {},
+                        "order": 101,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "audio",
+                                "type": "AUDIO",
+                                "link": 1
+                            },
+                            {
+                                "name": "filename_prefix",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "filename_prefix"
+                                }
+                            },
+                            {
+                                "name": "format",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "format"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "audio",
+                                "type": "AUDIO",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "SaveAudioAdvanced"
+                        },
+                        "widgets_values": ["audio/kie/song", "flac"]
+                    }
+                ],
+                "groups": [],
+                "links": [
+                    {
+                        "id": 1,
+                        "origin_id": 101,
+                        "origin_slot": 0,
+                        "target_id": 102,
+                        "target_slot": 0,
+                        "type": "AUDIO"
+                    },
+                    {
+                        "id": 2,
+                        "origin_id": -10,
+                        "origin_slot": 0,
+                        "target_id": 101,
+                        "target_slot": 6,
+                        "type": "STRING"
+                    }
+                ],
+                "extra": {
+                    "description": "Writes the song and saves both versions."
+                }
+            }
+        ]
+    }
+}

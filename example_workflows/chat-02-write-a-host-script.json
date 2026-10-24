@@ -1,0 +1,659 @@
+{
+    "id": "cd635b7d-1cc3-5030-ab80-200695cbd1b2",
+    "revision": 0,
+    "last_node_id": 6,
+    "last_link_id": 2,
+    "nodes": [
+        {
+            "id": 1,
+            "type": "MarkdownNote",
+            "pos": [0, 60],
+            "size": [400, 88],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "text",
+                    "type": "STRING",
+                    "link": null,
+                    "widget": {
+                        "name": "text"
+                    }
+                }
+            ],
+            "outputs": [],
+            "properties": {
+                "Node name for S&R": "MarkdownNote"
+            },
+            "widgets_values": [
+                "1. In the ComfyUI menu, open **Extensions**, then **KIE**, then **KIE Settings**, and save your key.\n2. Load a product photo in **Front View**.\n3. Press **Run**. The script goes to `text/kie`."
+            ],
+            "title": "Start Here"
+        },
+        {
+            "id": 2,
+            "type": "MarkdownNote",
+            "pos": [430, 60],
+            "size": [400, 88],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "text",
+                    "type": "STRING",
+                    "link": null,
+                    "widget": {
+                        "name": "text"
+                    }
+                }
+            ],
+            "outputs": [],
+            "properties": {
+                "Node name for S&R": "MarkdownNote"
+            },
+            "widgets_values": [
+                "Gemini 3.8 Flash lists what a shopper can see in the photo. `reasoning_effort` is set to `low`, so it answers quickly. Its `conversation` output carries the question and the answer on to the next step."
+            ],
+            "title": "Note"
+        },
+        {
+            "id": 3,
+            "type": "MarkdownNote",
+            "pos": [860, 60],
+            "size": [400, 88],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "text",
+                    "type": "STRING",
+                    "link": null,
+                    "widget": {
+                        "name": "text"
+                    }
+                }
+            ],
+            "outputs": [],
+            "properties": {
+                "Node name for S&R": "MarkdownNote"
+            },
+            "widgets_values": [
+                "GPT 6 Luna continues the same conversation and writes a 30-second script from those facts. `system_prompt` tells it to write as a warm live-shopping host. A conversation can move between models and formats; each Chat: Ask sends every earlier turn."
+            ],
+            "title": "Note"
+        },
+        {
+            "id": 4,
+            "type": "LoadImage",
+            "pos": [30, 288],
+            "size": [340, 350],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "image",
+                    "type": "COMBO",
+                    "link": null,
+                    "widget": {
+                        "name": "image"
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "IMAGE",
+                    "type": "IMAGE",
+                    "links": [1]
+                },
+                {
+                    "name": "MASK",
+                    "type": "MASK",
+                    "links": []
+                }
+            ],
+            "properties": {
+                "Node name for S&R": "LoadImage"
+            },
+            "widgets_values": [""],
+            "title": "Front View"
+        },
+        {
+            "id": 5,
+            "type": "813f4a34-4c7f-52ad-9808-43349cd28892",
+            "pos": [460, 288],
+            "size": [340, 26],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "images",
+                    "type": "IMAGE",
+                    "link": 1
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "conversation",
+                    "type": "KIE_CONVERSATION",
+                    "links": [2]
+                }
+            ],
+            "properties": {
+                "previewExposures": [
+                    {
+                        "name": "preview_text",
+                        "sourceNodeId": "102",
+                        "sourcePreviewName": "preview_text"
+                    }
+                ]
+            },
+            "widgets_values": [],
+            "title": "Facts"
+        },
+        {
+            "id": 6,
+            "type": "66c86d54-cf5e-5d0d-b685-5a629c04da76",
+            "pos": [890, 288],
+            "size": [340, 26],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "conversation",
+                    "type": "KIE_CONVERSATION",
+                    "link": 2
+                }
+            ],
+            "outputs": [],
+            "properties": {
+                "previewExposures": [
+                    {
+                        "name": "preview_text",
+                        "sourceNodeId": "202",
+                        "sourcePreviewName": "preview_text"
+                    }
+                ]
+            },
+            "widgets_values": [],
+            "title": "Host Script"
+        }
+    ],
+    "links": [
+        [1, 4, 0, 5, 0, "IMAGE"],
+        [2, 5, 0, 6, 0, "KIE_CONVERSATION"]
+    ],
+    "groups": [
+        {
+            "id": 1,
+            "title": "Input",
+            "bounding": [0, 178, 400, 490],
+            "color": "#55746b",
+            "font_size": 24,
+            "flags": {}
+        },
+        {
+            "id": 2,
+            "title": "Facts",
+            "bounding": [430, 178, 400, 166],
+            "color": "#68688c",
+            "font_size": 24,
+            "flags": {}
+        },
+        {
+            "id": 3,
+            "title": "Host Script",
+            "bounding": [860, 178, 400, 166],
+            "color": "#68688c",
+            "font_size": 24,
+            "flags": {}
+        }
+    ],
+    "config": {},
+    "extra": {
+        "ds": {
+            "scale": 0.5,
+            "offset": [30, 30]
+        }
+    },
+    "version": 0.4,
+    "definitions": {
+        "subgraphs": [
+            {
+                "id": "813f4a34-4c7f-52ad-9808-43349cd28892",
+                "version": 1,
+                "state": {
+                    "lastGroupId": 0,
+                    "lastNodeId": 102,
+                    "lastLinkId": 3,
+                    "lastRerouteId": 0
+                },
+                "revision": 0,
+                "config": {},
+                "name": "Facts",
+                "inputNode": {
+                    "id": -10,
+                    "bounding": [-10, 140, 120, 20]
+                },
+                "outputNode": {
+                    "id": -20,
+                    "bounding": [1010, 140, 120, 20]
+                },
+                "inputs": [
+                    {
+                        "id": "6df28ce8-628d-5daa-8f11-351fca4fe869",
+                        "name": "images",
+                        "type": "IMAGE",
+                        "linkIds": [2],
+                        "pos": [110, 140]
+                    }
+                ],
+                "outputs": [
+                    {
+                        "id": "d7f3cb2b-8551-5b1c-8672-9127d8d44f53",
+                        "name": "conversation",
+                        "type": "KIE_CONVERSATION",
+                        "linkIds": [3],
+                        "pos": [1010, 140]
+                    }
+                ],
+                "widgets": [],
+                "nodes": [
+                    {
+                        "id": 101,
+                        "type": "KIEChatAsk",
+                        "pos": [200, 140],
+                        "size": [340, 362],
+                        "flags": {},
+                        "order": 100,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "model",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "model"
+                                }
+                            },
+                            {
+                                "name": "conversation",
+                                "type": "KIE_CONVERSATION",
+                                "link": null,
+                                "shape": 7
+                            },
+                            {
+                                "name": "documents",
+                                "type": "KIE_DOCUMENTS",
+                                "link": null,
+                                "shape": 7
+                            },
+                            {
+                                "name": "images",
+                                "type": "IMAGE",
+                                "link": 2,
+                                "shape": 7
+                            },
+                            {
+                                "name": "reasoning_effort",
+                                "type": "COMBO",
+                                "link": null,
+                                "widget": {
+                                    "name": "reasoning_effort"
+                                }
+                            },
+                            {
+                                "name": "run_number",
+                                "type": "INT",
+                                "link": null,
+                                "widget": {
+                                    "name": "run_number"
+                                }
+                            },
+                            {
+                                "name": "json_schema",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "json_schema"
+                                }
+                            },
+                            {
+                                "name": "prompt",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "prompt"
+                                }
+                            },
+                            {
+                                "name": "system_prompt",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "system_prompt"
+                                }
+                            },
+                            {
+                                "name": "extra_fields",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "extra_fields"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "text",
+                                "type": "STRING",
+                                "links": [1]
+                            },
+                            {
+                                "name": "reasoning",
+                                "type": "STRING",
+                                "links": []
+                            },
+                            {
+                                "name": "conversation",
+                                "type": "KIE_CONVERSATION",
+                                "links": [3]
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "KIEChatAsk"
+                        },
+                        "widgets_values": [
+                            "gemini-3-8-flash",
+                            "low",
+                            0,
+                            "",
+                            "List the facts a shopper can see in this photo, one per line: what it is, its colors, and its materials.",
+                            "",
+                            ""
+                        ],
+                        "color": "#432",
+                        "bgcolor": "#653"
+                    },
+                    {
+                        "id": 102,
+                        "type": "PreviewAny",
+                        "pos": [580, 140],
+                        "size": [340, 122],
+                        "flags": {},
+                        "order": 101,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "source",
+                                "type": "*",
+                                "link": 1
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "STRING",
+                                "type": "STRING",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "PreviewAny"
+                        },
+                        "widgets_values": []
+                    }
+                ],
+                "groups": [],
+                "links": [
+                    {
+                        "id": 1,
+                        "origin_id": 101,
+                        "origin_slot": 0,
+                        "target_id": 102,
+                        "target_slot": 0,
+                        "type": "STRING"
+                    },
+                    {
+                        "id": 2,
+                        "origin_id": -10,
+                        "origin_slot": 0,
+                        "target_id": 101,
+                        "target_slot": 3,
+                        "type": "IMAGE"
+                    },
+                    {
+                        "id": 3,
+                        "origin_id": 101,
+                        "origin_slot": 2,
+                        "target_id": -20,
+                        "target_slot": 0,
+                        "type": "KIE_CONVERSATION"
+                    }
+                ],
+                "extra": {
+                    "description": "Lists the facts a shopper can see in the photo."
+                }
+            },
+            {
+                "id": "66c86d54-cf5e-5d0d-b685-5a629c04da76",
+                "version": 1,
+                "state": {
+                    "lastGroupId": 0,
+                    "lastNodeId": 202,
+                    "lastLinkId": 2,
+                    "lastRerouteId": 0
+                },
+                "revision": 0,
+                "config": {},
+                "name": "Host Script",
+                "inputNode": {
+                    "id": -10,
+                    "bounding": [-10, 140, 120, 20]
+                },
+                "outputNode": {
+                    "id": -20,
+                    "bounding": [1010, 140, 120, 20]
+                },
+                "inputs": [
+                    {
+                        "id": "eae90d6c-e9b1-5daa-a3c6-8d7522ac34ec",
+                        "name": "conversation",
+                        "type": "KIE_CONVERSATION",
+                        "linkIds": [2],
+                        "pos": [110, 140]
+                    }
+                ],
+                "outputs": [],
+                "widgets": [],
+                "nodes": [
+                    {
+                        "id": 201,
+                        "type": "KIEChatAsk",
+                        "pos": [200, 140],
+                        "size": [340, 362],
+                        "flags": {},
+                        "order": 200,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "model",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "model"
+                                }
+                            },
+                            {
+                                "name": "conversation",
+                                "type": "KIE_CONVERSATION",
+                                "link": 2,
+                                "shape": 7
+                            },
+                            {
+                                "name": "documents",
+                                "type": "KIE_DOCUMENTS",
+                                "link": null,
+                                "shape": 7
+                            },
+                            {
+                                "name": "images",
+                                "type": "IMAGE",
+                                "link": null,
+                                "shape": 7
+                            },
+                            {
+                                "name": "reasoning_effort",
+                                "type": "COMBO",
+                                "link": null,
+                                "widget": {
+                                    "name": "reasoning_effort"
+                                }
+                            },
+                            {
+                                "name": "run_number",
+                                "type": "INT",
+                                "link": null,
+                                "widget": {
+                                    "name": "run_number"
+                                }
+                            },
+                            {
+                                "name": "json_schema",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "json_schema"
+                                }
+                            },
+                            {
+                                "name": "prompt",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "prompt"
+                                }
+                            },
+                            {
+                                "name": "system_prompt",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "system_prompt"
+                                }
+                            },
+                            {
+                                "name": "extra_fields",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "extra_fields"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "text",
+                                "type": "STRING",
+                                "links": [1]
+                            },
+                            {
+                                "name": "reasoning",
+                                "type": "STRING",
+                                "links": []
+                            },
+                            {
+                                "name": "conversation",
+                                "type": "KIE_CONVERSATION",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "KIEChatAsk"
+                        },
+                        "widgets_values": [
+                            "gpt-6-luna",
+                            "default",
+                            0,
+                            "",
+                            "Write a 30-second live-shopping script about this product from those facts.",
+                            "",
+                            "You are a warm, upbeat live-shopping host. Speak to the viewer, and invent nothing."
+                        ],
+                        "color": "#432",
+                        "bgcolor": "#653"
+                    },
+                    {
+                        "id": 202,
+                        "type": "SaveText",
+                        "pos": [580, 140],
+                        "size": [340, 170],
+                        "flags": {},
+                        "order": 201,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "text",
+                                "type": "STRING",
+                                "link": 1
+                            },
+                            {
+                                "name": "filename_prefix",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "filename_prefix"
+                                }
+                            },
+                            {
+                                "name": "format",
+                                "type": "COMBO",
+                                "link": null,
+                                "widget": {
+                                    "name": "format"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "text",
+                                "type": "STRING",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "SaveText"
+                        },
+                        "widgets_values": ["text/kie/host-script", "txt"]
+                    }
+                ],
+                "groups": [],
+                "links": [
+                    {
+                        "id": 1,
+                        "origin_id": 201,
+                        "origin_slot": 0,
+                        "target_id": 202,
+                        "target_slot": 0,
+                        "type": "STRING"
+                    },
+                    {
+                        "id": 2,
+                        "origin_id": -10,
+                        "origin_slot": 0,
+                        "target_id": 201,
+                        "target_slot": 1,
+                        "type": "KIE_CONVERSATION"
+                    }
+                ],
+                "extra": {
+                    "description": "Writes the host script from the facts."
+                }
+            }
+        ]
+    }
+}

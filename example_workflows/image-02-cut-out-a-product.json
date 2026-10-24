@@ -1,0 +1,1310 @@
+{
+    "id": "b53e43c9-094d-5528-9122-34fd1f7ff7df",
+    "revision": 0,
+    "last_node_id": 8,
+    "last_link_id": 3,
+    "nodes": [
+        {
+            "id": 1,
+            "type": "MarkdownNote",
+            "pos": [0, 60],
+            "size": [400, 120],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "text",
+                    "type": "STRING",
+                    "link": null,
+                    "widget": {
+                        "name": "text"
+                    }
+                }
+            ],
+            "outputs": [],
+            "properties": {
+                "Node name for S&R": "MarkdownNote"
+            },
+            "widgets_values": [
+                "1. In the ComfyUI menu, open **Extensions**, then **KIE**, then **KIE Settings**, and save your key.\n2. Describe the product in **Product**.\n3. Press **Run**. The enlarged photo and the transparent cut-out go to `image/kie`."
+            ],
+            "title": "Start Here"
+        },
+        {
+            "id": 2,
+            "type": "MarkdownNote",
+            "pos": [430, 60],
+            "size": [400, 120],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "text",
+                    "type": "STRING",
+                    "link": null,
+                    "widget": {
+                        "name": "text"
+                    }
+                }
+            ],
+            "outputs": [],
+            "properties": {
+                "Node name for S&R": "MarkdownNote"
+            },
+            "widgets_values": [
+                "Qwen Image draws the product photo. `guidance_scale` and `num_inference_steps` are set to `custom`: a higher guidance follows the prompt more closely, and more steps take longer and often look finer. `negative_prompt` keeps text and people out. `image_size` goes in `arguments`, under the name Qwen gives it.\n\nTo start from your own photo, add **Load Image** and connect it to the `files` input of **Upscale**. The node uploads it for the model."
+            ],
+            "title": "Note"
+        },
+        {
+            "id": 3,
+            "type": "MarkdownNote",
+            "pos": [860, 60],
+            "size": [400, 120],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "text",
+                    "type": "STRING",
+                    "link": null,
+                    "widget": {
+                        "name": "text"
+                    }
+                }
+            ],
+            "outputs": [],
+            "properties": {
+                "Node name for S&R": "MarkdownNote"
+            },
+            "widgets_values": [
+                "**File: Add** gives Topaz the photo as `image_url`, the input where it takes its image. Topaz enlarges the photo two times and keeps the edges sharp. Set `\"upscale_factor\"` in `arguments` to `\"4\"` for print."
+            ],
+            "title": "Note"
+        },
+        {
+            "id": 4,
+            "type": "MarkdownNote",
+            "pos": [1290, 60],
+            "size": [400, 120],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "text",
+                    "type": "STRING",
+                    "link": null,
+                    "widget": {
+                        "name": "text"
+                    }
+                }
+            ],
+            "outputs": [],
+            "properties": {
+                "Node name for S&R": "MarkdownNote"
+            },
+            "widgets_values": [
+                "Recraft removes the background and returns a PNG with a clear background. **Image: Generate** gives each image a mask from its transparency. **Get Item From List** takes the image and its mask, and **Join Image with Alpha** puts the transparency back, so the saved PNG keeps a clear background."
+            ],
+            "title": "Note"
+        },
+        {
+            "id": 5,
+            "type": "PrimitiveStringMultiline",
+            "pos": [30, 320],
+            "size": [340, 88],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "value",
+                    "type": "STRING",
+                    "link": null,
+                    "widget": {
+                        "name": "value"
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "STRING",
+                    "type": "STRING",
+                    "links": [1]
+                }
+            ],
+            "properties": {
+                "Node name for S&R": "PrimitiveStringMultiline"
+            },
+            "widgets_values": [
+                "A pair of white canvas sneakers with red laces, side view, on a plain white background, soft studio light."
+            ],
+            "title": "Product"
+        },
+        {
+            "id": 6,
+            "type": "ffeef53f-e2c5-54c2-8b79-e3a82411c5a0",
+            "pos": [460, 320],
+            "size": [340, 88],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "product",
+                    "type": "STRING",
+                    "link": 1,
+                    "widget": {
+                        "name": "product"
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "files",
+                    "type": "KIE_FILES",
+                    "links": [2]
+                }
+            ],
+            "properties": {
+                "previewExposures": [
+                    {
+                        "name": "$$canvas-image-preview",
+                        "sourceNodeId": "102",
+                        "sourcePreviewName": "$$canvas-image-preview"
+                    }
+                ]
+            },
+            "widgets_values": [""],
+            "title": "Photo"
+        },
+        {
+            "id": 7,
+            "type": "6e70e8a3-714b-5df1-affc-0cf8c7c91a7b",
+            "pos": [890, 320],
+            "size": [340, 58],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "files",
+                    "type": "STRING,IMAGE,MASK,AUDIO,VIDEO,KIE_FILES",
+                    "link": 2,
+                    "widget": {
+                        "name": "files"
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "files",
+                    "type": "KIE_FILES",
+                    "links": [3]
+                }
+            ],
+            "properties": {
+                "previewExposures": [
+                    {
+                        "name": "$$canvas-image-preview",
+                        "sourceNodeId": "203",
+                        "sourcePreviewName": "$$canvas-image-preview"
+                    }
+                ]
+            },
+            "widgets_values": [""],
+            "title": "Upscale"
+        },
+        {
+            "id": 8,
+            "type": "88878dfa-fe7a-5fdb-9e90-a5eba792bf71",
+            "pos": [1320, 320],
+            "size": [340, 58],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "files",
+                    "type": "STRING,IMAGE,MASK,AUDIO,VIDEO,KIE_FILES",
+                    "link": 3,
+                    "widget": {
+                        "name": "files"
+                    }
+                }
+            ],
+            "outputs": [],
+            "properties": {
+                "previewExposures": [
+                    {
+                        "name": "$$canvas-image-preview",
+                        "sourceNodeId": "306",
+                        "sourcePreviewName": "$$canvas-image-preview"
+                    }
+                ]
+            },
+            "widgets_values": [""],
+            "title": "Cut Out"
+        }
+    ],
+    "links": [
+        [1, 5, 0, 6, 0, "STRING"],
+        [2, 6, 0, 7, 0, "KIE_FILES"],
+        [3, 7, 0, 8, 0, "KIE_FILES"]
+    ],
+    "groups": [
+        {
+            "id": 1,
+            "title": "Input",
+            "bounding": [0, 210, 400, 228],
+            "color": "#55746b",
+            "font_size": 24,
+            "flags": {}
+        },
+        {
+            "id": 2,
+            "title": "Photo",
+            "bounding": [430, 210, 400, 228],
+            "color": "#68688c",
+            "font_size": 24,
+            "flags": {}
+        },
+        {
+            "id": 3,
+            "title": "Upscale",
+            "bounding": [860, 210, 400, 198],
+            "color": "#68688c",
+            "font_size": 24,
+            "flags": {}
+        },
+        {
+            "id": 4,
+            "title": "Cut Out",
+            "bounding": [1290, 210, 400, 198],
+            "color": "#68688c",
+            "font_size": 24,
+            "flags": {}
+        }
+    ],
+    "config": {},
+    "extra": {
+        "ds": {
+            "scale": 0.5,
+            "offset": [30, 30]
+        }
+    },
+    "version": 0.4,
+    "definitions": {
+        "subgraphs": [
+            {
+                "id": "ffeef53f-e2c5-54c2-8b79-e3a82411c5a0",
+                "version": 1,
+                "state": {
+                    "lastGroupId": 0,
+                    "lastNodeId": 102,
+                    "lastLinkId": 3,
+                    "lastRerouteId": 0
+                },
+                "revision": 0,
+                "config": {},
+                "name": "Photo",
+                "inputNode": {
+                    "id": -10,
+                    "bounding": [-10, 140, 120, 20]
+                },
+                "outputNode": {
+                    "id": -20,
+                    "bounding": [1010, 140, 120, 20]
+                },
+                "inputs": [
+                    {
+                        "id": "c6e57a4b-5105-502d-9141-6475546e5bbb",
+                        "name": "product",
+                        "type": "STRING",
+                        "linkIds": [2],
+                        "pos": [110, 140]
+                    }
+                ],
+                "outputs": [
+                    {
+                        "id": "dfd0fbd7-cc20-56bb-8360-b6b0a3507b09",
+                        "name": "files",
+                        "type": "KIE_FILES",
+                        "linkIds": [3],
+                        "pos": [1010, 140]
+                    }
+                ],
+                "widgets": [],
+                "nodes": [
+                    {
+                        "id": 101,
+                        "type": "KIEImageGenerate",
+                        "pos": [200, 140],
+                        "size": [340, 520],
+                        "flags": {},
+                        "order": 100,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "link": null,
+                                "shape": 7
+                            },
+                            {
+                                "name": "model",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "model"
+                                }
+                            },
+                            {
+                                "name": "aspect_ratio",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "aspect_ratio"
+                                }
+                            },
+                            {
+                                "name": "resolution",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "resolution"
+                                }
+                            },
+                            {
+                                "name": "num_images",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "num_images"
+                                }
+                            },
+                            {
+                                "name": "output_format",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "output_format"
+                                }
+                            },
+                            {
+                                "name": "guidance_scale",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "guidance_scale"
+                                }
+                            },
+                            {
+                                "name": "num_inference_steps",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "num_inference_steps"
+                                }
+                            },
+                            {
+                                "name": "seed",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "seed"
+                                }
+                            },
+                            {
+                                "name": "run_number",
+                                "type": "INT",
+                                "link": null,
+                                "widget": {
+                                    "name": "run_number"
+                                }
+                            },
+                            {
+                                "name": "prompt",
+                                "type": "STRING",
+                                "link": 2,
+                                "widget": {
+                                    "name": "prompt"
+                                }
+                            },
+                            {
+                                "name": "negative_prompt",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "negative_prompt"
+                                }
+                            },
+                            {
+                                "name": "arguments",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "arguments"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "images",
+                                "type": "IMAGE",
+                                "shape": 6,
+                                "links": [1]
+                            },
+                            {
+                                "name": "masks",
+                                "type": "MASK",
+                                "shape": 6,
+                                "links": []
+                            },
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "links": [3]
+                            },
+                            {
+                                "name": "result",
+                                "type": "STRING",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "KIEImageGenerate"
+                        },
+                        "widgets_values": [
+                            "qwen/text-to-image",
+                            "default",
+                            "default",
+                            "default",
+                            "default",
+                            "custom",
+                            4.0,
+                            "custom",
+                            30,
+                            "default",
+                            0,
+                            "",
+                            "text, watermark, people",
+                            "{\n  \"image_size\": \"square_hd\"\n}"
+                        ],
+                        "color": "#432",
+                        "bgcolor": "#653"
+                    },
+                    {
+                        "id": 102,
+                        "type": "PreviewImage",
+                        "pos": [580, 140],
+                        "size": [340, 26],
+                        "flags": {},
+                        "order": 101,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "images",
+                                "type": "IMAGE",
+                                "link": 1
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "images",
+                                "type": "IMAGE",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "PreviewImage"
+                        },
+                        "widgets_values": []
+                    }
+                ],
+                "groups": [],
+                "links": [
+                    {
+                        "id": 1,
+                        "origin_id": 101,
+                        "origin_slot": 0,
+                        "target_id": 102,
+                        "target_slot": 0,
+                        "type": "IMAGE"
+                    },
+                    {
+                        "id": 2,
+                        "origin_id": -10,
+                        "origin_slot": 0,
+                        "target_id": 101,
+                        "target_slot": 10,
+                        "type": "STRING"
+                    },
+                    {
+                        "id": 3,
+                        "origin_id": 101,
+                        "origin_slot": 2,
+                        "target_id": -20,
+                        "target_slot": 0,
+                        "type": "KIE_FILES"
+                    }
+                ],
+                "extra": {
+                    "description": "Draws the product photo."
+                }
+            },
+            {
+                "id": "6e70e8a3-714b-5df1-affc-0cf8c7c91a7b",
+                "version": 1,
+                "state": {
+                    "lastGroupId": 0,
+                    "lastNodeId": 203,
+                    "lastLinkId": 4,
+                    "lastRerouteId": 0
+                },
+                "revision": 0,
+                "config": {},
+                "name": "Upscale",
+                "inputNode": {
+                    "id": -10,
+                    "bounding": [-10, 140, 120, 20]
+                },
+                "outputNode": {
+                    "id": -20,
+                    "bounding": [1390, 140, 120, 20]
+                },
+                "inputs": [
+                    {
+                        "id": "fd2d24c9-eedf-5b01-bbe1-321eea03f4ed",
+                        "name": "files",
+                        "type": "STRING,IMAGE,MASK,AUDIO,VIDEO,KIE_FILES",
+                        "linkIds": [3],
+                        "pos": [110, 140]
+                    }
+                ],
+                "outputs": [
+                    {
+                        "id": "a151f32a-945e-5349-b0f9-25db9d88db48",
+                        "name": "files",
+                        "type": "KIE_FILES",
+                        "linkIds": [4],
+                        "pos": [1390, 140]
+                    }
+                ],
+                "widgets": [],
+                "nodes": [
+                    {
+                        "id": 201,
+                        "type": "KIEFileAdd",
+                        "pos": [200, 140],
+                        "size": [340, 82],
+                        "flags": {},
+                        "order": 200,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "link": null,
+                                "shape": 7
+                            },
+                            {
+                                "name": "field",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "field"
+                                }
+                            },
+                            {
+                                "name": "file",
+                                "type": "STRING,IMAGE,MASK,AUDIO,VIDEO,KIE_FILES",
+                                "link": 3,
+                                "widget": {
+                                    "name": "file"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "links": [1]
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "KIEFileAdd"
+                        },
+                        "widgets_values": ["image_url", ""]
+                    },
+                    {
+                        "id": 202,
+                        "type": "KIEImageGenerate",
+                        "pos": [580, 140],
+                        "size": [340, 472],
+                        "flags": {},
+                        "order": 201,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "link": 1,
+                                "shape": 7
+                            },
+                            {
+                                "name": "model",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "model"
+                                }
+                            },
+                            {
+                                "name": "aspect_ratio",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "aspect_ratio"
+                                }
+                            },
+                            {
+                                "name": "resolution",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "resolution"
+                                }
+                            },
+                            {
+                                "name": "num_images",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "num_images"
+                                }
+                            },
+                            {
+                                "name": "output_format",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "output_format"
+                                }
+                            },
+                            {
+                                "name": "guidance_scale",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "guidance_scale"
+                                }
+                            },
+                            {
+                                "name": "num_inference_steps",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "num_inference_steps"
+                                }
+                            },
+                            {
+                                "name": "seed",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "seed"
+                                }
+                            },
+                            {
+                                "name": "run_number",
+                                "type": "INT",
+                                "link": null,
+                                "widget": {
+                                    "name": "run_number"
+                                }
+                            },
+                            {
+                                "name": "prompt",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "prompt"
+                                }
+                            },
+                            {
+                                "name": "negative_prompt",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "negative_prompt"
+                                }
+                            },
+                            {
+                                "name": "arguments",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "arguments"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "images",
+                                "type": "IMAGE",
+                                "shape": 6,
+                                "links": [2]
+                            },
+                            {
+                                "name": "masks",
+                                "type": "MASK",
+                                "shape": 6,
+                                "links": []
+                            },
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "links": [4]
+                            },
+                            {
+                                "name": "result",
+                                "type": "STRING",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "KIEImageGenerate"
+                        },
+                        "widgets_values": [
+                            "topaz/image-upscale",
+                            "default",
+                            "default",
+                            "default",
+                            "default",
+                            "default",
+                            "default",
+                            "default",
+                            0,
+                            "",
+                            "",
+                            "{\n  \"upscale_factor\": \"2\"\n}"
+                        ],
+                        "color": "#432",
+                        "bgcolor": "#653"
+                    },
+                    {
+                        "id": 203,
+                        "type": "SaveImage",
+                        "pos": [960, 140],
+                        "size": [340, 58],
+                        "flags": {},
+                        "order": 202,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "images",
+                                "type": "IMAGE",
+                                "link": 2
+                            },
+                            {
+                                "name": "filename_prefix",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "filename_prefix"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "images",
+                                "type": "IMAGE",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "SaveImage"
+                        },
+                        "widgets_values": ["image/kie/product-large"]
+                    }
+                ],
+                "groups": [],
+                "links": [
+                    {
+                        "id": 1,
+                        "origin_id": 201,
+                        "origin_slot": 0,
+                        "target_id": 202,
+                        "target_slot": 0,
+                        "type": "KIE_FILES"
+                    },
+                    {
+                        "id": 2,
+                        "origin_id": 202,
+                        "origin_slot": 0,
+                        "target_id": 203,
+                        "target_slot": 0,
+                        "type": "IMAGE"
+                    },
+                    {
+                        "id": 3,
+                        "origin_id": -10,
+                        "origin_slot": 0,
+                        "target_id": 201,
+                        "target_slot": 2,
+                        "type": "STRING,IMAGE,MASK,AUDIO,VIDEO,KIE_FILES"
+                    },
+                    {
+                        "id": 4,
+                        "origin_id": 202,
+                        "origin_slot": 2,
+                        "target_id": -20,
+                        "target_slot": 0,
+                        "type": "KIE_FILES"
+                    }
+                ],
+                "extra": {
+                    "description": "Enlarges the product photo and saves it."
+                }
+            },
+            {
+                "id": "88878dfa-fe7a-5fdb-9e90-a5eba792bf71",
+                "version": 1,
+                "state": {
+                    "lastGroupId": 0,
+                    "lastNodeId": 306,
+                    "lastLinkId": 7,
+                    "lastRerouteId": 0
+                },
+                "revision": 0,
+                "config": {},
+                "name": "Cut Out",
+                "inputNode": {
+                    "id": -10,
+                    "bounding": [-10, 140, 120, 20]
+                },
+                "outputNode": {
+                    "id": -20,
+                    "bounding": [2150, 140, 120, 20]
+                },
+                "inputs": [
+                    {
+                        "id": "a68be684-6c31-50f8-960e-6355d97311a9",
+                        "name": "files",
+                        "type": "STRING,IMAGE,MASK,AUDIO,VIDEO,KIE_FILES",
+                        "linkIds": [7],
+                        "pos": [110, 140]
+                    }
+                ],
+                "outputs": [],
+                "widgets": [],
+                "nodes": [
+                    {
+                        "id": 301,
+                        "type": "KIEFileAdd",
+                        "pos": [200, 140],
+                        "size": [340, 82],
+                        "flags": {},
+                        "order": 300,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "link": null,
+                                "shape": 7
+                            },
+                            {
+                                "name": "field",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "field"
+                                }
+                            },
+                            {
+                                "name": "file",
+                                "type": "STRING,IMAGE,MASK,AUDIO,VIDEO,KIE_FILES",
+                                "link": 7,
+                                "widget": {
+                                    "name": "file"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "links": [1]
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "KIEFileAdd"
+                        },
+                        "widgets_values": ["image", ""]
+                    },
+                    {
+                        "id": 302,
+                        "type": "KIEImageGenerate",
+                        "pos": [580, 140],
+                        "size": [340, 472],
+                        "flags": {},
+                        "order": 301,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "link": 1,
+                                "shape": 7
+                            },
+                            {
+                                "name": "model",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "model"
+                                }
+                            },
+                            {
+                                "name": "aspect_ratio",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "aspect_ratio"
+                                }
+                            },
+                            {
+                                "name": "resolution",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "resolution"
+                                }
+                            },
+                            {
+                                "name": "num_images",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "num_images"
+                                }
+                            },
+                            {
+                                "name": "output_format",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "output_format"
+                                }
+                            },
+                            {
+                                "name": "guidance_scale",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "guidance_scale"
+                                }
+                            },
+                            {
+                                "name": "num_inference_steps",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "num_inference_steps"
+                                }
+                            },
+                            {
+                                "name": "seed",
+                                "type": "COMFY_DYNAMICCOMBO_V3",
+                                "link": null,
+                                "widget": {
+                                    "name": "seed"
+                                }
+                            },
+                            {
+                                "name": "run_number",
+                                "type": "INT",
+                                "link": null,
+                                "widget": {
+                                    "name": "run_number"
+                                }
+                            },
+                            {
+                                "name": "prompt",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "prompt"
+                                }
+                            },
+                            {
+                                "name": "negative_prompt",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "negative_prompt"
+                                }
+                            },
+                            {
+                                "name": "arguments",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "arguments"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "images",
+                                "type": "IMAGE",
+                                "shape": 6,
+                                "links": [2]
+                            },
+                            {
+                                "name": "masks",
+                                "type": "MASK",
+                                "shape": 6,
+                                "links": [3]
+                            },
+                            {
+                                "name": "files",
+                                "type": "KIE_FILES",
+                                "links": []
+                            },
+                            {
+                                "name": "result",
+                                "type": "STRING",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "KIEImageGenerate"
+                        },
+                        "widgets_values": [
+                            "recraft/remove-background",
+                            "default",
+                            "default",
+                            "default",
+                            "default",
+                            "default",
+                            "default",
+                            "default",
+                            0,
+                            "",
+                            "",
+                            ""
+                        ],
+                        "color": "#432",
+                        "bgcolor": "#653"
+                    },
+                    {
+                        "id": 303,
+                        "type": "GetItemFromList",
+                        "pos": [960, 140],
+                        "size": [340, 58],
+                        "flags": {},
+                        "order": 302,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "list",
+                                "type": "*",
+                                "link": 2
+                            },
+                            {
+                                "name": "index",
+                                "type": "INT",
+                                "link": null,
+                                "widget": {
+                                    "name": "index"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "*",
+                                "type": "*",
+                                "links": [4]
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "GetItemFromList"
+                        },
+                        "widgets_values": [0]
+                    },
+                    {
+                        "id": 304,
+                        "type": "GetItemFromList",
+                        "pos": [960, 262],
+                        "size": [340, 58],
+                        "flags": {},
+                        "order": 303,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "list",
+                                "type": "*",
+                                "link": 3
+                            },
+                            {
+                                "name": "index",
+                                "type": "INT",
+                                "link": null,
+                                "widget": {
+                                    "name": "index"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "*",
+                                "type": "*",
+                                "links": [5]
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "GetItemFromList"
+                        },
+                        "widgets_values": [0]
+                    },
+                    {
+                        "id": 305,
+                        "type": "JoinImageWithAlpha",
+                        "pos": [1340, 140],
+                        "size": [340, 46],
+                        "flags": {},
+                        "order": 304,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "image",
+                                "type": "IMAGE",
+                                "link": 4
+                            },
+                            {
+                                "name": "alpha",
+                                "type": "MASK",
+                                "link": 5
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "IMAGE",
+                                "type": "IMAGE",
+                                "links": [6]
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "JoinImageWithAlpha"
+                        },
+                        "widgets_values": []
+                    },
+                    {
+                        "id": 306,
+                        "type": "SaveImage",
+                        "pos": [1720, 140],
+                        "size": [340, 58],
+                        "flags": {},
+                        "order": 305,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "images",
+                                "type": "IMAGE",
+                                "link": 6
+                            },
+                            {
+                                "name": "filename_prefix",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "filename_prefix"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "images",
+                                "type": "IMAGE",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "SaveImage"
+                        },
+                        "widgets_values": ["image/kie/product-cut-out"]
+                    }
+                ],
+                "groups": [],
+                "links": [
+                    {
+                        "id": 1,
+                        "origin_id": 301,
+                        "origin_slot": 0,
+                        "target_id": 302,
+                        "target_slot": 0,
+                        "type": "KIE_FILES"
+                    },
+                    {
+                        "id": 2,
+                        "origin_id": 302,
+                        "origin_slot": 0,
+                        "target_id": 303,
+                        "target_slot": 0,
+                        "type": "IMAGE"
+                    },
+                    {
+                        "id": 3,
+                        "origin_id": 302,
+                        "origin_slot": 1,
+                        "target_id": 304,
+                        "target_slot": 0,
+                        "type": "MASK"
+                    },
+                    {
+                        "id": 4,
+                        "origin_id": 303,
+                        "origin_slot": 0,
+                        "target_id": 305,
+                        "target_slot": 0,
+                        "type": "*"
+                    },
+                    {
+                        "id": 5,
+                        "origin_id": 304,
+                        "origin_slot": 0,
+                        "target_id": 305,
+                        "target_slot": 1,
+                        "type": "*"
+                    },
+                    {
+                        "id": 6,
+                        "origin_id": 305,
+                        "origin_slot": 0,
+                        "target_id": 306,
+                        "target_slot": 0,
+                        "type": "IMAGE"
+                    },
+                    {
+                        "id": 7,
+                        "origin_id": -10,
+                        "origin_slot": 0,
+                        "target_id": 301,
+                        "target_slot": 2,
+                        "type": "STRING,IMAGE,MASK,AUDIO,VIDEO,KIE_FILES"
+                    }
+                ],
+                "extra": {
+                    "description": "Cuts out the product and saves it with a clear background."
+                }
+            }
+        ]
+    }
+}

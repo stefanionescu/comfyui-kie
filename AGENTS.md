@@ -83,4 +83,7 @@ browser code in `web/scripts/` ships as the built `web/extension.js` and `web/ex
   is `web/docs/<node ID>.md`, named with the exact registered ID.
 - The type checker reads the ComfyUI install that `.mise.local.toml` names in `COMFYUI_PATH` and `COMFYUI_PYTHON`.
   `mise run deps` puts that install on the path of the project environment.
+- Example workflows are `example_workflows/<family>-<two-digit number>-<task>.json`. `mise run workflows` builds them
+  and the blueprints in `subgraphs/` from `scripts/workflows/descriptions/`; never edit the JSON by hand. Each workflow
+  holds its own copy of the subgraphs it uses, and the README links every workflow.
 - Send no paid request to KIE without the owner's approval, and state its cost first.

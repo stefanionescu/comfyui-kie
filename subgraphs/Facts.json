@@ -1,0 +1,268 @@
+{
+    "id": "ffb06778-01b6-50b1-9b11-cc0de124cb96",
+    "revision": 0,
+    "last_node_id": 1,
+    "last_link_id": 0,
+    "nodes": [
+        {
+            "id": 1,
+            "type": "813f4a34-4c7f-52ad-9808-43349cd28892",
+            "pos": [0, 0],
+            "size": [340, 26],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+                {
+                    "name": "images",
+                    "type": "IMAGE",
+                    "link": null
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "conversation",
+                    "type": "KIE_CONVERSATION",
+                    "links": []
+                }
+            ],
+            "properties": {
+                "previewExposures": [
+                    {
+                        "name": "preview_text",
+                        "sourceNodeId": "102",
+                        "sourcePreviewName": "preview_text"
+                    }
+                ]
+            },
+            "widgets_values": [],
+            "title": "Facts"
+        }
+    ],
+    "links": [],
+    "groups": [],
+    "config": {},
+    "extra": {},
+    "version": 0.4,
+    "definitions": {
+        "subgraphs": [
+            {
+                "id": "813f4a34-4c7f-52ad-9808-43349cd28892",
+                "version": 1,
+                "state": {
+                    "lastGroupId": 0,
+                    "lastNodeId": 102,
+                    "lastLinkId": 3,
+                    "lastRerouteId": 0
+                },
+                "revision": 0,
+                "config": {},
+                "name": "Facts",
+                "inputNode": {
+                    "id": -10,
+                    "bounding": [-10, 140, 120, 20]
+                },
+                "outputNode": {
+                    "id": -20,
+                    "bounding": [1010, 140, 120, 20]
+                },
+                "inputs": [
+                    {
+                        "id": "6df28ce8-628d-5daa-8f11-351fca4fe869",
+                        "name": "images",
+                        "type": "IMAGE",
+                        "linkIds": [2],
+                        "pos": [110, 140]
+                    }
+                ],
+                "outputs": [
+                    {
+                        "id": "d7f3cb2b-8551-5b1c-8672-9127d8d44f53",
+                        "name": "conversation",
+                        "type": "KIE_CONVERSATION",
+                        "linkIds": [3],
+                        "pos": [1010, 140]
+                    }
+                ],
+                "widgets": [],
+                "nodes": [
+                    {
+                        "id": 101,
+                        "type": "KIEChatAsk",
+                        "pos": [200, 140],
+                        "size": [340, 362],
+                        "flags": {},
+                        "order": 100,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "model",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "model"
+                                }
+                            },
+                            {
+                                "name": "conversation",
+                                "type": "KIE_CONVERSATION",
+                                "link": null,
+                                "shape": 7
+                            },
+                            {
+                                "name": "documents",
+                                "type": "KIE_DOCUMENTS",
+                                "link": null,
+                                "shape": 7
+                            },
+                            {
+                                "name": "images",
+                                "type": "IMAGE",
+                                "link": 2,
+                                "shape": 7
+                            },
+                            {
+                                "name": "reasoning_effort",
+                                "type": "COMBO",
+                                "link": null,
+                                "widget": {
+                                    "name": "reasoning_effort"
+                                }
+                            },
+                            {
+                                "name": "run_number",
+                                "type": "INT",
+                                "link": null,
+                                "widget": {
+                                    "name": "run_number"
+                                }
+                            },
+                            {
+                                "name": "json_schema",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "json_schema"
+                                }
+                            },
+                            {
+                                "name": "prompt",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "prompt"
+                                }
+                            },
+                            {
+                                "name": "system_prompt",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "system_prompt"
+                                }
+                            },
+                            {
+                                "name": "extra_fields",
+                                "type": "STRING",
+                                "link": null,
+                                "widget": {
+                                    "name": "extra_fields"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "text",
+                                "type": "STRING",
+                                "links": [1]
+                            },
+                            {
+                                "name": "reasoning",
+                                "type": "STRING",
+                                "links": []
+                            },
+                            {
+                                "name": "conversation",
+                                "type": "KIE_CONVERSATION",
+                                "links": [3]
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "KIEChatAsk"
+                        },
+                        "widgets_values": [
+                            "gemini-3-8-flash",
+                            "low",
+                            0,
+                            "",
+                            "List the facts a shopper can see in this photo, one per line: what it is, its colors, and its materials.",
+                            "",
+                            ""
+                        ],
+                        "color": "#432",
+                        "bgcolor": "#653"
+                    },
+                    {
+                        "id": 102,
+                        "type": "PreviewAny",
+                        "pos": [580, 140],
+                        "size": [340, 122],
+                        "flags": {},
+                        "order": 101,
+                        "mode": 0,
+                        "inputs": [
+                            {
+                                "name": "source",
+                                "type": "*",
+                                "link": 1
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "name": "STRING",
+                                "type": "STRING",
+                                "links": []
+                            }
+                        ],
+                        "properties": {
+                            "Node name for S&R": "PreviewAny"
+                        },
+                        "widgets_values": []
+                    }
+                ],
+                "groups": [],
+                "links": [
+                    {
+                        "id": 1,
+                        "origin_id": 101,
+                        "origin_slot": 0,
+                        "target_id": 102,
+                        "target_slot": 0,
+                        "type": "STRING"
+                    },
+                    {
+                        "id": 2,
+                        "origin_id": -10,
+                        "origin_slot": 0,
+                        "target_id": 101,
+                        "target_slot": 3,
+                        "type": "IMAGE"
+                    },
+                    {
+                        "id": 3,
+                        "origin_id": 101,
+                        "origin_slot": 2,
+                        "target_id": -20,
+                        "target_slot": 0,
+                        "type": "KIE_CONVERSATION"
+                    }
+                ],
+                "extra": {
+                    "description": "Lists the facts a shopper can see in the photo."
+                },
+                "category": "KIE/Chat",
+                "description": "Lists the facts a shopper can see in the photo."
+            }
+        ]
+    }
+}

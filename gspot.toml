@@ -14,7 +14,7 @@ enabled = true
 quotes = "single"
 
 [[naming.override]]
-allowed_names = ["ModelInfo"]
+allowed_names = ["ModelInfo", "MODEL_INFO"]
 reason = "The node class is named after its display name, Model: Info, as in the OpenRouter, BytePlus, fal, and Dreamina packs; its node ID KIEModelInfo is fixed once released."
 
 [spelling.allowed_words]
@@ -27,7 +27,7 @@ UTC = "UTC is the time standard's name, which readers know."
 ISO = "ISO names the date format standard, ISO 8601, which readers know."
 
 [python]
-externals = ["comfy", "comfy_api", "comfy_api_nodes", "comfy_execution", "folder_paths", "server"]
+externals = ["comfy", "comfy_api", "comfy_api_nodes", "comfy_execution", "folder_paths", "nodes", "server"]
 
 [tools.eslint]
 import_extension = "extensionless"
@@ -101,6 +101,12 @@ name = "nodes"
 paths = ["src/nodes/**"]
 can_import = ["config", "state", "kie", "comfy"]
 
+# The build scripts read the fixed values and the registered nodes, and nothing in src/ imports them.
+[[import_rule]]
+name = "scripts"
+paths = ["scripts/**"]
+can_import = ["config", "nodes"]
+
 [[import_rule]]
 name = "entry"
 paths = ["__init__.py", "src/__init__.py"]
@@ -117,6 +123,28 @@ summary = "Checks that only src/comfy and src/nodes import ComfyUI's modules."
 help = "Move the import into src/comfy or src/nodes, and pass the value it gives to the other package."
 exit_codes = [1]
 output = { format = "regex", pattern = "^-\\s+(?<message>\\S+ -> \\S+) \\(l\\.(?<line>\\d+)\\)$" }
+
+# The examples and the help pages follow the registered nodes. Both checks export the node schemas through the ComfyUI
+# install that .mise.local.toml names, without starting ComfyUI.
+[[command_check]]
+id = "example-workflows"
+command = ["uv", "run", "--no-sync", "python", "-m", "scripts.workflows.build", "--check"]
+paths = ["src/**", "scripts/**", "README.md", "example_workflows/**", "subgraphs/**"]
+stage = "push"
+summary = "Checks that the example workflows and subgraph blueprints match their descriptions and the nodes."
+help = "Run mise run workflows, and commit the rebuilt files."
+exit_codes = [1]
+output = { format = "regex", pattern = "^(?<message>.+)$" }
+
+[[command_check]]
+id = "help-pages"
+command = ["uv", "run", "--no-sync", "python", "-m", "scripts.nodes.check"]
+paths = ["src/**", "web/docs/**"]
+stage = "push"
+summary = "Checks that every node has a help page, and that each page names only real inputs and outputs."
+help = "Add or fix the help page in web/docs/<node ID>.md that the message names."
+exit_codes = [1]
+output = { format = "regex", pattern = "^(?<message>.+)$" }
 
 [[ignore]]
 check = "javascript/eslint"
@@ -135,6 +163,17 @@ check = "javascript/knip"
 rule = "unresolved"
 paths = ["web/scripts/extension.ts"]
 reason = "ComfyUI serves ../../scripts/app.js and ../../scripts/api.js at runtime; esbuild leaves them external."
+
+[[ignore]]
+check = "naming/paths"
+rule = "banned-word"
+paths = ["ADVANCED.md"]
+reason = "ADVANCED.md is the advanced guide of every pack in the family, the name its readers and the README link know."
+
+[[ignore]]
+check = "structure/shared-prefixes"
+paths = ["example_workflows/**"]
+reason = "ComfyUI's template browser reads one flat example_workflows folder, and the owner names each workflow <family>-<two-digit number>-<task>."
 
 [[ignore]]
 check = "naming/paths"

@@ -656,6 +656,12 @@ export default [
                         ]
                     },
                     {
+                        "category": "import-rule:scripts",
+                        "pattern": [
+                            "scripts/**"
+                        ]
+                    },
+                    {
                         "category": "import-rule:entry",
                         "pattern": [
                             "__init__.py",
@@ -1107,6 +1113,41 @@ export default [
                         {
                             "from": {
                                 "file": {
+                                    "categories": "import-rule:scripts"
+                                }
+                            },
+                            "disallow": {
+                                "to": {
+                                    "file": {
+                                        "path": "**/*"
+                                    }
+                                }
+                            },
+                            "message": "Import rule \"scripts\" may import its own files and \"config\", \"nodes\", not {{dependency.source}} from {{to.file.categories.[0]}}. Move the code, move that rule above this one, or list the rules it may import in can_import."
+                        },
+                        {
+                            "from": {
+                                "file": {
+                                    "categories": "import-rule:scripts"
+                                }
+                            },
+                            "allow": {
+                                "to": {
+                                    "file": {
+                                        "categories": {
+                                            "anyOf": [
+                                                "import-rule:scripts",
+                                                "import-rule:config",
+                                                "import-rule:nodes"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "from": {
+                                "file": {
                                     "categories": "import-rule:entry"
                                 }
                             },
@@ -1223,6 +1264,7 @@ export default [
                                             "import-rule:settings",
                                             "import-rule:comfy",
                                             "import-rule:nodes",
+                                            "import-rule:scripts",
                                             "import-rule:entry"
                                         ]
                                     }
@@ -1253,6 +1295,7 @@ export default [
                                                 "import-rule:settings",
                                                 "import-rule:comfy",
                                                 "import-rule:nodes",
+                                                "import-rule:scripts",
                                                 "import-rule:entry"
                                             ]
                                         }
