@@ -158,7 +158,7 @@ WORKFLOW_TEXTS = {
         'facts_description': 'Lists the facts a shopper can see in the photo.',
         'host_script': (
             'GPT 6 Luna continues the same conversation and writes a 30-second script from those facts. '
-            '`system_prompt` tells it to write as a warm live-shopping host. A conversation can move between models '
+            '`system_prompt` tells it to write as a warm presenter. A conversation can move between models '
             'and formats; each Chat: Ask sends every earlier turn.'
         ),
         'host_script_description': 'Writes the host script from the facts.',

@@ -103,8 +103,8 @@ HOST_SCRIPT = Subgraph(
             CHAT_ASK,
             {
                 'model': GPT_LUNA,
-                'prompt': 'Write a 30-second live-shopping script about this product from those facts.',
-                'system_prompt': 'You are a warm, upbeat live-shopping host. Speak to the viewer, and invent nothing.',
+                'prompt': 'Write a 30-second product presentation from those facts.',
+                'system_prompt': 'You are a warm, upbeat presenter. Speak to the viewer, and invent nothing.',
             },
             is_paid=True,
         ),

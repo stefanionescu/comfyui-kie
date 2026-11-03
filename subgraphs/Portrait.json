@@ -128,9 +128,7 @@
                         "properties": {
                             "Node name for S&R": "StringFormat"
                         },
-                        "widgets_values": [
-                            "Waist-up photo of a live-shopping host, vertical frame: {a} Looking at the camera."
-                        ]
+                        "widgets_values": ["Waist-up photo of a presenter, vertical frame: {a} Looking at the camera."]
                     },
                     {
                         "id": 102,

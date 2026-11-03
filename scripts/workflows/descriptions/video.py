@@ -32,7 +32,7 @@ PORTRAIT = Subgraph(
         Node(
             'prompt',
             HostNode.FORMAT,
-            {'f_string': 'Waist-up photo of a live-shopping host, vertical frame: {a} Looking at the camera.'},
+            {'f_string': 'Waist-up photo of a presenter, vertical frame: {a} Looking at the camera.'},
         ),
         Node(
             'draw',
@@ -122,7 +122,7 @@ FILM = Subgraph(
                 **WAN_SETTINGS,
                 'aspect_ratio': '9:16',
                 'prompt': (
-                    'A live-shopping host holds up the product from the reference image, looks at the camera, and '
+                    'A presenter holds up the product from the reference image, looks at the camera, and '
                     'says the line from the reference audio.'
                 ),
             },

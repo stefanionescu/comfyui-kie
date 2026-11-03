@@ -81,7 +81,7 @@
                 "Node name for S&R": "MarkdownNote"
             },
             "widgets_values": [
-                "GPT 6 Luna continues the same conversation and writes a 30-second script from those facts. `system_prompt` tells it to write as a warm live-shopping host. A conversation can move between models and formats; each Chat: Ask sends every earlier turn."
+                "GPT 6 Luna continues the same conversation and writes a 30-second script from those facts. `system_prompt` tells it to write as a warm presenter. A conversation can move between models and formats; each Chat: Ask sends every earlier turn."
             ],
             "title": "Note"
         },
@@ -580,9 +580,9 @@
                             "default",
                             0,
                             "",
-                            "Write a 30-second live-shopping script about this product from those facts.",
+                            "Write a 30-second product presentation from those facts.",
                             "",
-                            "You are a warm, upbeat live-shopping host. Speak to the viewer, and invent nothing."
+                            "You are a warm, upbeat presenter. Speak to the viewer, and invent nothing."
                         ],
                         "color": "#432",
                         "bgcolor": "#653"
