@@ -40,7 +40,12 @@ class TaskStore:
     _lock: threading.Lock = field(default_factory=threading.Lock, init=False, repr=False)
 
     def _read_all(self) -> list[TaskRecord]:
-        """Read every record, and skip a damaged, oversized, or other-version file, so it never blocks the rest."""
+        """Read every record, and skip a damaged, oversized, or other-version file, so it never blocks the rest.
+
+        Returns:
+            The readable records, in the order of their file names.
+
+        """
         if not self.directory.is_dir():
             return []
         records: list[TaskRecord] = []
@@ -52,14 +57,27 @@ class TaskStore:
         return records
 
     def save(self, record: TaskRecord) -> None:
-        """Write one record atomically, named by its task ID."""
+        """Write one record atomically, named by its task ID.
+
+        Args:
+            record: The record to write.
+
+        """
         path = self.directory / f'{record.task_id}{TASK_FILES["SUFFIX"]}'
         content = (record.model_dump_json(indent=2) + '\n').encode()
         with self._lock:
             save_file(path, content)
 
     def delete(self, task_id: str) -> None:
-        """Delete one record; a record already gone needs nothing. Refuse an ID that cannot be a task ID."""
+        """Delete one record; a record already gone needs nothing. Refuse an ID that cannot be a task ID.
+
+        Args:
+            task_id: The task whose record goes.
+
+        Raises:
+            KIEError: When the ID cannot be a task ID.
+
+        """
         if _TASK_ID.match(task_id) is None:
             raise KIEError(ErrorCode.INVALID_INPUT, TASK_UNKNOWN)
         path = self.directory / f'{task_id}{TASK_FILES["SUFFIX"]}'
@@ -67,7 +85,18 @@ class TaskStore:
             path.unlink(missing_ok=True)
 
     def read(self, task_id: str) -> TaskRecord:
-        """Return the record of this task, and refuse an ID that cannot be a task ID, or that has no record."""
+        """Return the record of this task, and refuse an ID that cannot be a task ID, or that has no record.
+
+        Args:
+            task_id: The task whose record to return.
+
+        Returns:
+            The record of the task.
+
+        Raises:
+            KIEError: When the ID cannot be a task ID, or no record has it.
+
+        """
         if _TASK_ID.match(task_id) is None:
             raise KIEError(ErrorCode.INVALID_INPUT, TASK_UNKNOWN)
         with self._lock:
@@ -80,6 +109,10 @@ class TaskStore:
         """List the records as Task: Download shows them, newest first: task ID, model, and start time in UTC.
 
         The label cuts the time to the minute and starts with the task ID, so the node can read the ID back.
+
+        Returns:
+            One label for each record.
+
         """
         with self._lock:
             records = sorted(self._read_all(), key=lambda record: record.submitted_at, reverse=True)

@@ -1,4 +1,4 @@
-# Image: Generate
+# Image: generate
 
 Runs any KIE model that makes images: generating, editing, upscaling, and
 removing backgrounds. It outputs the images, a mask for each, and the link of

@@ -11,7 +11,15 @@ from ..config.messages.settings import STATE_FILE_SIZE, STATE_DIRECTORY_ABSOLUTE
 
 
 def choose_state_directory() -> Path:
-    """Choose the platform's private state folder, without creating it."""
+    """Choose the platform's private state folder, without creating it.
+
+    Returns:
+        The folder the environment names, or else the default folder of the platform.
+
+    Raises:
+        KIEError: When the environment names a relative folder.
+
+    """
     override = os.environ.get(ENVIRONMENT_VARIABLES['STATE_DIRECTORY'])
     if override:
         path = Path(override).expanduser()
@@ -26,7 +34,13 @@ def choose_state_directory() -> Path:
 
 
 def save_file(path: Path, content: bytes) -> None:
-    """Replace one state file only after its complete private write succeeds."""
+    """Replace one state file only after its complete private write succeeds.
+
+    Args:
+        path: The state file to replace.
+        content: The complete content of the file.
+
+    """
     path.parent.mkdir(parents=True, exist_ok=True, mode=PRIVATE_FOLDER_MODE)
     descriptor, temporary = tempfile.mkstemp(prefix=TEMPORARY_PREFIX, dir=path.parent)
     temporary_path = Path(temporary)
@@ -41,7 +55,19 @@ def save_file(path: Path, content: bytes) -> None:
 
 
 def read_file(path: Path, *, max_bytes: int) -> bytes:
-    """Read a state file within its size limit."""
+    """Read a state file within its size limit.
+
+    Args:
+        path: The state file to read.
+        max_bytes: The most bytes the file may hold.
+
+    Returns:
+        The content of the file.
+
+    Raises:
+        KIEError: When the file is larger than the limit.
+
+    """
     with path.open('rb') as stream:
         content = stream.read(max_bytes + 1)
     if len(content) > max_bytes:

@@ -24,7 +24,15 @@ if TYPE_CHECKING:
 
 
 async def wait_for_request[T](task: asyncio.Task[T]) -> T:
-    """Wait for the owned task that sends a request, and cancel it when ComfyUI's cancel arrives."""
+    """Wait for the owned task that sends a request, and cancel it when ComfyUI's cancel arrives.
+
+    Args:
+        task: The task that sends the request, which this call owns.
+
+    Returns:
+        The result of the task.
+
+    """
     try:
         while not task.done():
             throw_exception_if_processing_interrupted()
@@ -37,7 +45,18 @@ async def wait_for_request[T](task: asyncio.Task[T]) -> T:
 
 
 async def wait_for_thread[T](work: Callable[[], T]) -> T:
-    """Run blocking work in a thread, and let a cancel through only after the work ends."""
+    """Run blocking work in a thread, and let a cancel through only after the work ends.
+
+    Args:
+        work: The blocking call to run.
+
+    Returns:
+        What the work returns.
+
+    Raises:
+        asyncio.CancelledError: When a cancel arrived while the work ran, raised once the work has ended.
+
+    """
     task = asyncio.ensure_future(asyncio.to_thread(work))
     is_cancelled = False
     while not task.done():
@@ -59,6 +78,15 @@ async def send_request[Result](
 
     The bar belongs to the node: a node that another pack calls has no ID, so it leaves the bar of its caller alone.
     Building the outputs decodes media, which blocks, so it runs in a worker thread.
+
+    Args:
+        run: Sends the request with the configuration and the progress bar, and returns its result.
+        build_outputs: Turns the result into the outputs of the node.
+        node_id: The ID of the node that owns the progress bar, or None for a direct call.
+
+    Returns:
+        The outputs of the node.
+
     """
     progress: Progress = None
     if node_id is not None:

@@ -22,12 +22,22 @@ class Extension(ComfyExtension):
 
     @override
     async def get_node_list(self) -> list[type[io.ComfyNode]]:
-        """Return the node classes in menu order."""
+        """Return the node classes in menu order.
+
+        Returns:
+            The node classes, in the order of the menu.
+
+        """
         return list(NODE_TYPES)
 
 
 async def comfy_entrypoint() -> Extension:
-    """Hand ComfyUI the extension."""
+    """Hand ComfyUI the extension.
+
+    Returns:
+        The extension that registers the routes and lists the nodes.
+
+    """
     return Extension()
 
 

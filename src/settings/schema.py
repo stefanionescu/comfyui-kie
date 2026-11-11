@@ -13,7 +13,18 @@ DEFAULT_SETTINGS = Settings(**{name: definition['default'] for name, definition 
 
 
 def parse_settings(document: dict[str, Json]) -> Settings:
-    """Refuse unknown settings, so a misspelled limit never passes silently, and keep each limit in its range."""
+    """Refuse unknown settings, so a misspelled limit never passes silently, and keep each limit in its range.
+
+    Args:
+        document: The settings by name; a setting that is absent takes its default.
+
+    Returns:
+        The checked settings.
+
+    Raises:
+        KIEError: When a setting is unknown, is not a whole number, or is outside its range.
+
+    """
     expected = {item.name for item in fields(Settings)}
     if document.keys() - expected:
         raise KIEError(ErrorCode.CONFIGURATION, SETTING_UNKNOWN)

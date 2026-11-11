@@ -34,7 +34,17 @@ if TYPE_CHECKING:
 def _measure_inputs(
     inputs: list[dict[str, object]], values: Mapping[str, object], linked: frozenset[str]
 ) -> tuple[int, list[int]]:
-    """Count the socket rows of a node and list its widget heights, the control widget of a seed included."""
+    """Count the socket rows of a node and list its widget heights, the control widget of a seed included.
+
+    Args:
+        inputs: The descriptions of the inputs of the node.
+        values: The widget values of the node, which name the chosen option of a dropdown.
+        linked: The names of the inputs that links fill.
+
+    Returns:
+        The count of socket rows, and the height of each widget.
+
+    """
     sockets = 0
     widgets: list[int] = []
     for item in inputs:
@@ -52,7 +62,16 @@ def _measure_inputs(
 
 
 def _measure_option(item: Mapping[str, object], chosen: object) -> list[int]:
-    """List the widget heights of a dropdown's chosen option, or of its first option when the value names none."""
+    """List the widget heights of a dropdown's chosen option, or of its first option when the value names none.
+
+    Args:
+        item: The description of the dropdown.
+        chosen: The key of the chosen option.
+
+    Returns:
+        The height of each widget of the option.
+
+    """
     options = cast('list[dict[str, object]]', item.get('options') or [])
     option = next((option for option in options if option['key'] == chosen), options[0] if options else None)
     children = cast('dict[str, dict[str, list[object]]]', option['inputs']) if option else {}
@@ -64,14 +83,31 @@ def _measure_option(item: Mapping[str, object], chosen: object) -> list[int]:
 
 
 def _measure_widget(item: Mapping[str, object]) -> int:
-    """Height of one widget before its gap: a multi-line text is taller."""
+    """Height of one widget before its gap: a multi-line text is taller.
+
+    Args:
+        item: The description of the widget.
+
+    Returns:
+        The height of the widget.
+
+    """
     if item.get('multiline'):
         return MULTILINE_HEIGHT
     return WIDGET_HEIGHT
 
 
 def _read_slots(name: str, settings: Mapping[str, object]) -> list[str]:
-    """Name every slot of a growing row: listed by name, or numbered from 0 after a prefix."""
+    """Name every slot of a growing row: listed by name, or numbered from 0 after a prefix.
+
+    Args:
+        name: The name of the growing row.
+        settings: The description of the row, with its template.
+
+    Returns:
+        The full name of each slot, in order.
+
+    """
     template = cast('dict[str, object]', settings['template'])
     if 'names' in template:
         return [f'{name}.{slot}' for slot in cast('list[str]', template['names'])]
@@ -79,7 +115,17 @@ def _read_slots(name: str, settings: Mapping[str, object]) -> list[str]:
 
 
 def list_shown_slots(name: str, settings: Mapping[str, object], linked: frozenset[str]) -> list[str]:
-    """List the sockets a growing row shows: every slot up to the last linked one and one more, or its minimum."""
+    """List the sockets a growing row shows: every slot up to the last linked one and one more, or its minimum.
+
+    Args:
+        name: The name of the growing row.
+        settings: The description of the row, with its template.
+        linked: The names of the slots that links fill.
+
+    Returns:
+        The full names of the shown slots, in order.
+
+    """
     slots = _read_slots(name, settings)
     shown = max((index + 1 for index, slot in enumerate(slots) if slot in linked), default=0) + 1
     minimum = cast('int', cast('dict[str, object]', settings['template']).get('min', 0))
@@ -92,6 +138,16 @@ def measure(
     """Size a node as the page does: a row per socket, then each widget and its gap; panels take their measured size.
 
     A dropdown adds the widgets of its chosen option, and a growing row shows its linked slots and one more.
+
+    Args:
+        kind: The kind of the node, which tells whether the node is a panel.
+        schema: The description of the node.
+        values: The widget values of the node.
+        linked: The names of the inputs that links fill.
+
+    Returns:
+        The width and height of the node.
+
     """
     if kind in DOM_SIZES:
         return DOM_SIZES[kind]
@@ -107,6 +163,14 @@ def measure_note(text: str, width: int) -> int:
     """Height of a note that fits its text: each line wraps at the note's width, and a blank line is a gap.
 
     A numbered step wraps sooner, because the page indents the list.
+
+    Args:
+        text: The text of the note.
+        width: The width of the note.
+
+    Returns:
+        The height of the note.
+
     """
     height = NOTE_PADDING
     for line in text.splitlines():

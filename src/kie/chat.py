@@ -67,7 +67,17 @@ class _Question:
 
 
 def _build_responses(model: KIEModel, question: _Question, options: dict[str, Json]) -> dict[str, Json]:
-    """Build an OpenAI Responses request: the system prompt, the earlier turns, then the question as input messages."""
+    """Build an OpenAI Responses request: the system prompt, the earlier turns, then the question as input messages.
+
+    Args:
+        model: The model whose name goes into the body.
+        question: The texts, turns, documents, and images to send.
+        options: The effort and the answer schema, each sent when set.
+
+    Returns:
+        The body of the OpenAI Responses request.
+
+    """
     content: list[Json] = [
         {'type': 'input_file', 'filename': document.name, 'file_data': document.file_url}
         if document.file_url is not None
@@ -98,23 +108,44 @@ def _build_responses(model: KIEModel, question: _Question, options: dict[str, Js
     return body
 
 
+def _build_content(question: _Question, images: list[Json]) -> list[Json]:
+    """Build the content of the question: each document as text under its name, the images, then the prompt.
+
+    Args:
+        question: The question, whose documents are all text.
+        images: The image parts, in the form the format takes.
+
+    Returns:
+        The parts of the content, in the order the model reads them.
+
+    """
+    documents: list[Json] = [
+        {'type': 'text', 'text': DOCUMENT_TEXT.format(name=document.name, text=document.text)}
+        for document in question.documents
+    ]
+    return [*documents, *images, {'type': 'text', 'text': question.texts['prompt']}]
+
+
 def _build_messages(model: KIEModel, question: _Question, _options: dict[str, Json]) -> dict[str, Json]:
     """Build an Anthropic Messages request: the system prompt apart, the earlier turns, then the question.
 
     KIE honors no effort, no answer schema, and no PDF for Claude, so the options are always empty here, and every
     document is text.
+
+    Args:
+        model: The model that the body names.
+        question: The system prompt, earlier turns, documents, images, and prompt to send.
+        _options: Not used, because this format takes no options.
+
+    Returns:
+        The body of the Anthropic Messages request.
+
     """
-    content: list[Json] = [
-        {'type': 'text', 'text': DOCUMENT_TEXT.format(name=document.name, text=document.text)}
-        for document in question.documents
+    images: list[Json] = [
+        {'type': 'image', 'source': {'type': 'base64', 'media_type': kind, 'data': data}}
+        for kind, data in question.images
     ]
-    content.extend(
-        [
-            {'type': 'image', 'source': {'type': 'base64', 'media_type': kind, 'data': data}}
-            for kind, data in question.images
-        ]
-    )
-    content.append({'type': 'text', 'text': question.texts['prompt']})
+    content = _build_content(question, images)
     messages: list[Json] = [
         {'role': turn.role, 'content': [{'type': 'text', 'text': turn.text}]} for turn in question.turns
     ]
@@ -126,15 +157,21 @@ def _build_messages(model: KIEModel, question: _Question, _options: dict[str, Js
 
 
 def _build_completions(_model: KIEModel, question: _Question, options: dict[str, Json]) -> dict[str, Json]:
-    """Build a Chat Completions request: every image as an image_url part, and every document as text."""
-    content: list[Json] = [
-        {'type': 'text', 'text': DOCUMENT_TEXT.format(name=document.name, text=document.text)}
-        for document in question.documents
+    """Build a Chat Completions request: every image as an image_url part, and every document as text.
+
+    Args:
+        _model: Not used by this format.
+        question: The prompts, earlier turns, documents, and images to send.
+        options: The effort and the answer schema, each added to the body when set.
+
+    Returns:
+        The body of the Chat Completions request.
+
+    """
+    images: list[Json] = [
+        {'type': 'image_url', 'image_url': {'url': f'data:{kind};base64,{data}'}} for kind, data in question.images
     ]
-    content.extend(
-        [{'type': 'image_url', 'image_url': {'url': f'data:{kind};base64,{data}'}} for kind, data in question.images]
-    )
-    content.append({'type': 'text', 'text': question.texts['prompt']})
+    content = _build_content(question, images)
     messages: list[Json] = [{'role': turn.role, 'content': turn.text} for turn in question.turns]
     messages.append({'role': ROLES['USER'], 'content': content})
     if question.texts['system_prompt'].strip():
@@ -154,6 +191,15 @@ def _build_gemini(_model: KIEModel, question: _Question, options: dict[str, Json
     """Build a native Gemini request: images as inline data, and the system prompt as a system instruction.
 
     The route names the model, so the body does not. Gemini names the earlier answers of the model by the role model.
+
+    Args:
+        _model: Not used, because the route names the model.
+        question: The documents, images, prompts, and earlier turns to send.
+        options: The effort, sent as the thinking level when set.
+
+    Returns:
+        The body of the Gemini request.
+
     """
     parts: list[Json] = [
         {'text': DOCUMENT_TEXT.format(name=document.name, text=document.text)} for document in question.documents
@@ -185,7 +231,19 @@ _BUILDERS = {
 
 
 def _read_reply(model_format: str, reply: Json) -> tuple[str, str]:
-    """Read the answer and the shown reasoning from a reply in its format."""
+    """Read the answer and the shown reasoning from a reply in its format.
+
+    Args:
+        model_format: The name of the format the reply is in.
+        reply: The reply as KIE sent it.
+
+    Returns:
+        The answer text, then the shown reasoning text.
+
+    Raises:
+        KIEError: When the reply does not have the shape of a chat reply.
+
+    """
     try:
         parts = ChatReplyParts.model_validate(reply)
     except ValidationError:
@@ -210,6 +268,18 @@ def _read_options(model: KIEModel, effort: str | None, json_schema: str | None) 
     """Check the effort and the JSON schema against what KIE honors for the format, and return the ones set.
 
     The JSON schema object goes as written: its name, its schema, and strict when the person sets it.
+
+    Args:
+        model: The model whose format decides what KIE honors.
+        effort: The reasoning effort the person chose, or None when it is not known yet.
+        json_schema: The text of the JSON schema object, or None when it is not known yet.
+
+    Returns:
+        The options that are set, by name.
+
+    Raises:
+        KIEError: When the format does not take the effort or a schema, or the schema text is not valid.
+
     """
     model_format = cast('str', model.model_format)
     options: dict[str, Json] = {}
@@ -236,6 +306,19 @@ def parse_chat(
 
     A None text or effort is an input fed by a link, known only when the node runs, so its checks wait until then.
     Returns the options of the format and the extra fields.
+
+    Args:
+        model: The model that the checks are for.
+        texts: The text boxes by input name, with None for a box fed by a link.
+        effort: The reasoning effort, or None when a link feeds it.
+        documents: The attached documents.
+
+    Returns:
+        The options of the format, then the extra fields.
+
+    Raises:
+        KIEError: When a check refuses the prompt, a document, an option, or an extra field.
+
     """
     prompt = texts['prompt']
     if prompt is not None and not prompt.strip():
@@ -257,7 +340,21 @@ def parse_chat(
 async def run_chat(
     request: ChatRequest, encode: Callable[[KIEFile], EncodedFile], configuration: Configuration, _progress: Progress
 ) -> ChatResult:
-    """Read the model, make the free checks, encode the images, send the request once, and read the answer."""
+    """Read the model, make the free checks, encode the images, send the request once, and read the answer.
+
+    Args:
+        request: The model ID, texts, effort, documents, images, and conversation of the question.
+        encode: The function that turns one image into its content type and bytes.
+        configuration: The settings and the API key of the request.
+        _progress: Not used.
+
+    Returns:
+        The answer and the shown reasoning.
+
+    Raises:
+        KIEError: When the reply holds no answer text.
+
+    """
     model = await read_kie_model(request.model_id, 'chat', configuration)
     options, extra_fields = parse_chat(model, request.texts, request.reasoning_effort, request.documents)
     encoded = [await asyncio.to_thread(encode, image) for image in request.images]

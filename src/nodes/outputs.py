@@ -20,6 +20,14 @@ def build_node_outputs(result: TaskResult, output_ids: Sequence[str]) -> io.Node
     """Return one value per output ID, in the order given, decoding only the files those outputs show.
 
     An empty list, and no files, block the nodes connected to them; result always holds the task's result.
+
+    Args:
+        result: The collected task, with its files and their downloaded content.
+        output_ids: The IDs of the outputs of the node.
+
+    Returns:
+        The values of the outputs, with a blocker in place of each empty one.
+
     """
     contents = {
         kind: [output.content for output in result.files if output.file.kind == kind and output.content is not None]

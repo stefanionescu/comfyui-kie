@@ -40,6 +40,10 @@ class ConfigurationStore:
 
         A save replaces the file whole, so a read needs no lock. The revision is the SHA-256 of the settings, so a stale
         window cannot overwrite newer changes.
+
+        Returns:
+            The settings, and the revision that names them.
+
         """
         path = self.directory / FILE_NAMES['SETTINGS']
         settings = DEFAULT_SETTINGS
@@ -53,6 +57,13 @@ class ConfigurationStore:
 
         The cache token stays while the key stays, and changes with the key, so a new key runs nodes again. No
         setting changes a successful result, and ComfyUI never caches a failed run, so a settings change keeps it.
+
+        Returns:
+            The settings, the key, and the cache token of the key.
+
+        Raises:
+            KIEError: When the settings or the key cannot be read or are not valid.
+
         """
         with self.lock:
             try:
@@ -72,7 +83,12 @@ class ConfigurationStore:
             return self._previous
 
     def read_status(self) -> dict[str, Json]:
-        """Describe the settings in effect and where the key comes from, without returning the key."""
+        """Describe the settings in effect and where the key comes from, without returning the key.
+
+        Returns:
+            The settings, their ranges, their revision, the key length limit, and the source of the key.
+
+        """
         with self.lock:
             settings, revision = self._read_settings()
             source = read_credential_source(self.directory)
@@ -88,7 +104,19 @@ class ConfigurationStore:
         }
 
     def save_settings(self, changes: dict[str, Json], revision: str) -> dict[str, Json]:
-        """Apply checked changes only to the revision the dialog read."""
+        """Apply checked changes only to the revision the dialog read.
+
+        Args:
+            changes: The new values of the settings to change, by name.
+            revision: The revision of the settings that the dialog read.
+
+        Returns:
+            The status of the settings and the key after the save.
+
+        Raises:
+            KIEError: When a change names an unknown setting, the revision is stale, or a value is not valid.
+
+        """
         if changes.keys() - set(SETTING_RANGES):
             raise KIEError(ErrorCode.CONFIGURATION, SETTING_READ_ONLY)
         with self.lock:
@@ -100,7 +128,15 @@ class ConfigurationStore:
         return self.read_status()
 
     def save_credential(self, value: str) -> dict[str, Json]:
-        """Save a checked API key, and return only where the key in effect comes from."""
+        """Save a checked API key, and return only where the key in effect comes from.
+
+        Args:
+            value: The API key as the person typed it.
+
+        Returns:
+            The status of the settings and the key after the save.
+
+        """
         credential = parse_credential(value)
         with self.lock:
             save_file(self.directory / FILE_NAMES['CREDENTIAL'], credential.value.encode('utf-8'))
@@ -110,7 +146,12 @@ class ConfigurationStore:
         return self.read_status()
 
     def delete_credential(self) -> dict[str, Json]:
-        """Remove only the saved API key; a key in the server's environment stays in effect."""
+        """Remove only the saved API key; a key in the server's environment stays in effect.
+
+        Returns:
+            The status of the settings and the key after the removal.
+
+        """
         with self.lock:
             (self.directory / FILE_NAMES['CREDENTIAL']).unlink(missing_ok=True)
             self._previous = None

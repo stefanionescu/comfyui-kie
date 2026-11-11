@@ -54,13 +54,13 @@ class Envelope(Reply):
 
     Attributes:
         code: 200 for success; KIE's error code otherwise.
-        msg: KIE's message, or None.
+        message: KIE's message, or None; KIE names it msg.
         payload: The result, which KIE names data.
 
     """
 
     code: int
-    msg: str | None = None
+    message: str | None = Field(default=None, alias='msg')
     payload: Json = Field(default=None, alias='data')
 
 
@@ -81,8 +81,9 @@ class ChatReply(BaseModel):
     It keeps every field, because the reply goes to the result output whole.
 
     Attributes:
+        model_config: The pydantic options that freeze the record and keep unknown fields.
         code: KIE's error code, when KIE wrapped the reply.
-        msg: KIE's message, when KIE wrapped the reply.
+        envelope_message: KIE's message, when KIE wrapped the reply; KIE names it msg.
         error: Claude's error object, when Claude refused.
 
     """
@@ -90,7 +91,7 @@ class ChatReply(BaseModel):
     model_config = ConfigDict(extra='allow', frozen=True)
 
     code: int | None = None
-    msg: str | None = None
+    envelope_message: str | None = Field(default=None, alias='msg')
     error: ChatError | None = None
 
 

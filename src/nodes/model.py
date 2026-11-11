@@ -20,14 +20,30 @@ if TYPE_CHECKING:
 
 
 def _format_bound(value: float | None) -> Json:
-    """Show a whole-number bound without a decimal point, as the schema writes it."""
+    """Show a whole-number bound without a decimal point, as the schema writes it.
+
+    Args:
+        value: The smallest or largest number of a field, or None.
+
+    Returns:
+        The bound as a whole number when it has no fraction, or None.
+
+    """
     if value is None:
         return None
     return int(value) if value.is_integer() else value
 
 
 async def _read_report(model_id: str) -> io.NodeOutput:
-    """Read one model from KIE with the saved key, and report it."""
+    """Read one model from KIE with the saved key, and report it.
+
+    Args:
+        model_id: The model ID, stripped.
+
+    Returns:
+        The report of the model as JSON text.
+
+    """
     configuration = await asyncio.to_thread(CONFIGURATION.read_configuration)
     model = await read_kie_model(model_id, None, configuration)
     # Every key is present, with null where KIE gives no value; the input keys match the arguments of a paid node.
@@ -68,7 +84,12 @@ class ModelInfo(io.ComfyNode):
     @classmethod
     @override
     def define_schema(cls) -> io.Schema:
-        """List the model ID and the JSON the node returns."""
+        """List the model ID and the JSON the node returns.
+
+        Returns:
+            The schema of the node.
+
+        """
         return io.Schema(
             node_id=f'{NODE_PREFIX}{cls.__name__}',
             display_name='Model: Info',
@@ -81,7 +102,15 @@ class ModelInfo(io.ComfyNode):
     @classmethod
     @override
     async def execute(cls, *, model: str) -> io.NodeOutput:  # pyright: ignore[reportIncompatibleMethodOverride] # reason: ComfyUI calls execute with the inputs the schema declares.
-        """Read the model in an owned task, so ComfyUI's cancel stops the read."""
+        """Read the model in an owned task, so ComfyUI's cancel stops the read.
+
+        Args:
+            model: The model ID as typed.
+
+        Returns:
+            The report of the model as JSON text.
+
+        """
         return await wait_for_request(asyncio.create_task(_read_report(model.strip())))
 
 

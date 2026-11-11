@@ -1,4 +1,3 @@
-#:schema ./.gspot/gspot.schema.json
 # gspot settings for this repository. Change them with gspot set, unset, add, remove, ignore, and unignore.
 
 level = "all"
@@ -14,9 +13,20 @@ setup_command = ["mise", "run", "ci:setup"]
 [format]
 quotes = "single"
 
-[[naming.override]]
+[javascript]
+import_extension = "extensionless"
+entry_files = ["web/scripts/extension.ts"]
+
+[commits]
+scopes = ["nodes", "frontend", "workflows", "docs", "hooks", "quality", "root", "deps"]
+
+[[naming.exception]]
 allowed_names = ["ModelInfo", "MODEL_INFO"]
 reason = "The node class is named after its display name, Model: Info, as in the OpenRouter, BytePlus, fal, and Dreamina packs; its node ID KIEModelInfo is fixed once released."
+
+[[naming.exception]]
+allowed_names = ["execute"]
+reason = "ComfyUI calls each node's execute by name."
 
 [docs]
 allowed_urls = { value = ["^https://kie\\.ai/"], reason = "kie.ai answers 403 to requests from CI runners; the pages load from a normal connection." }
@@ -31,20 +41,12 @@ UTC = "UTC is the time standard's name, which readers know."
 ISO = "ISO names the date format standard, ISO 8601, which readers know."
 
 [python]
-externals = ["comfy", "comfy_api", "comfy_api_nodes", "comfy_execution", "folder_paths", "nodes", "server"]
-
-[tools.eslint]
-import_extension = "extensionless"
+externals = { value = ["comfy", "comfy_api", "comfy_api_nodes", "comfy_execution", "folder_paths", "nodes", "server"], reason = "ComfyUI supplies these modules in its application environment." }
+docstring_convention = "google"
 
 [[tools.eslint.override]]
 paths = ["web/scripts/**"]
 runtime = "browser"
-
-[tools.commitlint]
-scopes = ["nodes", "frontend", "workflows", "docs", "hooks", "quality", "root", "deps"]
-
-[tools.knip]
-entry = ["web/scripts/extension.ts"]
 
 # The browser code in layers. Each rule lists exactly what its files may import, besides their own folder.
 [[import_rule]]
@@ -186,31 +188,28 @@ paths = ["web/docs/**"]
 reason = "ComfyUI reads each node's help page from web/docs/<node id>.md, so the file name must equal the registered node ID."
 
 [[ignore]]
+check = "python/ruff"
+rule = "TID252"
+reason = "ComfyUI imports this pack by its folder path, so only relative imports resolve."
+
+[[ignore]]
 check = "naming/paths"
 rule = "banned-word"
 paths = ["ADVANCED.md"]
 reason = "ADVANCED.md is the advanced guide of every pack in the family, the name its readers and the README link know."
 
 [[ignore]]
-check = "prose/vale"
-rule = "write-good.E-Prime"
-reason = "E-Prime bans every form of 'to be'; rewriting every such sentence makes the docs harder to read, not plainer."
-
-[[ignore]]
 check = "python/vulture"
-names = ["on_load", "get_node_list"]
 paths = ["__init__.py"]
 reason = "ComfyUI calls the extension's on_load and get_node_list by name."
 
 [[ignore]]
 check = "python/vulture"
-names = ["cpu"]
 paths = ["scripts/nodes/export.py"]
 reason = "ComfyUI's model_management reads args.cpu when its device code loads; the schema export sets it so ComfyUI loads without a graphics card."
 
 [[ignore]]
 check = "python/vulture"
-names = ["define_schema", "execute", "validate_inputs", "fingerprint_inputs"]
 paths = ["src/nodes/**"]
 reason = "ComfyUI calls each node's define_schema, execute, validate_inputs, and fingerprint_inputs by name."
 
@@ -221,18 +220,15 @@ reason = "ComfyUI's template browser reads one flat example_workflows folder, an
 
 [[ignore]]
 check = "structure/trivial-functions"
-names = ["on_load", "get_node_list", "comfy_entrypoint"]
 paths = ["__init__.py"]
 reason = "ComfyUI calls the extension's on_load, get_node_list, and comfy_entrypoint by name, so they cannot be inlined."
 
 [[ignore]]
 check = "structure/trivial-functions"
-names = ["define_schema", "execute", "validate_inputs", "fingerprint_inputs"]
 paths = ["src/nodes/**"]
 reason = "ComfyUI calls each node's define_schema, execute, validate_inputs, and fingerprint_inputs by name, so they cannot be inlined."
 
 [[ignore]]
 check = "structure/trivial-functions"
-names = ["__init__"]
 paths = ["src/state/errors.py"]
 reason = "KIEError's constructor keeps the category beside the message that RuntimeError stores; every raise calls it."

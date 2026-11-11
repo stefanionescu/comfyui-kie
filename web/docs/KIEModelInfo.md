@@ -1,4 +1,4 @@
-# Model: Info
+# Model: info
 
 Shows what any KIE model takes, as JSON: every input with its type, default,
 choices, range, and length limit. Use it to fill the `arguments` of a paid node

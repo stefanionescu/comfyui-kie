@@ -24,7 +24,7 @@
 /.editorconfig
 /.markdownlint.jsonc
 /.prettierignore
-/.stylelintrc.json
+/.stylelintrc.yml
 /eslint.config.mjs
 /prettier.config.mjs
 /pyrightconfig.json

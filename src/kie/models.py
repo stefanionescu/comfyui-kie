@@ -68,7 +68,19 @@ _READS: weakref.WeakKeyDictionary[asyncio.AbstractEventLoop, dict[str, asyncio.T
 
 
 async def _read_in_turn(url: URL, configuration: Configuration) -> Json:
-    """Read one free route in its turn; a rate limit waits for a later turn, within the request timeout."""
+    """Read one free route in its turn; a rate limit waits for a later turn, within the request timeout.
+
+    Args:
+        url: The address of the free route.
+        configuration: The settings that hold the request timeout, and the key.
+
+    Returns:
+        The result KIE sends for the route.
+
+    Raises:
+        KIEError: When the read fails, or when KIE still limits the rate after the request timeout.
+
+    """
     deadline = time.monotonic() + configuration.settings.request_timeout_seconds
     while True:
         with _TURNS.lock:
@@ -86,7 +98,19 @@ async def _read_in_turn(url: URL, configuration: Configuration) -> Json:
 
 
 async def _download_model(model_id: str, configuration: Configuration) -> KIEModel:
-    """Find the model in KIE's catalog with one search, then read its schema."""
+    """Find the model in KIE's catalog with one search, then read its schema.
+
+    Args:
+        model_id: The model to find in the catalog.
+        configuration: The settings and the key of both reads.
+
+    Returns:
+        The model, with the inputs its schema lists.
+
+    Raises:
+        KIEError: When the catalog page cannot be read, or when the catalog has no model with this ID.
+
+    """
     api = URL.build(scheme='https', host=HOSTS['API'])
     page = await _read_in_turn(api.with_path(ROUTES['MODELS']).with_query({'q': model_id}), configuration)
     try:
@@ -104,6 +128,12 @@ def _delete_read(reads: dict[str, asyncio.Task[KIEModel]], model_id: str, read: 
     """Drop a finished read, so a later caller reads again when this one failed.
 
     Taking its failure here keeps a read whose callers all cancelled from failing unseen.
+
+    Args:
+        reads: The reads in flight on the event loop of the read.
+        model_id: The key of the finished read.
+        read: The finished read, whose failure is taken here.
+
     """
     del reads[model_id]
     if not read.cancelled():
@@ -115,6 +145,14 @@ async def _read_shared(model_id: str, configuration: Configuration) -> KIEModel:
 
     A task belongs to its event loop, and ComfyUI may run each prompt on a new one, so the extension keeps the reads in
     flight per loop. A caller's cancel leaves the read running for the others.
+
+    Args:
+        model_id: The model to read.
+        configuration: The settings and the key, used when no read of the model is in flight.
+
+    Returns:
+        The model the shared read gives.
+
     """
     reads = _READS.setdefault(asyncio.get_running_loop(), {})
     task = reads.get(model_id)
@@ -125,7 +163,16 @@ async def _read_shared(model_id: str, configuration: Configuration) -> KIEModel:
 
 
 def _validate_kind(model: KIEModel, kind: Kind) -> None:
-    """Refuse a model a paid node of this kind cannot run, naming the node that runs it."""
+    """Refuse a model a paid node of this kind cannot run, naming the node that runs it.
+
+    Args:
+        model: The model the person chose.
+        kind: The kind the paid node makes.
+
+    Raises:
+        KIEError: When the model runs on another route, makes no known kind, or makes another kind.
+
+    """
     if model.model_format is None:
         raise KIEError(ErrorCode.INVALID_INPUT, MODEL_OTHER_ROUTE.format(model=model.entry.model, route=model.route))
     if model.kind is None:
@@ -139,6 +186,18 @@ async def read_kie_model(model_id: str, kind: Kind | None, configuration: Config
     """Read one model from KIE, refusing an ID that cannot be one, and one KIE does not know.
 
     A paid node passes its kind, and the read refuses a model of another kind too. Model: Info passes no kind.
+
+    Args:
+        model_id: The model ID as the person typed it, stripped.
+        kind: The kind of the paid node that asks, or None for Model: Info.
+        configuration: The settings and the key of a read from KIE.
+
+    Returns:
+        The model, from this process when it was read before.
+
+    Raises:
+        KIEError: When the ID is empty or has the wrong form.
+
     """
     example = DEFAULT_MODELS[kind or 'image']
     if not model_id:

@@ -35,6 +35,13 @@ def _create_session(settings: Settings) -> aiohttp.ClientSession:
 
     The session ignores the environment's proxy settings and every cookie, and no request follows a redirect, so
     neither the key nor a reply passes through another host.
+
+    Args:
+        settings: The settings that give the request timeout.
+
+    Returns:
+        The open session.
+
     """
     timeout = aiohttp.ClientTimeout(total=settings.request_timeout_seconds)
     session = aiohttp.ClientSession(timeout=timeout, trust_env=False, cookie_jar=aiohttp.DummyCookieJar())
@@ -44,7 +51,16 @@ def _create_session(settings: Settings) -> aiohttp.ClientSession:
 
 
 def _build_headers(url: URL, credential: Credential | None) -> dict[str, str]:
-    """Add the API key only for an https address on one of KIE's hosts, whatever address a reply named."""
+    """Add the API key only for an https address on one of KIE's hosts, whatever address a reply named.
+
+    Args:
+        url: The address the request goes to.
+        credential: The API key, or None for a request without a key.
+
+    Returns:
+        The headers of the request.
+
+    """
     headers = {'Accept': 'application/json'}
     if credential is not None and url.scheme == 'https' and url.host in HOSTS.values():
         headers['Authorization'] = f'Bearer {credential.value}'
@@ -52,7 +68,19 @@ def _build_headers(url: URL, credential: Credential | None) -> dict[str, str]:
 
 
 async def _read_body(response: aiohttp.ClientResponse, settings: Settings) -> bytes:
-    """Read a reply or a file within the maximum download size."""
+    """Read a reply or a file within the maximum download size.
+
+    Args:
+        response: The reply whose content is read.
+        settings: The settings that give the maximum download size.
+
+    Returns:
+        The bytes that were read.
+
+    Raises:
+        KIEError: When the content passes the maximum download size.
+
+    """
     maximum = settings.max_download_megabytes
     content = bytearray()
     async for chunk in response.content.iter_chunked(REPLY_BYTES['CHUNK']):
@@ -67,6 +95,18 @@ def _read_envelope(status: int, content: bytes) -> Json:
 
     KIE answers most failures with HTTP 200 and an error code in the body. A body that is not an envelope takes its
     failure from the HTTP status, and is unreadable when the status says success.
+
+    Args:
+        status: The HTTP status of the reply.
+        content: The body of the reply.
+
+    Returns:
+        The result inside the envelope.
+
+    Raises:
+        KIEError: When the body is not an envelope and the status says success.
+        build_failure: The failure that the error code or the HTTP status names.
+
     """
     try:
         envelope = Envelope.model_validate_json(content)
@@ -75,7 +115,7 @@ def _read_envelope(status: int, content: bytes) -> Json:
             raise build_failure(status, None) from None
         raise KIEError(ErrorCode.TRANSPORT, REPLY_UNREADABLE) from None
     if envelope.code != SUCCESS_CODE:
-        raise build_failure(envelope.code, envelope.msg)
+        raise build_failure(envelope.code, envelope.message)
     return envelope.payload
 
 
@@ -87,6 +127,20 @@ async def _send_free_request(
 
     A failure to connect or to read counts as KIE being out of reach, never as a charge, because the request bills
     nothing.
+
+    Args:
+        method: The HTTP method of the request.
+        url: The address the request goes to.
+        settings: The settings that give the request timeout.
+        credential: The API key, or None for a request without a key.
+        form: The form data to send as the body, or None for no body.
+
+    Yields:
+        The reply, open while the caller reads it.
+
+    Raises:
+        KIEError: When KIE is out of reach or the request passes the timeout.
+
     """
     headers = _build_headers(url, credential)
     session = _create_session(settings)
@@ -102,20 +156,23 @@ async def _send_free_request(
         raise KIEError(ErrorCode.TIMEOUT, READ_TIMEOUT.format(seconds=settings.request_timeout_seconds)) from None
 
 
-async def send_lookup(url: URL, configuration: Configuration) -> Json:
-    """Send one read that bills nothing, such as a model read, and return the result inside KIE's envelope."""
-    settings = configuration.settings
-    async with _send_free_request('GET', url, settings, credential=configuration.credential) as response:
-        status = response.status
-        content = await _read_body(response, settings)
-    return _read_envelope(status, content)
-
-
 async def _send_paid_request(url: URL, body: Mapping[str, Json], configuration: Configuration) -> tuple[int, bytes]:
     """Send one paid request once, and return its HTTP status and body.
 
     A connection that fails before the request leaves bills nothing. A connection that breaks after it may have
     billed, so the message names the logs page to check before running again.
+
+    Args:
+        url: The address the paid request goes to.
+        body: The JSON body of the request.
+        configuration: The settings and the API key of the request.
+
+    Returns:
+        The HTTP status and the body of the reply.
+
+    Raises:
+        KIEError: When the connection fails, breaks, or passes the timeout.
+
     """
     settings = configuration.settings
     headers = _build_headers(url, configuration.credential)
@@ -131,10 +188,40 @@ async def _send_paid_request(url: URL, body: Mapping[str, Json], configuration: 
     return status, content
 
 
+async def send_lookup(url: URL, configuration: Configuration) -> Json:
+    """Send one read that bills nothing, such as a model read, and return the result inside KIE's envelope.
+
+    Args:
+        url: The address to read.
+        configuration: The settings and the API key of the read.
+
+    Returns:
+        The result inside KIE's envelope.
+
+    """
+    settings = configuration.settings
+    async with _send_free_request('GET', url, settings, credential=configuration.credential) as response:
+        status = response.status
+        content = await _read_body(response, settings)
+    return _read_envelope(status, content)
+
+
 async def send_task(url: URL, body: Mapping[str, Json], configuration: Configuration) -> str:
     """Send the request that creates a task, once, and return the ID of the task.
 
     A success without a task ID may still have created the task, so the message names the logs page too.
+
+    Args:
+        url: The address that creates a task.
+        body: The JSON body that describes the task.
+        configuration: The settings and the API key that pay for the task.
+
+    Returns:
+        The ID of the task.
+
+    Raises:
+        KIEError: When the reply holds no task ID.
+
     """
     status, content = await _send_paid_request(url, body, configuration)
     reply = _read_envelope(status, content)
@@ -149,6 +236,19 @@ async def send_chat(url: URL, body: Mapping[str, Json], configuration: Configura
 
     A chat reply is not in KIE's envelope. A failure comes either as KIE's envelope with an error code, or, from Claude,
     as an error object with an HTTP status.
+
+    Args:
+        url: The address of the chat route of the model.
+        body: The chat request in the format of the model.
+        configuration: The settings and the API key that pay for the chat request.
+
+    Returns:
+        The reply, with only the fields that it sets.
+
+    Raises:
+        KIEError: When the reply cannot be read.
+        build_failure: The failure that the error code or the HTTP status of the reply names.
+
     """
     status, content = await _send_paid_request(url, body, configuration)
     try:
@@ -156,12 +256,24 @@ async def send_chat(url: URL, body: Mapping[str, Json], configuration: Configura
     except ValidationError:
         raise KIEError(ErrorCode.TRANSPORT, REPLY_UNREADABLE) from None
     if status >= HTTPStatus.MULTIPLE_CHOICES or (reply.code is not None and reply.code != SUCCESS_CODE):
-        raise build_failure(reply.code or status, reply.msg or (reply.error.message if reply.error else None))
+        raise build_failure(
+            reply.code or status, reply.envelope_message or (reply.error.message if reply.error else None)
+        )
     return reply.model_dump(by_alias=True, exclude_unset=True)
 
 
 async def send_upload(url: URL, form: aiohttp.FormData, configuration: Configuration) -> Json:
-    """Upload one file to KIE's upload host with the key, and return the result inside KIE's envelope."""
+    """Upload one file to KIE's upload host with the key, and return the result inside KIE's envelope.
+
+    Args:
+        url: The address on KIE's upload host.
+        form: The form data that holds the file.
+        configuration: The settings and the API key of the upload.
+
+    Returns:
+        The result of the upload inside KIE's envelope.
+
+    """
     settings = configuration.settings
     async with _send_free_request('POST', url, settings, credential=configuration.credential, form=form) as response:
         status = response.status
@@ -173,6 +285,17 @@ async def download_output(url: str, settings: Settings) -> bytes:
     """Download one file a task made, once, without any credential.
 
     The link may carry its own signature, so it goes out byte for byte.
+
+    Args:
+        url: The link to the file, sent as written.
+        settings: The settings that give the request timeout and the maximum download size.
+
+    Returns:
+        The bytes of the file.
+
+    Raises:
+        KIEError: When the status of the reply is not a success.
+
     """
     async with _send_free_request('GET', URL(url, encoded=True), settings, credential=None) as response:
         if response.status >= HTTPStatus.MULTIPLE_CHOICES:

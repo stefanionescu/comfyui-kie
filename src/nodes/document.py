@@ -25,7 +25,12 @@ class ChatAttachDocument(io.ComfyNode):
     @classmethod
     @override
     def define_schema(cls) -> io.Schema:
-        """List the documents of the input folder when ComfyUI builds the node definitions; the R key reads it again."""
+        """List the documents of the input folder when ComfyUI builds the node definitions; the R key reads it again.
+
+        Returns:
+            The schema of the node.
+
+        """
         return io.Schema(
             node_id=f'{NODE_PREFIX}{cls.__name__}',
             display_name='Chat: Attach Document',
@@ -49,13 +54,30 @@ class ChatAttachDocument(io.ComfyNode):
     @classmethod
     @override
     def validate_inputs(cls, **_inputs: object) -> bool:
-        """Take a file added after ComfyUI built the node definitions; the run reads the folder itself."""
+        """Take a file added after ComfyUI built the node definitions; the run reads the folder itself.
+
+        Args:
+            **_inputs: The inputs of the node, which need no check here.
+
+        Returns:
+            True, always.
+
+        """
         return True
 
     @classmethod
     @override
     def fingerprint_inputs(cls, *, file: str = '', **_inputs: object) -> str:
-        """Run again when someone edits, replaces, or removes the file."""
+        """Run again when someone edits, replaces, or removes the file.
+
+        Args:
+            file: The chosen file name.
+            **_inputs: The other inputs, which the cache key leaves out.
+
+        Returns:
+            The file name with the time of its last change and its size, or the name alone for a missing file.
+
+        """
         path = Path(folder_paths.get_annotated_filepath(file)) if file else None
         if path is None or not path.is_file():
             return file
@@ -67,7 +89,19 @@ class ChatAttachDocument(io.ComfyNode):
     async def execute(  # pyright: ignore[reportIncompatibleMethodOverride] # reason: ComfyUI calls execute with the inputs the schema declares.
         cls, *, file: str = '', documents: tuple[Document, ...] = ()
     ) -> io.NodeOutput:
-        """Read the file off the event loop and add it after the earlier documents; the node needs no key."""
+        """Read the file off the event loop and add it after the earlier documents; the node needs no key.
+
+        Args:
+            file: The chosen file name.
+            documents: The documents of the earlier nodes in the chain.
+
+        Returns:
+            The earlier documents followed by this one.
+
+        Raises:
+            KIEError: When no file is chosen.
+
+        """
         if not file:
             raise KIEError(ErrorCode.INVALID_INPUT, DOCUMENT_MISSING)
         configuration = await asyncio.to_thread(CONFIGURATION.read_configuration)

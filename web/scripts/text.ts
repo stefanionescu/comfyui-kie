@@ -1,4 +1,6 @@
-/** The text the extension's dialogs show, addressed by dotted key. */
+/**
+The text the extension's dialogs show, addressed by dotted key.
+*/
 const TEXT = {
     close: 'Close',
     settings: {
@@ -36,7 +38,9 @@ const TEXT = {
     working: 'Working...',
 } as const;
 
-/** Labels of the server's execution limits, keyed by setting name. */
+/**
+Labels of the server's execution limits, keyed by setting name.
+*/
 export const LIMIT_LABELS = new Map<string, string>([
     ['max_download_megabytes', 'Maximum download size (MB)'],
     ['max_upload_megabytes', 'Maximum upload size (MB)'],
@@ -50,11 +54,11 @@ type MessagePaths<Messages> = {
 export type MessageKey = MessagePaths<typeof TEXT>;
 
 /**
- * Read one message.
- *
- * @param key - A dotted path into the extension's text.
- * @returns The text at that path.
- */
+Read one message.
+
+@param key - A dotted path into the extension's text.
+@returns The text at that path.
+*/
 export function message(key: MessageKey): string {
     let value: unknown = TEXT;
     for (const part of key.split('.')) {

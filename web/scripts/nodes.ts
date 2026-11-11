@@ -1,4 +1,6 @@
-/** The KIE nodes whose number settings show a value on custom, and those settings, in node order. */
+/**
+The KIE nodes whose number settings show a value on custom, and those settings, in node order.
+*/
 export const dynamicControlInputs: ReadonlyMap<string, readonly string[]> = new Map([
     ['KIEImageGenerate', ['num_images', 'guidance_scale', 'num_inference_steps', 'seed']],
     ['KIEVideoGenerate', ['duration', 'seed']],

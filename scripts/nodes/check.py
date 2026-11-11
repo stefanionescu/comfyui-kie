@@ -11,7 +11,7 @@ import asyncio
 from pathlib import Path
 import tempfile
 
-from scripts.paths import HELP_DIR, REPO_ROOT, EXPORT_SCRIPT_PATH
+from scripts.paths import REPO_ROOT, HELP_FOLDER, EXPORT_SCRIPT_PATH
 from src.config.storage import ENVIRONMENT_VARIABLES
 from src.config.namespace import MENUS
 
@@ -22,7 +22,19 @@ SOCKET_ROW = re.compile(r'^\| `([a-z_.]+)` \|')
 
 
 async def _read_schema_export(interpreter: Path, environment: dict[str, str]) -> str:
-    """Run the schema script in ComfyUI's interpreter."""
+    """Run the schema script in ComfyUI's interpreter.
+
+    Args:
+        interpreter: The Python interpreter of the ComfyUI environment, which runs the script.
+        environment: The environment variables the script runs with.
+
+    Returns:
+        The text the script printed, which is the schema export.
+
+    Raises:
+        RuntimeError: When the script exits with an error.
+
+    """
     process = await asyncio.create_subprocess_exec(
         str(interpreter),
         str(EXPORT_SCRIPT_PATH),
@@ -39,7 +51,15 @@ async def _read_schema_export(interpreter: Path, environment: dict[str, str]) ->
 
 
 def _read_host_installation() -> tuple[Path, Path]:
-    """Return the ComfyUI folder and its Python interpreter."""
+    """Return the ComfyUI folder and its Python interpreter.
+
+    Returns:
+        The ComfyUI folder and the path of its Python interpreter.
+
+    Raises:
+        ValueError: When COMFYUI_PATH is not set, the folder holds no main.py, or the interpreter is not a file.
+
+    """
     chosen = os.environ.get('COMFYUI_PATH', '')
     if not chosen:
         message = 'Set COMFYUI_PATH to the ComfyUI folder that holds main.py.'
@@ -56,9 +76,17 @@ def _read_host_installation() -> tuple[Path, Path]:
 
 
 def _list_help_problems(schemas: dict[str, Schema]) -> list[str]:
-    """Check that every node has a help page naming real inputs."""
+    """Check that every node has a help page naming real inputs.
+
+    Args:
+        schemas: The description of each registered node, keyed by node ID.
+
+    Returns:
+        One message for each missing page, each page without a registered node, and each row with an unknown socket.
+
+    """
     problems: list[str] = []
-    pages = {path.stem: path for path in HELP_DIR.glob('*.md')}
+    pages = {path.stem: path for path in HELP_FOLDER.glob('*.md')}
     problems.extend(f'Add web/docs/{node_id}.md.' for node_id in schemas if node_id not in pages)
     for stem, path in sorted(pages.items()):
         schema = schemas.get(stem)
@@ -75,7 +103,12 @@ def _list_help_problems(schemas: dict[str, Schema]) -> list[str]:
 
 
 def read_schemas() -> dict[str, object]:
-    """Describe the nodes and the host nodes the workflows place."""
+    """Describe the nodes and the host nodes the workflows place.
+
+    Returns:
+        The schema export, with the registered nodes under `nodes` and the host nodes under `host`.
+
+    """
     host, interpreter = _read_host_installation()
     with tempfile.TemporaryDirectory(prefix='comfyui-kie-schema-') as state_directory:
         environment = dict(
@@ -87,7 +120,12 @@ def read_schemas() -> dict[str, object]:
 
 
 def main() -> int:
-    """Check the help pages and menus against the registered nodes."""
+    """Check the help pages and menus against the registered nodes.
+
+    Returns:
+        The exit code, which is zero only when the check found no problem.
+
+    """
     schemas = cast('dict[str, Schema]', read_schemas()['nodes'])
     problems = _list_help_problems(schemas)
     problems += [

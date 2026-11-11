@@ -1,15 +1,16 @@
 import '#web/interface.css';
+import { addNodeControls, refreshGraph } from '#web/controls';
+import { openSettings } from '#web/settings/dialog';
 import { message } from '#web/text';
+
 import { api } from '../../scripts/api.js';
 import { app } from '../../scripts/app.js';
-import { openSettings } from '#web/settings/dialog';
-import { refreshGraph, addNodeControls } from '#web/controls';
 
 /**
- * Read the language ComfyUI shows, which the server's messages follow.
- *
- * @returns A valid language tag, or English when the setting is invalid.
- */
+Read the language ComfyUI shows, which the server's messages follow.
+
+@returns A valid language tag, or English when the setting is invalid.
+*/
 function selectLocale(): string {
     const value = app.extensionManager.setting.get('Comfy.Locale');
     try {
@@ -20,12 +21,12 @@ function selectLocale(): string {
 }
 
 /**
- * Send a local request through ComfyUI, in the language ComfyUI shows.
- *
- * @param route - The path of the local settings route.
- * @param options - The request's method, headers, and body.
- * @returns The local ComfyUI response.
- */
+Send a local request through ComfyUI, in the language ComfyUI shows.
+
+@param route - The path of the local settings route.
+@param options - The request's method, headers, and body.
+@returns The local ComfyUI response.
+*/
 function requestLocal(route: string, options: RequestInit): Promise<Response> {
     const headers = new Headers(options.headers);
     headers.set('Accept-Language', selectLocale());

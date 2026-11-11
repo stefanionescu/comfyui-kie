@@ -65,6 +65,19 @@ async def _create_task(model: KIEModel, task_input: dict[str, Json], kind: Kind,
 
     A cancel cannot cut the create short. Once the request leaves, the extension waits for the reply and records the
     task, and only then lets the cancel through, so Task: Download can still collect the task.
+
+    Args:
+        model: The model that runs the task.
+        task_input: The input of the task, with every file as a link.
+        kind: The kind of node that sends the task, kept in the record.
+        wait: The task records and the configuration of the request.
+
+    Returns:
+        The saved record of the new task.
+
+    Raises:
+        asyncio.CancelledError: When a cancel arrived during the create, raised after the record is saved.
+
     """
     body: dict[str, Json] = {'model': model.entry.model, 'input': task_input}
     sending = asyncio.ensure_future(send_task(_API.with_path(ROUTES['CREATE_TASK']), body, wait.configuration))
@@ -86,7 +99,19 @@ async def _create_task(model: KIEModel, task_input: dict[str, Json], kind: Kind,
 
 
 async def _read_state(record: TaskRecord, wait: TaskWait) -> TaskState:
-    """Read the state of the task once; a task that KIE does not know deletes its record."""
+    """Read the state of the task once; a task that KIE does not know deletes its record.
+
+    Args:
+        record: The record of the task to read.
+        wait: The configuration of the request, and the task records a gone task leaves.
+
+    Returns:
+        The state KIE reports for the task.
+
+    Raises:
+        KIEError: When the lookup fails, KIE does not know the task, or the reply cannot be read.
+
+    """
     url = _API.with_path(ROUTES['RECORD_INFO']).with_query({'taskId': record.task_id})
     try:
         reply = await send_lookup(url, wait.configuration)
@@ -105,6 +130,17 @@ async def _wait_for_end(record: TaskRecord, wait: TaskWait) -> TaskState:
     """Read the state of the task every few seconds until it ends, within the request timeout.
 
     On a timeout the record stays, so Task: Download can collect the task later.
+
+    Args:
+        record: The record of the task to follow.
+        wait: The configuration that holds the request timeout, and the progress bar.
+
+    Returns:
+        The last state of the task, a success or a failure.
+
+    Raises:
+        KIEError: When the task has not ended within the request timeout.
+
     """
     seconds = wait.configuration.settings.request_timeout_seconds
     deadline = time.monotonic() + seconds
@@ -131,6 +167,20 @@ async def collect_task(
     """Wait for a recorded task to end, download the files the node decodes, and delete the record.
 
     A failed task bills nothing and deletes its record. A record older than KIE keeps files goes, unread.
+
+    Args:
+        record: The record of the task to collect.
+        tasks: The task records, which the collected task leaves.
+        download_kinds: The kinds of file to download; a file of another kind keeps only its link.
+        configuration: The settings and the key.
+        progress: The progress bar of the node, or None.
+
+    Returns:
+        The record, the result of the task, and its files.
+
+    Raises:
+        KIEError: When the record is too old, the task failed, or the result cannot be read.
+
     """
     wait = TaskWait(tasks, configuration, progress, download_kinds)
     submitted = datetime.fromisoformat(record.submitted_at)
@@ -140,7 +190,7 @@ async def collect_task(
     state = await _wait_for_end(record, wait)
     if state.state == STATES['FAIL']:
         await asyncio.to_thread(wait.tasks.delete, record.task_id)
-        raise KIEError(ErrorCode.REFUSED, TASK_FAILED.format(reason=clean_reason(state.fail_msg)))
+        raise KIEError(ErrorCode.REFUSED, TASK_FAILED.format(reason=clean_reason(state.fail_message)))
     try:
         result: Json = json.loads(state.result_json or '{}')
     except ValueError:
@@ -163,7 +213,19 @@ async def run_task(
     configuration: Configuration,
     progress: Progress,
 ) -> TaskResult:
-    """Check the request against the model, upload its files, create the task once, and collect it."""
+    """Check the request against the model, upload its files, create the task once, and collect it.
+
+    Args:
+        request: The task as the inputs of the node describe it.
+        encode: Turns a local file into the bytes to upload.
+        tasks: The task records, which keep the task until it is collected.
+        configuration: The settings and the key.
+        progress: The progress bar of the node, or None.
+
+    Returns:
+        The record, the result of the task, and its files.
+
+    """
     wait = TaskWait(tasks, configuration, progress, frozenset({cast('FileKind', request.kind)}))
     model = await read_kie_model(request.model_id, request.kind, configuration)
     values = build_input(model, request.texts, request.settings, request.arguments, request.files)

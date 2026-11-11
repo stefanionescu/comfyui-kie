@@ -42,6 +42,13 @@ def clean_reason(message: str | None) -> str:
     """Remove links and key-shaped text from KIE's reason, shorten it, and end it as a sentence.
 
     A link can be a public file address, so none stays. A message can add its next step after the reason.
+
+    Args:
+        message: The reason as KIE wrote it, or None.
+
+    Returns:
+        The cleaned reason, or a fixed text when nothing is left.
+
     """
     text = ' '.join(_KEY.sub('', _URL.sub('', message or '')).split())
     if len(text) > MAX_REASON_CHARACTERS:
@@ -52,7 +59,16 @@ def clean_reason(message: str | None) -> str:
 
 
 def build_failure(code: int, message: str | None) -> KIEError:
-    """Build the reviewed error for one KIE code, with KIE's cleaned reason where the message has room for it."""
+    """Build the reviewed error for one KIE code, with KIE's cleaned reason where the message has room for it.
+
+    Args:
+        code: The code KIE sent, or the HTTP status.
+        message: The reason as KIE wrote it, or None.
+
+    Returns:
+        The error to raise, with the category of the code.
+
+    """
     category, template = _FAILURES.get(code, (ErrorCode.TRANSPORT, SERVER_FAILED))
     text = template.format(reason=clean_reason(message), keys=PAGES['KEYS'], billing=PAGES['BILLING'])
     return KIEError(category, text)

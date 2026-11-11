@@ -19,7 +19,15 @@ from scripts.nodes.host import HostNode
 
 
 def _build_node_schema(schema: io.Schema) -> dict[str, object]:
-    """Describe the public metadata and outputs of one node, and each input with its type, widget flag, and limits."""
+    """Describe the public metadata and outputs of one node, and each input with its type, widget flag, and limits.
+
+    Args:
+        schema: The schema that the node defines.
+
+    Returns:
+        The description of the node, ready to print as JSON.
+
+    """
     inputs: list[dict[str, object]] = []
     for item in schema.inputs:
         fields = cast('dict[str, object]', item.as_dict())
@@ -42,7 +50,15 @@ def _build_node_schema(schema: io.Schema) -> dict[str, object]:
 
 
 def _build_host_schema(name: str) -> dict[str, object]:
-    """Describe a ComfyUI node by its schema or input table."""
+    """Describe a ComfyUI node by its schema or input table.
+
+    Args:
+        name: The name ComfyUI registers the node under.
+
+    Returns:
+        The inputs and outputs of the node, with its public metadata when the node defines a schema.
+
+    """
     node_class = cast('type[object]', host.NODE_CLASS_MAPPINGS[name])
     define_schema = getattr(node_class, 'define_schema', None)
     if callable(define_schema):
@@ -72,7 +88,15 @@ def _build_host_schema(name: str) -> dict[str, object]:
 
 
 def _build_registered_schemas() -> dict[str, dict[str, object]]:
-    """Describe every registered node, refusing a node ID registered twice."""
+    """Describe every registered node, refusing a node ID registered twice.
+
+    Returns:
+        The description of each registered node, keyed by node ID.
+
+    Raises:
+        ValueError: When two nodes register the same node ID.
+
+    """
     schemas: dict[str, dict[str, object]] = {}
     for node_type in NODE_TYPES:
         schema = node_type.define_schema()

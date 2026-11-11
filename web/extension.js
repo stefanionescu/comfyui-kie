@@ -1,55 +1,63 @@
-// web/scripts/text.ts
-var TEXT = {
-  close: "Close",
-  settings: {
-    clearKey: "Clear Saved Key",
-    close: "Close KIE Settings",
-    credentialLabel: "KIE API key",
-    credentials: "Credentials",
-    environmentKey: "Set by KIE_API_KEY",
-    invalidDefinition: "ComfyUI returned an invalid KIE setting definition.",
-    invalidLimit: "ComfyUI returned an invalid KIE limit.",
-    invalidResponse: "ComfyUI returned an invalid KIE settings response.",
-    keyCleared: "Saved key cleared.",
-    keyNotice: "Add a KIE API key to use the extension. Your key stays on your ComfyUI server and is sent only to KIE.",
-    keySaved: "Key saved.",
-    limits: "Request limits",
-    limitsSaved: "Limits saved.",
-    reread: "Settings loaded.",
-    reading: "Loading settings...",
-    noLimitChanges: "No limit changes to save.",
-    readOnly: "Changes are disabled in this host's multi-user mode.",
-    reload: "Reload Settings",
-    saveFailed: "ComfyUI could not save the KIE settings.",
-    saveKey: "Save Key",
-    saveLimits: "Save Limits",
-    savedKey: "Saved key",
-    title: "KIE Settings",
-    unreachable: "Cannot reach the KIE settings. Check ComfyUI and try again.",
-    unreadableResponse: "ComfyUI returned an unreadable KIE settings response.",
-    updateFailed: "The KIE settings could not be saved.",
-    readFailed: "ComfyUI could not read the KIE settings.",
-    removeFailed: "ComfyUI could not clear the saved KIE API key.",
-    menu: "KIE Settings"
-  },
-  working: "Working..."
-};
-var LIMIT_LABELS = /* @__PURE__ */ new Map([
-  ["max_download_megabytes", "Maximum download size (MB)"],
-  ["max_upload_megabytes", "Maximum upload size (MB)"],
-  ["request_timeout_seconds", "Request timeout (seconds)"]
+// web/scripts/nodes.ts
+var dynamicControlInputs = /* @__PURE__ */ new Map([
+  ["KIEImageGenerate", ["num_images", "guidance_scale", "num_inference_steps", "seed"]],
+  ["KIEVideoGenerate", ["duration", "seed"]],
+  ["KIEAudioGenerate", ["seed"]]
 ]);
-function message(key) {
-  let value = TEXT;
-  for (const part of key.split(".")) {
-    value = value[part];
-  }
-  return String(value);
-}
 
-// web/scripts/extension.ts
-import { api } from "../../scripts/api.js";
-import { app } from "../../scripts/app.js";
+// web/scripts/controls.ts
+var controlRestorers = /* @__PURE__ */ new WeakMap();
+function keepChildValue(app2, canvasNode, child, key, isRestoring) {
+  const saved = canvasNode.properties.conditionalValues;
+  if (isRestoring && saved && Object.hasOwn(saved, key)) child.value = saved[key];
+  const removed = child.onRemove?.bind(child);
+  child.onRemove = () => {
+    if (!app2.configuringGraph) {
+      canvasNode.properties.conditionalValues ??= {};
+      canvasNode.properties.conditionalValues[key] = child.value;
+    }
+    removed?.();
+  };
+}
+function preserveControlValues(app2, canvasNode, widget) {
+  const restoredWidgets = /* @__PURE__ */ new WeakSet();
+  const restoreValues = (isRestoring = false) => {
+    const selected = widget.value;
+    const children = canvasNode.widgets ?? [];
+    for (const child of children) {
+      if (!child.name.startsWith(`${widget.name}.`) || restoredWidgets.has(child)) continue;
+      restoredWidgets.add(child);
+      keepChildValue(app2, canvasNode, child, `${selected}/${child.name}`, isRestoring);
+    }
+  };
+  restoreValues();
+  return restoreValues;
+}
+function watchControl(app2, canvasNode, widget) {
+  const restoreValues = preserveControlValues(app2, canvasNode, widget);
+  const previous = widget.callback?.bind(widget);
+  widget.callback = (...args) => {
+    previous?.(...args);
+    restoreValues(true);
+    app2.canvas.onSelectionChange?.(app2.canvas.selected_nodes);
+  };
+  return restoreValues;
+}
+function addNodeControls(app2, canvasNode) {
+  const restorers = [];
+  const names = dynamicControlInputs.get(canvasNode.comfyClass ?? "") ?? [];
+  for (const name of names) {
+    const widget = canvasNode.widgets?.find((candidate) => candidate.name === name);
+    if (widget) restorers.push(watchControl(app2, canvasNode, widget));
+  }
+  controlRestorers.set(canvasNode, restorers);
+}
+function refreshGraph(app2) {
+  for (const canvasNode of app2.rootGraph.nodes) {
+    const restorers = controlRestorers.get(canvasNode) ?? [];
+    for (const restoreValues of restorers) restoreValues();
+  }
+}
 
 // web/scripts/dom.ts
 function element(tag, text) {
@@ -527,13 +535,63 @@ function safeParse(schema, input, config$1) {
 }
 
 // web/scripts/schema.ts
+var errorTextSchema = pipe(string(), minLength(1), maxLength(browserLimits.maxErrorCharacters));
 var publicErrorSchema = object({
-  error: optional(pipe(string(), minLength(1), maxLength(browserLimits.maxErrorCharacters)))
+  error: optional(errorTextSchema)
 });
 function parsePublicError(value) {
   const result = safeParse(publicErrorSchema, value);
   if (!result.success) return void 0;
   return result.output.error;
+}
+
+// web/scripts/text.ts
+var TEXT = {
+  close: "Close",
+  settings: {
+    clearKey: "Clear Saved Key",
+    close: "Close KIE Settings",
+    credentialLabel: "KIE API key",
+    credentials: "Credentials",
+    environmentKey: "Set by KIE_API_KEY",
+    invalidDefinition: "ComfyUI returned an invalid KIE setting definition.",
+    invalidLimit: "ComfyUI returned an invalid KIE limit.",
+    invalidResponse: "ComfyUI returned an invalid KIE settings response.",
+    keyCleared: "Saved key cleared.",
+    keyNotice: "Add a KIE API key to use the extension. Your key stays on your ComfyUI server and is sent only to KIE.",
+    keySaved: "Key saved.",
+    limits: "Request limits",
+    limitsSaved: "Limits saved.",
+    reread: "Settings loaded.",
+    reading: "Loading settings...",
+    noLimitChanges: "No limit changes to save.",
+    readOnly: "Changes are disabled in this host's multi-user mode.",
+    reload: "Reload Settings",
+    saveFailed: "ComfyUI could not save the KIE settings.",
+    saveKey: "Save Key",
+    saveLimits: "Save Limits",
+    savedKey: "Saved key",
+    title: "KIE Settings",
+    unreachable: "Cannot reach the KIE settings. Check ComfyUI and try again.",
+    unreadableResponse: "ComfyUI returned an unreadable KIE settings response.",
+    updateFailed: "The KIE settings could not be saved.",
+    readFailed: "ComfyUI could not read the KIE settings.",
+    removeFailed: "ComfyUI could not clear the saved KIE API key.",
+    menu: "KIE Settings"
+  },
+  working: "Working..."
+};
+var LIMIT_LABELS = /* @__PURE__ */ new Map([
+  ["max_download_megabytes", "Maximum download size (MB)"],
+  ["max_upload_megabytes", "Maximum upload size (MB)"],
+  ["request_timeout_seconds", "Request timeout (seconds)"]
+]);
+function message(key) {
+  let value = TEXT;
+  for (const part of key.split(".")) {
+    value = value[part];
+  }
+  return String(value);
 }
 
 // web/scripts/settings/schema.ts
@@ -629,16 +687,16 @@ async function requestConfiguration(fetcher, signal, route = browserRoutes.setti
 }
 
 // web/scripts/settings/dialog.ts
-var current;
+var DIALOG_CLASS = "kie-dialog";
 var SettingsDialog = class {
   /**
-   * Build settings forms without contacting KIE.
-   *
-   * @param fetcher - ComfyUI's local API client.
-   */
+      Build settings forms without contacting KIE.
+  
+      @param fetcher - ComfyUI's local API client.
+      */
   constructor(fetcher) {
     this.fetcher = fetcher;
-    this.dialog.className = "kie-dialog";
+    this.dialog.className = DIALOG_CLASS;
     this.dialog.setAttribute("aria-labelledby", "kie-settings-title");
     const heading = element("h2", message("settings.title"));
     heading.id = "kie-settings-title";
@@ -677,10 +735,10 @@ var SettingsDialog = class {
   // The last settings request; each new one waits for it, so the requests stay in order.
   pending = Promise.resolve();
   /**
-   * Build the private key form.
-   *
-   * @returns The form for saving or clearing the server's key.
-   */
+      Build the private key form.
+  
+      @returns The form for saving or clearing the server's key.
+      */
   credentials() {
     const form = element("form");
     this.keyFields.disabled = true;
@@ -710,10 +768,10 @@ var SettingsDialog = class {
     return form;
   }
   /**
-   * Build duration, timeout, and media size inputs.
-   *
-   * @returns The form for execution limits.
-   */
+      Build duration, timeout, and media size inputs.
+  
+      @returns The form for execution limits.
+      */
   limits() {
     const form = element("form");
     this.limitFields.disabled = true;
@@ -727,10 +785,10 @@ var SettingsDialog = class {
     return form;
   }
   /**
-   * Build fields from the backend's setting definitions.
-   *
-   * @param configuration - The validated limits.
-   */
+      Build fields from the backend's setting definitions.
+  
+      @param configuration - The validated limits.
+      */
   populateLimits(configuration) {
     this.limitFields.replaceChildren(element("legend", message("settings.limits")));
     for (const [name, definition] of Object.entries(configuration.definitions)) {
@@ -748,10 +806,10 @@ var SettingsDialog = class {
     this.limitFields.append(button(message("settings.saveLimits"), "submit"));
   }
   /**
-   * Save only the limits that changed after the last successful read.
-   *
-   * @param configuration - The settings and revision currently shown.
-   */
+      Save only the limits that changed after the last successful read.
+  
+      @param configuration - The settings and revision currently shown.
+      */
   saveLimits(configuration) {
     const changes = /* @__PURE__ */ new Map();
     const settings = new Map(Object.entries(configuration.settings));
@@ -768,10 +826,10 @@ var SettingsDialog = class {
     });
   }
   /**
-   * Show validated settings and apply the server's editing policy.
-   *
-   * @param configuration - The last successful server response.
-   */
+      Show validated settings and apply the server's editing policy.
+  
+      @param configuration - The last successful server response.
+      */
   display(configuration) {
     this.configuration = configuration;
     if (this.inputs.size === 0) this.populateLimits(configuration);
@@ -792,13 +850,13 @@ var SettingsDialog = class {
     if (!configuration.mutationAllowed) this.status.textContent = message("settings.readOnly");
   }
   /**
-   * Keep settings requests serial and show the server's response.
-   *
-   * @param success - The success message.
-   * @param route - The local settings route.
-   * @param method - The HTTP method.
-   * @param body - The settings change, if any.
-   */
+      Keep settings requests serial and show the server's response.
+  
+      @param success - The success message.
+      @param route - The local settings route.
+      @param method - The HTTP method.
+      @param body - The settings change, if any.
+      */
   updateSettings(success, route, method, body) {
     if (route === browserRoutes.settings.credential) this.key.value = "";
     this.keyFields.disabled = this.limitFields.disabled = true;
@@ -807,14 +865,14 @@ var SettingsDialog = class {
     this.pending = this.pending.then(() => this.requestSettings(success, route, method, body));
   }
   /**
-   * Apply the server response and restore editing after a settings request.
-   *
-   * @param success - The success message.
-   * @param route - The local settings route.
-   * @param method - The HTTP method.
-   * @param body - The settings change, if any.
-   * @returns A promise that settles after the dialog shows the response or the error.
-   */
+      Apply the server response and restore editing after a settings request.
+  
+      @param success - The success message.
+      @param route - The local settings route.
+      @param method - The HTTP method.
+      @param body - The settings change, if any.
+      @returns A promise that settles after the dialog shows the response or the error.
+      */
   async requestSettings(success, route, method, body) {
     try {
       const value = await requestConfiguration(this.fetcher, this.controller.signal, route, method, body);
@@ -831,89 +889,36 @@ var SettingsDialog = class {
       }
     }
   }
-  /** Show the dialog and read local settings. */
+  /**
+  Clear the key input, stop requests, and return focus to the caller.
+  */
+  dispose() {
+    this.key.value = "";
+    this.controller.abort();
+    this.dialog.remove();
+    if (this.previousFocus instanceof HTMLElement && this.previousFocus.isConnected) this.previousFocus.focus();
+  }
+  /**
+  Show the dialog and read local settings.
+  */
   show() {
     document.body.append(this.dialog);
     this.dialog.showModal();
     this.updateSettings(message("settings.reread"));
   }
-  /** Clear the key input, stop requests, and return focus to the caller. */
-  dispose() {
-    this.key.value = "";
-    this.controller.abort();
-    this.dialog.remove();
-    if (current === this) current = void 0;
-    if (this.previousFocus instanceof HTMLElement && this.previousFocus.isConnected) this.previousFocus.focus();
-  }
 };
 function openSettings(fetcher) {
-  if (current?.dialog.open === true) {
-    current.dialog.focus();
+  const open = document.querySelector(`dialog.${DIALOG_CLASS}[open]`);
+  if (open) {
+    open.focus();
     return;
   }
-  current = new SettingsDialog(fetcher);
-  current.show();
-}
-
-// web/scripts/nodes.ts
-var dynamicControlInputs = /* @__PURE__ */ new Map([
-  ["KIEImageGenerate", ["num_images", "guidance_scale", "num_inference_steps", "seed"]],
-  ["KIEVideoGenerate", ["duration", "seed"]],
-  ["KIEAudioGenerate", ["seed"]]
-]);
-
-// web/scripts/controls.ts
-var controlRestorers = /* @__PURE__ */ new WeakMap();
-function keepChildValue(app2, canvasNode, child, key, restore) {
-  const saved = canvasNode.properties.conditionalValues;
-  if (restore && saved && Object.hasOwn(saved, key)) child.value = saved[key];
-  const removed = child.onRemove?.bind(child);
-  child.onRemove = () => {
-    if (!app2.configuringGraph) {
-      canvasNode.properties.conditionalValues ??= {};
-      canvasNode.properties.conditionalValues[key] = child.value;
-    }
-    removed?.();
-  };
-}
-function preserveControlValues(app2, canvasNode, widget) {
-  const restoredWidgets = /* @__PURE__ */ new WeakSet();
-  const restoreValues = (restore = false) => {
-    const selected = widget.value;
-    for (const child of canvasNode.widgets ?? []) {
-      if (!child.name.startsWith(`${widget.name}.`) || restoredWidgets.has(child)) continue;
-      restoredWidgets.add(child);
-      keepChildValue(app2, canvasNode, child, `${selected}/${child.name}`, restore);
-    }
-  };
-  restoreValues();
-  return restoreValues;
-}
-function watchControl(app2, canvasNode, widget) {
-  const restoreValues = preserveControlValues(app2, canvasNode, widget);
-  const previous = widget.callback?.bind(widget);
-  widget.callback = (...args) => {
-    previous?.(...args);
-    restoreValues(true);
-    app2.canvas.onSelectionChange?.(app2.canvas.selected_nodes);
-  };
-  return restoreValues;
-}
-function addNodeControls(app2, canvasNode) {
-  const restorers = [];
-  for (const name of dynamicControlInputs.get(canvasNode.comfyClass ?? "") ?? []) {
-    const widget = canvasNode.widgets?.find((candidate) => candidate.name === name);
-    if (widget) restorers.push(watchControl(app2, canvasNode, widget));
-  }
-  controlRestorers.set(canvasNode, restorers);
-}
-function refreshGraph(app2) {
-  for (const canvasNode of app2.rootGraph.nodes) {
-    for (const restoreValues of controlRestorers.get(canvasNode) ?? []) restoreValues();
-  }
+  new SettingsDialog(fetcher).show();
 }
 
 // web/scripts/extension.ts
+import { api } from "../../scripts/api.js";
+import { app } from "../../scripts/app.js";
 function selectLocale() {
   const value = app.extensionManager.setting.get("Comfy.Locale");
   try {

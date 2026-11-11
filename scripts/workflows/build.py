@@ -8,7 +8,7 @@ import uuid
 from typing import TYPE_CHECKING, cast
 import argparse
 
-from scripts.paths import REPO_ROOT, README_PATH, EXAMPLES_DIR, SUBGRAPHS_DIR
+from scripts.paths import REPO_ROOT, README_PATH, EXAMPLES_FOLDER, SUBGRAPHS_FOLDER
 from scripts.nodes.check import read_schemas
 from src.config.namespace import MENUS
 from scripts.workflows.page.graph import NAMESPACE, Node
@@ -16,13 +16,8 @@ from scripts.workflows.page.sizes import measure, measure_note
 from scripts.workflows.page.config import NOTE, GUTTER
 from scripts.workflows.page.layout import place_stacks, place_columns
 from scripts.workflows.page.palette import Palette
-from scripts.workflows.page.serialize import (
-    encode_links,
-    encode_nodes,
-    encode_subgraph,
-    encode_blueprint,
-    read_preview_exposures,
-)
+from scripts.workflows.page.serialize import encode_links, encode_nodes
+from scripts.workflows.page.subgraphs import encode_subgraph, encode_blueprint, read_preview_exposures
 from scripts.workflows.descriptions.chat import CHAT_WORKFLOWS
 from scripts.workflows.descriptions.audio import AUDIO_WORKFLOWS
 from scripts.workflows.descriptions.image import IMAGE_WORKFLOWS
@@ -50,6 +45,14 @@ def _build_palette(export: dict[str, object], workflow: Workflow) -> Palette:
     """Build the table of every node one workflow may place.
 
     A subgraph's ID comes from its workflow and name, so two workflows can each define their own Draw.
+
+    Args:
+        export: The schema export, with the registered nodes and the host nodes.
+        workflow: The workflow whose subgraphs join the table.
+
+    Returns:
+        The node descriptions, the subgraphs of the workflow, and the ID of each subgraph.
+
     """
     schemas = cast('dict[str, dict[str, object]]', export['nodes']) | cast(
         'dict[str, dict[str, object]]', export['host']
@@ -60,7 +63,15 @@ def _build_palette(export: dict[str, object], workflow: Workflow) -> Palette:
 
 
 def _list_coverage_problems(node_ids: Iterable[str]) -> list[str]:
-    """Report every workflow the README does not link and every node no workflow places."""
+    """Report every workflow the README does not link and every node no workflow places.
+
+    Args:
+        node_ids: The IDs of the registered nodes.
+
+    Returns:
+        One message for each workflow without a link in the README and each node without a workflow.
+
+    """
     readme = README_PATH.read_text(encoding='utf-8')
     problems = [
         f'Link example_workflows/{workflow.slug}.json from README.md.'
@@ -80,6 +91,17 @@ def _build_notes(
 
     A note is as wide as the frame of its group, and every note is as tall as the tallest. The frames below the notes
     then start on one line across the groups.
+
+    Args:
+        workflow: The workflow whose groups get notes.
+        sizes: The width and height of each node, keyed by node key.
+
+    Returns:
+        The notes keyed by group title, and the width and height of each note keyed by note key.
+
+    Raises:
+        ValueError: When two groups share a title or a group has no note.
+
     """
     groups = [group for stack in workflow.stacks for group in stack]
     if len({group.title for group in groups}) != len(groups) or not all(group.note for group in groups):
@@ -104,7 +126,19 @@ def _build_notes(
 
 
 def _encode_workflow(workflow: Workflow, palette: Palette) -> Json:
-    """Serialize one workflow: a note above every group, the placed nodes, links, group frames, and subgraphs."""
+    """Serialize one workflow: a note above every group, the placed nodes, links, group frames, and subgraphs.
+
+    Args:
+        workflow: The workflow to serialize.
+        palette: The node descriptions and subgraphs the workflow may place.
+
+    Returns:
+        The workflow as the JSON ComfyUI saves.
+
+    Raises:
+        ValueError: When a node is in no group or in more than one.
+
+    """
     # A growing row of sockets shows each linked slot and one more, so the links decide the height of a node.
     targets = [end.split('.', 1) for _start, end in workflow.links]
     sizes = {
@@ -159,6 +193,16 @@ def _encode_blueprints(export: dict[str, object]) -> dict[Path, Json]:
     """Serialize every subgraph as a blueprint named after it; ComfyUI lists each by its file name.
 
     Two workflows may place the same subgraph, but two different subgraphs may not share a name.
+
+    Args:
+        export: The schema export, with the registered nodes and the host nodes.
+
+    Returns:
+        The blueprint of each subgraph, keyed by the path of its file.
+
+    Raises:
+        ValueError: When two different subgraphs share a name.
+
     """
     blueprints: dict[Path, Json] = {}
     placed: dict[str, Subgraph] = {}
@@ -169,12 +213,21 @@ def _encode_blueprints(export: dict[str, object]) -> dict[Path, Json]:
                 if placed.setdefault(subgraph.name, subgraph) != subgraph:
                     message = f'Give the subgraph {subgraph.name} in {workflow.slug} a name no other subgraph has.'
                     raise ValueError(message)
-                blueprints[SUBGRAPHS_DIR / f'{subgraph.name}.json'] = encode_blueprint(subgraph, palette, menu)
+                blueprints[SUBGRAPHS_FOLDER / f'{subgraph.name}.json'] = encode_blueprint(subgraph, palette, menu)
     return blueprints
 
 
 def _find_file_problem(path: Path, content: Json) -> str | None:
-    """Say whether a shipped file matches its build."""
+    """Say whether a shipped file matches its build.
+
+    Args:
+        path: The path of the shipped file.
+        content: The JSON the build made for the file.
+
+    Returns:
+        A message that names the command to build the file, or None when the file matches.
+
+    """
     if not path.is_file():
         return f'Build {path.relative_to(REPO_ROOT)} with mise run workflows.'
     is_same = json.loads(path.read_text(encoding='utf-8')) == content
@@ -182,19 +235,24 @@ def _find_file_problem(path: Path, content: Json) -> str | None:
 
 
 def main() -> int:
-    """Build every workflow and subgraph blueprint, or report the shipped files that differ."""
+    """Build every workflow and subgraph blueprint, or report the shipped files that differ.
+
+    Returns:
+        The exit code, which is zero only when the run found no problem.
+
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', action='store_true')
     arguments = parser.parse_args()
     export = read_schemas()
     outputs: dict[Path, Json] = {
-        EXAMPLES_DIR / f'{workflow.slug}.json': _encode_workflow(workflow, _build_palette(export, workflow))
+        EXAMPLES_FOLDER / f'{workflow.slug}.json': _encode_workflow(workflow, _build_palette(export, workflow))
         for workflow in WORKFLOWS
     }
     outputs |= _encode_blueprints(export)
     problems = [
         f'Remove or describe {path.relative_to(REPO_ROOT)}.'
-        for folder in (EXAMPLES_DIR, SUBGRAPHS_DIR)
+        for folder in (EXAMPLES_FOLDER, SUBGRAPHS_FOLDER)
         for path in folder.glob('*.json')
         if path not in outputs
     ]

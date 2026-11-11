@@ -78,14 +78,30 @@ _TEXT_INPUTS = (
 
 
 def _build_outputs(result: ChatResult, history: Conversation, prompt: str) -> io.NodeOutput:
-    """Return the answer and the reasoning, and extend the conversation with the words of this exchange."""
+    """Return the answer and the reasoning, and extend the conversation with the words of this exchange.
+
+    Args:
+        result: The answer and the reasoning of the model.
+        history: The turns before this exchange.
+        prompt: The question of this exchange.
+
+    Returns:
+        The text, the reasoning or a blocker when the model gave none, and the longer conversation.
+
+    """
     turns = (*history.turns, Turn('user', prompt), Turn('assistant', result.text))
     reasoning: object = result.reasoning or ExecutionBlocker(None)
     return io.NodeOutput(result.text, reasoning, Conversation(turns))
 
 
 class ChatAsk(PaidNode):
-    """Send one chat request and return the answer, the reasoning, and the conversation."""
+    """Send one chat request and return the answer, the reasoning, and the conversation.
+
+    Attributes:
+        kind: The kind of model the node asks, which is chat.
+        list_inputs: The inputs that arrive as lists of several items, which is the images.
+
+    """
 
     kind = 'chat'
     list_inputs = frozenset({'images'})
@@ -93,7 +109,12 @@ class ChatAsk(PaidNode):
     @classmethod
     @override
     def define_schema(cls) -> io.Schema:
-        """List the model, the conversation, the documents, the images, the effort, the run number, and the text."""
+        """List the model, the conversation, the documents, the images, the effort, the run number, and the text.
+
+        Returns:
+            The schema of the node.
+
+        """
         return io.Schema(
             node_id=f'{NODE_PREFIX}{cls.__name__}',
             display_name=KIND_NODES['chat'],
@@ -130,7 +151,13 @@ class ChatAsk(PaidNode):
     @classmethod
     @override
     def check(cls, model: KIEModel, inputs: dict[str, object]) -> None:
-        """Check the effort and the text boxes that the workflow sets, against the format of the model."""
+        """Check the effort and the text boxes that the workflow sets, against the format of the model.
+
+        Args:
+            model: The chat model the node asks.
+            inputs: The inputs of the node by name; one fed by a link is missing.
+
+        """
         texts = {name: value if isinstance(value := inputs.get(name), str) else None for name in _TEXTS}
         effort = inputs.get('reasoning_effort')
         parse_chat(model, texts, effort if isinstance(effort, str) else None, ())
@@ -138,7 +165,16 @@ class ChatAsk(PaidNode):
     @classmethod
     @override
     async def send(cls, node_id: str | None, **inputs: object) -> io.NodeOutput:
-        """Ask the question once with the earlier turns, the documents, and every frame of every connected batch."""
+        """Ask the question once with the earlier turns, the documents, and every frame of every connected batch.
+
+        Args:
+            node_id: The ID of the node, or None for a direct call.
+            **inputs: Every saved input of the node by name, except the run number.
+
+        Returns:
+            The answer, the reasoning, and the conversation.
+
+        """
         history = cast('Conversation | None', inputs.get('conversation')) or Conversation(())
         batches = cast('list[torch.Tensor] | None', inputs.get('images')) or []
         request = ChatRequest(

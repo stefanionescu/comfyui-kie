@@ -1,4 +1,4 @@
-# KIE Advanced Guide
+# KIE advanced guide
 
 Use this guide for model settings, chat capabilities, media, and task recovery.
 For installation, see the [README](README.md). Node help covers

@@ -1,4 +1,4 @@
-# Chat: Attach Document
+# Chat: attach document
 
 Attaches a PDF or text file from the input folder of ComfyUI to **Chat: Ask**.
 Chain several of these nodes to attach several files.

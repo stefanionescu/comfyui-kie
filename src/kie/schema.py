@@ -27,14 +27,35 @@ _LINK_ENDINGS = ('_url', '_urls')
 
 
 def _find_component(reference: str, components: Mapping[str, Json]) -> Json:
-    """Find the component a reference names; KIE escapes characters in its names, and some end in a space."""
+    """Find the component a reference names; KIE escapes characters in its names, and some end in a space.
+
+    Args:
+        reference: The reference that names the component.
+        components: The components by name.
+
+    Returns:
+        The component, or None when no name matches.
+
+    """
     name = unquote(reference.rsplit('/', 1)[-1]).replace('~1', '/').replace('~0', '~')
     matches = (value for key, value in components.items() if key.strip() == name.strip())
     return next(matches, None)
 
 
-def _resolve(schema: Json, components: Mapping[str, Json]) -> dict[str, Json]:
-    """Follow a schema's references to the schema itself; its own keys stay over the component's."""
+def _follow_references(schema: Json, components: Mapping[str, Json]) -> dict[str, Json]:
+    """Follow a schema's references to the schema itself; its own keys stay over the component's.
+
+    Args:
+        schema: The schema to follow. A value that is not an object counts as an empty schema.
+        components: The components that the references point to.
+
+    Returns:
+        The schema with no reference left.
+
+    Raises:
+        KIEError: When the references go on past the limit of steps.
+
+    """
     resolved = schema if isinstance(schema, dict) else {}
     for _ in range(MAX_REFERENCES):
         reference = resolved.get('$ref')
@@ -47,17 +68,35 @@ def _resolve(schema: Json, components: Mapping[str, Json]) -> dict[str, Json]:
 
 
 def _list_branches(schema: dict[str, Json], components: Mapping[str, Json]) -> list[dict[str, Json]]:
-    """List the schema's alternatives, each resolved; a schema without any gives none."""
+    """List the schema's alternatives, each resolved; a schema without any gives none.
+
+    Args:
+        schema: The schema whose alternatives are listed.
+        components: The components that the references of each alternative name.
+
+    Returns:
+        The resolved alternatives.
+
+    """
     branches: list[dict[str, Json]] = []
     for key in _BRANCH_KEYS:
         options = schema.get(key)
         if isinstance(options, list):
-            branches.extend(_resolve(option, components) for option in options)
+            branches.extend(_follow_references(option, components) for option in options)
     return branches
 
 
 def _read_types(schema: dict[str, Json], components: Mapping[str, Json]) -> tuple[str, ...]:
-    """Read a field's JSON types, from its type or from its alternatives, without null."""
+    """Read a field's JSON types, from its type or from its alternatives, without null.
+
+    Args:
+        schema: The schema of the field.
+        components: The components that the references of the alternatives name.
+
+    Returns:
+        The names of the JSON types, each one once.
+
+    """
     declared = schema.get('type')
     if isinstance(declared, str):
         return (declared,)
@@ -68,9 +107,20 @@ def _read_types(schema: dict[str, Json], components: Mapping[str, Json]) -> tupl
 
 
 def _read_field(name: str, schema: dict[str, Json], *, required: bool, components: Mapping[str, Json]) -> ModelField:
-    """Describe one input from its schema."""
+    """Describe one input from its schema.
+
+    Args:
+        name: The name of the input.
+        schema: The resolved schema of the input.
+        required: Whether the model requires the input.
+        components: The components that the references of the items and the alternatives name.
+
+    Returns:
+        The description of the input.
+
+    """
     types = _read_types(schema, components)
-    items = _resolve(schema.get('items'), components)
+    items = _follow_references(schema.get('items'), components)
     is_list = 'array' in types
     choices = schema.get('enum')
     max_items = schema.get('maxItems')
@@ -101,6 +151,14 @@ def _read_fields(schema: dict[str, Json], components: Mapping[str, Json]) -> tup
     """Describe every input of an object schema, its alternatives' inputs included.
 
     The model requires an input that every alternative requires. The order is the schema's own order of its fields.
+
+    Args:
+        schema: The object schema to read.
+        components: The components that the references of each input name.
+
+    Returns:
+        The description of every input.
+
     """
     branches = _list_branches(schema, components)
     properties: dict[str, Json] = dict(cast('dict[str, Json]', schema.get('properties') or {}))
@@ -117,13 +175,21 @@ def _read_fields(schema: dict[str, Json], components: Mapping[str, Json]) -> tup
     if branch_required:
         required |= branch_required[0].intersection(*branch_required[1:])
     return tuple(
-        _read_field(name, _resolve(value, components), required=name in required, components=components)
+        _read_field(name, _follow_references(value, components), required=name in required, components=components)
         for name, value in properties.items()
     )
 
 
 def _choose_format(route: str) -> ModelFormat | None:
-    """Choose how the extension calls a model from its route; None for a route the extension does not use."""
+    """Choose how the extension calls a model from its route; None for a route the extension does not use.
+
+    Args:
+        route: The route the model posts to.
+
+    Returns:
+        The name of the format, or None.
+
+    """
     if route == JOB_ROUTE:
         return 'job'
     return next((cast('ModelFormat', name) for ending, name in CHAT_FORMATS.items() if route.endswith(ending)), None)
@@ -133,17 +199,28 @@ def parse_model(entry: CatalogEntry, document: Json) -> KIEModel:
     """Describe one model from its catalog entry and the schema reply that holds its OpenAPI document.
 
     A job model's inputs are the fields of its input object; a chat model's are its request's top-level fields.
+
+    Args:
+        entry: The catalog entry of the model.
+        document: The schema reply for the model.
+
+    Returns:
+        The description of the model.
+
+    Raises:
+        KIEError: When the reply holds no OpenAPI document, or its references cannot be followed.
+
     """
     openapi = document.get('openapi') if isinstance(document, dict) else None
     if not isinstance(openapi, dict):
         raise KIEError(ErrorCode.INVALID_INPUT, MODEL_NO_SCHEMA.format(model=entry.model))
-    components = cast('dict[str, Json]', _resolve(openapi.get('components'), {}).get('schemas') or {})
+    components = cast('dict[str, Json]', _follow_references(openapi.get('components'), {}).get('schemas') or {})
     route, operation = _find_route(cast('dict[str, Json]', openapi.get('paths') or {}))
-    body = _resolve(_find_body(operation.get('post')), components)
+    body = _follow_references(_find_body(operation.get('post')), components)
     model_format = _choose_format(route)
     kinds = {TASK_TYPE_KINDS[task_type] for task_type in entry.task_types if task_type in TASK_TYPE_KINDS}
     target = (
-        _resolve(cast('dict[str, Json]', body.get('properties') or {}).get('input'), components)
+        _follow_references(cast('dict[str, Json]', body.get('properties') or {}).get('input'), components)
         if model_format == 'job'
         else body
     )
@@ -157,7 +234,15 @@ def parse_model(entry: CatalogEntry, document: Json) -> KIEModel:
 
 
 def _find_route(paths: dict[str, Json]) -> tuple[str, dict[str, Json]]:
-    """Find the route a model posts to, and its operations; a document without one gives an empty route."""
+    """Find the route a model posts to, and its operations; a document without one gives an empty route.
+
+    Args:
+        paths: The paths of the OpenAPI document.
+
+    Returns:
+        The route, then its operations.
+
+    """
     for path, item in paths.items():
         if isinstance(item, dict) and 'post' in item:
             return path, item
@@ -165,7 +250,15 @@ def _find_route(paths: dict[str, Json]) -> tuple[str, dict[str, Json]]:
 
 
 def _find_body(operation: Json) -> Json:
-    """Find the JSON schema of an operation's request body; None when it has none."""
+    """Find the JSON schema of an operation's request body; None when it has none.
+
+    Args:
+        operation: The post operation of the route. A value that is not an object has no body.
+
+    Returns:
+        The schema of the JSON body, or None.
+
+    """
     body = operation.get('requestBody') if isinstance(operation, dict) else None
     content = body.get('content') if isinstance(body, dict) else None
     media = content.get('application/json') if isinstance(content, dict) else None

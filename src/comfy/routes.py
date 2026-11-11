@@ -16,7 +16,12 @@ _EXTENSION_ROOT = Path(__file__).resolve().parents[2]
 
 
 def register_routes() -> None:
-    """Refuse a state folder inside ComfyUI or the extension, then register every local route."""
+    """Refuse a state folder inside ComfyUI or the extension, then register every local route.
+
+    Raises:
+        KIEError: When the private state folder is inside a folder that ComfyUI serves, or inside the extension.
+
+    """
     directory = CONFIGURATION.directory.resolve()
     public_roots = (
         folder_paths.base_path,

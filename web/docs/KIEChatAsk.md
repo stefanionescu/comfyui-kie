@@ -1,4 +1,4 @@
-# Chat: Ask
+# Chat: ask
 
 Asks a KIE chat model a question. Images and documents go along when the
 model reads them. Returns the answer, the reasoning of the model, and the

@@ -36,7 +36,16 @@ _KINDS: frozenset[FileKind] = frozenset({'image', 'video', 'audio'})
 
 
 async def _download_task(task_id: str, node_id: str | None) -> io.NodeOutput:
-    """Read the task's record, wait for the task, and download every file any output can show."""
+    """Read the task's record, wait for the task, and download every file any output can show.
+
+    Args:
+        task_id: The ID of the recorded task.
+        node_id: The ID of the node that owns the progress bar, or None for a direct call.
+
+    Returns:
+        The media of the task, its files, and its result.
+
+    """
     record = await asyncio.to_thread(TASKS.read, task_id)
     output_ids = tuple(output.id for output in _OUTPUTS if output.id is not None)
     run = partial(collect_task, record, TASKS, _KINDS)
@@ -52,7 +61,12 @@ class TaskDownload(io.ComfyNode):
     @classmethod
     @override
     def define_schema(cls) -> io.Schema:
-        """List the recorded tasks when ComfyUI builds the node definitions; the R key reads them again."""
+        """List the recorded tasks when ComfyUI builds the node definitions; the R key reads them again.
+
+        Returns:
+            The schema of the node.
+
+        """
         return io.Schema(
             node_id=f'{NODE_PREFIX}{cls.__name__}',
             display_name='Task: Download',
@@ -76,13 +90,31 @@ class TaskDownload(io.ComfyNode):
         """Take a task recorded after ComfyUI built the node definitions, as long as the label starts with its ID.
 
         ComfyUI skips its own list check only for the inputs this method takes as extra keywords.
+
+        Args:
+            **inputs: The inputs of the node by name; only the task label is read.
+
+        Returns:
+            True for a label that starts with a task ID, or the message of the refusal.
+
         """
         return True if _TASK_ID.match(str(inputs.get('task', '')).split(' ', 1)[0]) else TASK_UNKNOWN
 
     @classmethod
     @override
     async def execute(cls, *, task: str = '') -> io.NodeOutput:  # pyright: ignore[reportIncompatibleMethodOverride] # reason: ComfyUI calls execute with the inputs the schema declares.
-        """Collect the chosen task in an owned task, so ComfyUI's cancel stops the wait and keeps the record."""
+        """Collect the chosen task in an owned task, so ComfyUI's cancel stops the wait and keeps the record.
+
+        Args:
+            task: The chosen label, which starts with the task ID.
+
+        Returns:
+            The media of the task, its files, and its result.
+
+        Raises:
+            KIEError: When the label starts with no task ID.
+
+        """
         task_id = task.split(' ', 1)[0]
         if _TASK_ID.match(task_id) is None:
             raise KIEError(ErrorCode.INVALID_INPUT, TASK_UNKNOWN)

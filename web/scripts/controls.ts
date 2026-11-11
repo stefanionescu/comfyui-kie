@@ -1,35 +1,45 @@
-import { dynamicControlInputs } from '#web/nodes';
 import type { ComfyApp } from '@comfyorg/comfyui-frontend-types';
+
+import { dynamicControlInputs } from '#web/nodes';
 
 type HostNode = ComfyApp['rootGraph']['nodes'][number];
 type HostWidget = NonNullable<HostNode['widgets']>[number];
 
-/** A widget of ComfyUI, with the removal hook the published types do not describe. */
+/**
+A widget of ComfyUI, with the removal hook the published types do not describe.
+*/
 type Widget = HostWidget & { onRemove?: () => void };
 
-/** A node of ComfyUI, with the custom values its dropdowns keep while they are on default. */
+/**
+A node of ComfyUI, with the custom values its dropdowns keep while they are on default.
+*/
 type CanvasNode = HostNode & {
     widgets?: Widget[];
     properties: HostNode['properties'] & { conditionalValues?: Record<string, Widget['value']> };
 };
 
-const controlRestorers = new WeakMap<CanvasNode, ((restore?: boolean) => void)[]>();
+/**
+A callback that watches the widgets of the current option, and puts their saved values back when asked.
+*/
+type Restorer = (isRestoring?: boolean) => void;
+
+const controlRestorers = new WeakMap<CanvasNode, Restorer[]>();
 
 /**
- * Restore the value a child widget held under the current option, and save its value when the option leaves.
- *
- * Checked on frontend 1.49.6: ComfyUI resets a child widget to its default when its option returns.
- *
- * @param app - The ComfyUI app.
- * @param canvasNode - The node that owns the dropdown.
- * @param child - A widget the current option shows.
- * @param key - The current option and the name of the child, joined by a slash.
- * @param restore - Whether to put the saved value back.
- */
-function keepChildValue(app: ComfyApp, canvasNode: CanvasNode, child: Widget, key: string, restore: boolean): void {
+Restore the value a child widget held under the current option, and save its value when the option leaves.
+
+Checked on frontend 1.49.6: ComfyUI resets a child widget to its default when its option returns.
+
+@param app - The ComfyUI app.
+@param canvasNode - The node that owns the dropdown.
+@param child - A widget the current option shows.
+@param key - The current option and the name of the child, joined by a slash.
+@param isRestoring - Whether to put the saved value back.
+*/
+function keepChildValue(app: ComfyApp, canvasNode: CanvasNode, child: Widget, key: string, isRestoring: boolean): void {
     const saved = canvasNode.properties.conditionalValues;
 
-    if (restore && saved && Object.hasOwn(saved, key)) child.value = saved[key];
+    if (isRestoring && saved && Object.hasOwn(saved, key)) child.value = saved[key];
     const removed = child.onRemove?.bind(child);
     child.onRemove = () => {
         if (!app.configuringGraph) {
@@ -42,21 +52,22 @@ function keepChildValue(app: ComfyApp, canvasNode: CanvasNode, child: Widget, ke
 }
 
 /**
- * Keep the values of the widgets a dropdown hides, in the properties of the node.
- *
- * @param app - The ComfyUI app.
- * @param canvasNode - The node that owns the dropdown.
- * @param widget - The dynamic dropdown.
- * @returns A callback that restores the widgets of the current option and watches new ones.
- */
-function preserveControlValues(app: ComfyApp, canvasNode: CanvasNode, widget: Widget): (restore?: boolean) => void {
+Keep the values of the widgets a dropdown hides, in the properties of the node.
+
+@param app - The ComfyUI app.
+@param canvasNode - The node that owns the dropdown.
+@param widget - The dynamic dropdown.
+@returns A callback that restores the widgets of the current option and watches new ones.
+*/
+function preserveControlValues(app: ComfyApp, canvasNode: CanvasNode, widget: Widget): Restorer {
     const restoredWidgets = new WeakSet<Widget>();
-    const restoreValues = (restore = false): void => {
+    const restoreValues: Restorer = (isRestoring = false) => {
         const selected = widget.value as string;
-        for (const child of canvasNode.widgets ?? []) {
+        const children = canvasNode.widgets ?? [];
+        for (const child of children) {
             if (!child.name.startsWith(`${widget.name}.`) || restoredWidgets.has(child)) continue;
             restoredWidgets.add(child);
-            keepChildValue(app, canvasNode, child, `${selected}/${child.name}`, restore);
+            keepChildValue(app, canvasNode, child, `${selected}/${child.name}`, isRestoring);
         }
     };
     restoreValues();
@@ -64,14 +75,14 @@ function preserveControlValues(app: ComfyApp, canvasNode: CanvasNode, widget: Wi
 }
 
 /**
- * Restore the hidden values of a dropdown whenever its option changes, and redraw the Parameters panel.
- *
- * @param app - The ComfyUI app.
- * @param canvasNode - The node that owns the dropdown.
- * @param widget - The dynamic dropdown.
- * @returns The callback that restores the current option of this dropdown.
- */
-function watchControl(app: ComfyApp, canvasNode: CanvasNode, widget: Widget): (restore?: boolean) => void {
+Restore the hidden values of a dropdown whenever its option changes, and redraw the Parameters panel.
+
+@param app - The ComfyUI app.
+@param canvasNode - The node that owns the dropdown.
+@param widget - The dynamic dropdown.
+@returns The callback that restores the current option of this dropdown.
+*/
+function watchControl(app: ComfyApp, canvasNode: CanvasNode, widget: Widget): Restorer {
     const restoreValues = preserveControlValues(app, canvasNode, widget);
     const previous = widget.callback?.bind(widget);
     widget.callback = (...args) => {
@@ -85,14 +96,15 @@ function watchControl(app: ComfyApp, canvasNode: CanvasNode, widget: Widget): (r
 }
 
 /**
- * Keep the custom values of a new node across its option changes.
- *
- * @param app - The ComfyUI app.
- * @param canvasNode - The node ComfyUI created.
- */
+Keep the custom values of a new node across its option changes.
+
+@param app - The ComfyUI app.
+@param canvasNode - The node ComfyUI created.
+*/
 export function addNodeControls(app: ComfyApp, canvasNode: CanvasNode): void {
-    const restorers: ((restore?: boolean) => void)[] = [];
-    for (const name of dynamicControlInputs.get(canvasNode.comfyClass ?? '') ?? []) {
+    const restorers: Restorer[] = [];
+    const names = dynamicControlInputs.get(canvasNode.comfyClass ?? '') ?? [];
+    for (const name of names) {
         const widget = canvasNode.widgets?.find((candidate) => candidate.name === name);
         if (widget) restorers.push(watchControl(app, canvasNode, widget));
     }
@@ -100,12 +112,13 @@ export function addNodeControls(app: ComfyApp, canvasNode: CanvasNode): void {
 }
 
 /**
- * Watch the custom values of every node after ComfyUI loads a graph.
- *
- * @param app - The ComfyUI app.
- */
+Watch the custom values of every node after ComfyUI loads a graph.
+
+@param app - The ComfyUI app.
+*/
 export function refreshGraph(app: ComfyApp): void {
     for (const canvasNode of app.rootGraph.nodes) {
-        for (const restoreValues of controlRestorers.get(canvasNode) ?? []) restoreValues();
+        const restorers = controlRestorers.get(canvasNode) ?? [];
+        for (const restoreValues of restorers) restoreValues();
     }
 }

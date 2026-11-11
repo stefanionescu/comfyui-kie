@@ -45,7 +45,16 @@ if TYPE_CHECKING:
 
 
 def _build_encoded(content: bytes, kind: Literal['image', 'mask', 'audio', 'video']) -> EncodedFile:
-    """Name an encoded file by its kind and the start of its digest, with the content type of its kind."""
+    """Name an encoded file by its kind and the start of its digest, with the content type of its kind.
+
+    Args:
+        content: The encoded bytes of the file.
+        kind: The kind of media, which sets the extension and the content type.
+
+    Returns:
+        The bytes with their content type, file name, and digest.
+
+    """
     digest = hashlib.sha256(content).hexdigest()
     encoded = ENCODED_FORMATS[kind]
     file_name = f'{kind}-{digest[:DIGEST_CHARACTERS]}.{encoded["EXTENSION"]}'
@@ -53,7 +62,18 @@ def _build_encoded(content: bytes, kind: Literal['image', 'mask', 'audio', 'vide
 
 
 def _encode_image(frame: torch.Tensor) -> EncodedFile:
-    """Encode one image frame as lossless WebP at its own pixels, and refuse one that KIE cannot read."""
+    """Encode one image frame as lossless WebP at its own pixels, and refuse one that KIE cannot read.
+
+    Args:
+        frame: One image as height, width, and three or four channels.
+
+    Returns:
+        The frame as a WebP file.
+
+    Raises:
+        KIEError: When the frame has another shape, holds a value that is not finite, or cannot be written.
+
+    """
     if frame.ndim != IMAGE_TENSOR['DIMENSIONS'] - 1 or frame.shape[-1] not in {
         IMAGE_TENSOR['RGB_CHANNELS'],
         IMAGE_TENSOR['RGBA_CHANNELS'],
@@ -72,7 +92,18 @@ def _encode_image(frame: torch.Tensor) -> EncodedFile:
 
 
 def _encode_mask(frame: torch.Tensor) -> EncodedFile:
-    """Encode one mask frame as a one-channel PNG, where a mask value of 1 is white."""
+    """Encode one mask frame as a one-channel PNG, where a mask value of 1 is white.
+
+    Args:
+        frame: One mask as height and width.
+
+    Returns:
+        The frame as a PNG file.
+
+    Raises:
+        KIEError: When the frame has another shape, holds a value that is not finite, or cannot be written.
+
+    """
     if frame.ndim != MASK_TENSOR['FRAME_DIMENSIONS']:
         raise KIEError(ErrorCode.INVALID_INPUT, MASK_SHAPE)
     if not bool(torch.isfinite(frame).all()):
@@ -85,7 +116,18 @@ def _encode_mask(frame: torch.Tensor) -> EncodedFile:
 
 
 def _encode_audio(audio: Input.Audio) -> EncodedFile:
-    """Encode one audio clip as a 16-bit WAV, which keeps every sample."""
+    """Encode one audio clip as a 16-bit WAV, which keeps every sample.
+
+    Args:
+        audio: The waveform of one clip and its sample rate.
+
+    Returns:
+        The clip as a WAV file.
+
+    Raises:
+        KIEError: When the clip holds no samples, or cannot be written.
+
+    """
     waveform = audio['waveform']
     if waveform.shape[-1] == 0:
         raise KIEError(ErrorCode.INVALID_INPUT, AUDIO_EMPTY)
@@ -102,7 +144,18 @@ def _encode_audio(audio: Input.Audio) -> EncodedFile:
 
 
 def _encode_video(video: Input.Video) -> EncodedFile:
-    """Write a ComfyUI video as MP4 in memory, keeping the streams of an MP4 source as they are."""
+    """Write a ComfyUI video as MP4 in memory, keeping the streams of an MP4 source as they are.
+
+    Args:
+        video: The video ComfyUI holds.
+
+    Returns:
+        The video as an MP4 file.
+
+    Raises:
+        KIEError: When ComfyUI cannot write the video.
+
+    """
     buffer = io.BytesIO()
     try:
         video.save_to(buffer, format=Types.VideoContainer.MP4, codec=Types.VideoCodec.AUTO)  # pyright: ignore[reportUnknownMemberType] # reason: ComfyUI types its metadata parameter as a bare dict.
@@ -112,7 +165,15 @@ def _encode_video(video: Input.Video) -> EncodedFile:
 
 
 def encode_local_file(file: KIEFile) -> EncodedFile:
-    """Encode one local file from File: Add, which holds one image or mask frame, one audio clip, or one video."""
+    """Encode one local file from File: Add, which holds one image or mask frame, one audio clip, or one video.
+
+    Args:
+        file: The local file, whose kind says how to read its media.
+
+    Returns:
+        The file as bytes KIE can read, ready to upload.
+
+    """
     media = file.media
     if file.kind == 'image':
         return _encode_image(cast('torch.Tensor', media))
@@ -127,6 +188,16 @@ def decode_images(contents: Sequence[bytes]) -> tuple[tuple[torch.Tensor, ...], 
     """Read each image as pixels [1, H, W, 3] and its mask [1, H, W], where the mask is 1 minus alpha.
 
     An opaque image gets a mask of zeros, so the masks pair with the images by index.
+
+    Args:
+        contents: The downloaded bytes of each image.
+
+    Returns:
+        The pixels of every image, then the mask of every image, in the order given.
+
+    Raises:
+        KIEError: When an image cannot be read.
+
     """
     pixels: list[torch.Tensor] = []
     masks: list[torch.Tensor] = []
@@ -145,7 +216,18 @@ def decode_images(contents: Sequence[bytes]) -> tuple[tuple[torch.Tensor, ...], 
 
 
 def decode_video(content: bytes) -> Input.Video:
-    """Read a video from memory, and its size once, so an unreadable file fails here and not in Save Video."""
+    """Read a video from memory, and its size once, so an unreadable file fails here and not in Save Video.
+
+    Args:
+        content: The downloaded bytes of the video.
+
+    Returns:
+        The video as ComfyUI holds it.
+
+    Raises:
+        KIEError: When the video cannot be read.
+
+    """
     try:
         video = InputImpl.VideoFromFile(io.BytesIO(content))
         video.get_dimensions()
@@ -155,7 +237,18 @@ def decode_video(content: bytes) -> Input.Video:
 
 
 def decode_audio(content: bytes) -> Input.Audio:
-    """Read any common audio container as ComfyUI audio: a waveform [1, C, T] and its sample rate."""
+    """Read any common audio container as ComfyUI audio: a waveform [1, C, T] and its sample rate.
+
+    Args:
+        content: The downloaded bytes of the audio.
+
+    Returns:
+        The waveform and its sample rate.
+
+    Raises:
+        KIEError: When the audio cannot be read.
+
+    """
     try:
         audio = cast('Input.Audio', cast('object', audio_bytes_to_audio_input(content)))
     except Exception:  # noqa: BLE001 # reason: ComfyUI's helper raises unrelated exception types; one reviewed message replaces them.

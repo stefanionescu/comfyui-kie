@@ -1,4 +1,4 @@
-# Audio: Generate
+# Audio: generate
 
 Runs any KIE model that makes audio: speech, music, and sound effects. It
 outputs every audio file and the link of every file the model made.

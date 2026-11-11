@@ -41,7 +41,7 @@ class TaskState(Reply):
         state: waiting, queuing, generating, success, or fail.
         result_json: The result as JSON text once the task succeeds; KIE names it resultJson.
         fail_code: KIE's code for a failed task; KIE names it failCode.
-        fail_msg: KIE's reason for a failed task; KIE names it failMsg.
+        fail_message: KIE's reason for a failed task; KIE names it failMsg.
 
     """
 
@@ -49,7 +49,7 @@ class TaskState(Reply):
     state: str
     result_json: str | None = Field(default=None, alias='resultJson')
     fail_code: str | None = Field(default=None, alias='failCode')
-    fail_msg: str | None = Field(default=None, alias='failMsg')
+    fail_message: str | None = Field(default=None, alias='failMsg')
 
 
 @dataclass(frozen=True, slots=True)

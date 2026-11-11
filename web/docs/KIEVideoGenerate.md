@@ -1,4 +1,4 @@
-# Video: Generate
+# Video: generate
 
 Runs any KIE model that makes a video: from text, from a first frame, from
 reference images, video, and voice clips, and lip sync and upscaling. It

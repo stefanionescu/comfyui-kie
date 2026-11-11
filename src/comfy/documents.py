@@ -13,7 +13,12 @@ from ..config.messages.chat import DOCUMENT_KIND, DOCUMENT_SIZE, DOCUMENT_OUTSID
 
 
 def list_documents() -> list[str]:
-    """List the document files directly inside the input folder by name, as the file nodes of ComfyUI do."""
+    """List the document files directly inside the input folder by name, as the file nodes of ComfyUI do.
+
+    Returns:
+        The file names, sorted; none when the input folder is missing.
+
+    """
     folder = Path(folder_paths.get_input_directory())
     if not folder.is_dir():
         return []
@@ -25,6 +30,17 @@ def read_document(name: str, max_megabytes: int) -> Document:
 
     ComfyUI refuses a name that leads out of its input folder with its own error, which becomes the same refusal as a
     file outside it.
+
+    Args:
+        name: The file name as the node holds it.
+        max_megabytes: The largest file the node reads, in megabytes.
+
+    Returns:
+        The document, with its name and media type.
+
+    Raises:
+        KIEError: When the file is outside the input folder, is no document type, is too large, or is not UTF-8 text.
+
     """
     folder = Path(folder_paths.get_input_directory()).resolve()
     try:

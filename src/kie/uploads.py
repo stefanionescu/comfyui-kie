@@ -33,7 +33,21 @@ if TYPE_CHECKING:
 async def _link_file(
     file: KIEFile, encode: Callable[[KIEFile], EncodedFile], links: dict[str, str], configuration: Configuration
 ) -> str:
-    """Return a file's link: its own, or the link of its upload; links holds this request's uploads by digest."""
+    """Return a file's link: its own, or the link of its upload; links holds this request's uploads by digest.
+
+    Args:
+        file: The file an input of the task names.
+        encode: Turns a local file into the bytes to upload.
+        links: The links of the files this request uploaded, by digest; a new upload is added.
+        configuration: The settings that hold the upload limit, and the key.
+
+    Returns:
+        The link KIE reads the file from.
+
+    Raises:
+        KIEError: When the file is over the upload limit, or the reply to the upload cannot be read.
+
+    """
     if file.url is not None:
         return file.url
     encoded = await asyncio.to_thread(encode, file)
@@ -57,7 +71,17 @@ async def _link_file(
 async def upload_files(
     values: Mapping[str, FieldValue], encode: Callable[[KIEFile], EncodedFile], configuration: Configuration
 ) -> dict[str, Json]:
-    """Replace every file in a task's input with its link, uploading each local file once, in the input's order."""
+    """Replace every file in a task's input with its link, uploading each local file once, in the input's order.
+
+    Args:
+        values: The input of the task by input name, where a file or a tuple of files stands for its link.
+        encode: Turns a local file into the bytes to upload.
+        configuration: The settings and the key of the uploads.
+
+    Returns:
+        The input of the task as JSON, with a link in place of every file.
+
+    """
     links: dict[str, str] = {}
     task_input: dict[str, Json] = {}
     for name, value in values.items():

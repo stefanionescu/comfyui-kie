@@ -15,7 +15,13 @@ if TYPE_CHECKING:
 
 
 def _list_links(value: Json, links: list[str]) -> None:
-    """Walk one value depth first, adding each https link once, in the order KIE wrote it."""
+    """Walk one value depth first, adding each https link once, in the order KIE wrote it.
+
+    Args:
+        value: The value to walk.
+        links: The links found so far, which the walk adds to.
+
+    """
     if isinstance(value, dict):
         for item in value.values():
             _list_links(item, links)
@@ -31,6 +37,13 @@ def list_output_files(result: Json) -> tuple[KIEFile, ...]:
 
     KIE gives files as bare links: resultUrls for most models, data[].audio_url for music, and lastFrameUrl beside a
     video. A link of another kind, such as a cover image beside a song, stays in the result.
+
+    Args:
+        result: The result of the task, as KIE wrote it.
+
+    Returns:
+        One file for each link, in the order of the result.
+
     """
     links: list[str] = []
     _list_links(result, links)

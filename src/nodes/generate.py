@@ -15,7 +15,14 @@ _RESULT = io.String.Output('result', display_name='result')
 
 
 class ImageGenerate(JobNode):
-    """Make or edit images with any KIE image model."""
+    """Make or edit images with any KIE image model.
+
+    Attributes:
+        kind: The kind of model the node runs, which is image.
+        description: The text ComfyUI shows for the image node.
+        outputs: The images, their masks, the files, and the result.
+
+    """
 
     kind = 'image'
     description = 'Make or edit images with any KIE image model, named by its model ID.'
@@ -28,7 +35,14 @@ class ImageGenerate(JobNode):
 
 
 class VideoGenerate(JobNode):
-    """Make, edit, extend, lip-sync, or upscale a video with any KIE video model."""
+    """Make, edit, extend, lip-sync, or upscale a video with any KIE video model.
+
+    Attributes:
+        kind: The kind of model the node runs, which is video.
+        description: The text ComfyUI shows for the video node.
+        outputs: The video, the files, and the result.
+
+    """
 
     kind = 'video'
     description = 'Make, edit, extend, lip-sync, or upscale a video with any KIE video model, named by its model ID.'
@@ -40,7 +54,14 @@ class VideoGenerate(JobNode):
 
 
 class AudioGenerate(JobNode):
-    """Make speech, music, or sound effects with any KIE audio model."""
+    """Make speech, music, or sound effects with any KIE audio model.
+
+    Attributes:
+        kind: The kind of model the node runs, which is audio.
+        description: The text ComfyUI shows for the audio node.
+        outputs: The audio, the files, and the result.
+
+    """
 
     kind = 'audio'
     description = 'Make speech, music, or sound effects with any KIE audio model, named by its model ID.'

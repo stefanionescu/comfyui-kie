@@ -15,7 +15,15 @@ if TYPE_CHECKING:
 
 @dataclass(frozen=True, slots=True)
 class Box:
-    """The place of a node on the page."""
+    """The place of a node on the page.
+
+    Attributes:
+        x: The distance of the left edge from the left of the page.
+        y: The distance of the top edge from the top of the page.
+        width: The width of the node.
+        height: The height of the node.
+
+    """
 
     x: int
     y: int
@@ -29,6 +37,16 @@ def _place_group(
     """Place a group's note above its frame and its columns inside, and return the frame.
 
     The note sits outside the frame, so moving or bypassing the group leaves it in place.
+
+    Args:
+        group: The group to place.
+        sizes: The width and height of each node and note, keyed by node key.
+        origin: The top left corner the group starts at.
+        note: The key of the note above the frame, or None when the group has no note.
+
+    Returns:
+        The box of each placed node and note, and the box of the frame.
+
     """
     boxes: dict[str, Box] = {}
     top = origin[1]
@@ -44,7 +62,17 @@ def _place_group(
 def place_columns(
     columns: Sequence[Sequence[str]], sizes: Mapping[str, tuple[int, int]], origin: tuple[int, int]
 ) -> dict[str, Box]:
-    """Place columns of nodes side by side."""
+    """Place columns of nodes side by side.
+
+    Args:
+        columns: The node keys of each column, from left to right.
+        sizes: The width and height of each node, keyed by node key.
+        origin: The top left corner of the first column.
+
+    Returns:
+        The box of each node, keyed by node key.
+
+    """
     boxes: dict[str, Box] = {}
     x = origin[0]
     for column in columns:
@@ -63,6 +91,15 @@ def place_stacks(
     """Place the stacks side by side, each group under its note, and serialize each group's frame.
 
     The notes map a group's title to the key of the note placed above its frame.
+
+    Args:
+        stacks: The groups of each stack, from top to bottom.
+        sizes: The width and height of each node and note, keyed by node key.
+        notes: The key of the note of each group, keyed by group title.
+
+    Returns:
+        The box of each node and note, and the serialized frame of each group.
+
     """
     boxes: dict[str, Box] = {}
     frames: list[dict[str, object]] = []

@@ -22,14 +22,32 @@ BUILT_IN: dict[str, Schema] = {
 
 @dataclass(frozen=True, slots=True)
 class Palette:
-    """The node descriptions a workflow may place, and its subgraphs with their IDs."""
+    """The node descriptions a workflow may place, and its subgraphs with their IDs.
+
+    Attributes:
+        schemas: The description of each node, keyed by node ID.
+        subgraphs: The subgraphs of the workflow, keyed by name.
+        ids: The ID of each subgraph, keyed by name.
+
+    """
 
     schemas: Mapping[str, Schema]
     subgraphs: Mapping[str, Subgraph]
     ids: Mapping[str, str]
 
     def find_schema(self, node: Node) -> Schema:
-        """Describe one node or placed subgraph."""
+        """Describe one node or placed subgraph.
+
+        Args:
+            node: The node to describe.
+
+        Returns:
+            The description of the node, built from the subgraph when the node places one.
+
+        Raises:
+            KeyError: When the kind of the node names nothing the workflows can place.
+
+        """
         if node.kind in self.subgraphs:
             return _build_subgraph_schema(self.subgraphs[node.kind], self)
         if node.kind in self.schemas:
@@ -41,7 +59,21 @@ class Palette:
 
 
 def _find_socket(schema: Schema, side: str, name: str, owner: str) -> tuple[int, Item]:
-    """Find an input or output by name, with its position."""
+    """Find an input or output by name, with its position.
+
+    Args:
+        schema: The description of the node.
+        side: The list to search, `inputs` or `outputs`.
+        name: The name of the socket.
+        owner: The name of the node, for the error message.
+
+    Returns:
+        The position of the socket and its description.
+
+    Raises:
+        KeyError: When the node has no socket of that name on that side.
+
+    """
     for index, item in enumerate(cast('list[Item]', schema[side])):
         if item['name'] == name:
             return index, item
@@ -50,7 +82,19 @@ def _find_socket(schema: Schema, side: str, name: str, owner: str) -> tuple[int,
 
 
 def _find_node(subgraph: Subgraph, key: str) -> Node:
-    """Find one node of a subgraph by its key."""
+    """Find one node of a subgraph by its key.
+
+    Args:
+        subgraph: The subgraph to search.
+        key: The key of the node.
+
+    Returns:
+        The node with that key.
+
+    Raises:
+        KeyError: When the subgraph has no node with that key.
+
+    """
     node = next((node for node in subgraph.nodes if node.key == key), None)
     if node is None:
         message = f'{subgraph.name} has no node keyed {key}.'
@@ -59,7 +103,20 @@ def _find_node(subgraph: Subgraph, key: str) -> Node:
 
 
 def _find_input(node: Node, schema: Schema, socket: str) -> Item:
-    """Find an input by its full name: an input of the node, or a slot of a growing row."""
+    """Find an input by its full name: an input of the node, or a slot of a growing row.
+
+    Args:
+        node: The node that owns the input.
+        schema: The description of the node.
+        socket: The full name of the input, which can name a slot of a growing row.
+
+    Returns:
+        The description of the input, or of the slot.
+
+    Raises:
+        KeyError: When the node has no such input, or the name has a slot and the input is not a growing row.
+
+    """
     parent, _, rest = socket.partition('.')
     _, item = _find_socket(schema, 'inputs', parent, node.kind)
     if not rest:
@@ -71,7 +128,16 @@ def _find_input(node: Node, schema: Schema, socket: str) -> Item:
 
 
 def _build_subgraph_schema(subgraph: Subgraph, palette: Palette) -> Schema:
-    """Describe a subgraph as one node; an input linked to a widget inside shows as that widget."""
+    """Describe a subgraph as one node; an input linked to a widget inside shows as that widget.
+
+    Args:
+        subgraph: The subgraph to describe.
+        palette: The table that describes the inner nodes.
+
+    Returns:
+        The inputs and outputs that the subgraph exposes.
+
+    """
     inputs: list[Item] = []
     for name, target in subgraph.inputs:
         key, socket = target.split('.', 1)
@@ -89,7 +155,15 @@ def _build_subgraph_schema(subgraph: Subgraph, palette: Palette) -> Schema:
 
 
 def read_slot_type(settings: Mapping[str, object]) -> object:
-    """Read the type of every slot in a growing row."""
+    """Read the type of every slot in a growing row.
+
+    Args:
+        settings: The description of the growing row, with its template.
+
+    Returns:
+        The type of the slots.
+
+    """
     template = cast('dict[str, dict[str, dict[str, list[object]]]]', settings['template'])
     socket = template['input']
     return next(iter((socket.get('required') or socket.get('optional') or {}).values()))[0]

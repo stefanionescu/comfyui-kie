@@ -31,7 +31,18 @@ class ConfigurationRoutes:
     is_multi_user: bool
 
     async def save_settings(self, request: web.Request) -> dict[str, Json]:
-        """Check the changed settings, and save them against the revision the dialog read."""
+        """Check the changed settings, and save them against the revision the dialog read.
+
+        Args:
+            request: The request whose body holds the revision and the changed settings.
+
+        Returns:
+            The status of the settings and the key after the save.
+
+        Raises:
+            web.HTTPBadRequest: When the body does not hold exactly a valid revision and a settings object.
+
+        """
         document = await read_body(request)
         revision = document.get('revision')
         changes = document.get('settings')
@@ -42,7 +53,18 @@ class ConfigurationRoutes:
         return await asyncio.to_thread(self.store.save_settings, changes, revision)
 
     async def save_credential(self, request: web.Request) -> dict[str, Json]:
-        """Accept one API key, and save it only in the private state folder."""
+        """Accept one API key, and save it only in the private state folder.
+
+        Args:
+            request: The request whose body holds the API key.
+
+        Returns:
+            The status of the settings and the key after the save.
+
+        Raises:
+            web.HTTPBadRequest: When the body does not hold exactly one API key as text.
+
+        """
         document = await read_body(request)
         value = document.get('api_key')
         if document.keys() != {'api_key'} or not isinstance(value, str):
@@ -50,13 +72,29 @@ class ConfigurationRoutes:
         return await asyncio.to_thread(self.store.save_credential, value)
 
     async def delete_credential(self, request: web.Request) -> dict[str, Json]:
-        """Remove the saved key, and refuse a request that sends content."""
+        """Remove the saved key, and refuse a request that sends content.
+
+        Args:
+            request: The request, which must have no body.
+
+        Returns:
+            The status of the settings and the key after the removal.
+
+        Raises:
+            web.HTTPBadRequest: When the request sends a body.
+
+        """
         if request.can_read_body:
             raise web.HTTPBadRequest(text=CLEAR_KEY_BODY)
         return await asyncio.to_thread(self.store.delete_credential)
 
     def register(self, routes: web.RouteTableDef) -> None:
-        """Register the guarded status, settings, key-save, and key-removal routes."""
+        """Register the guarded status, settings, key-save, and key-removal routes.
+
+        Args:
+            routes: The route table that receives the four routes.
+
+        """
         policy = {'is_multi_user': self.is_multi_user}
         read_status = build_local_route(
             lambda _request: asyncio.to_thread(self.store.read_status), is_mutation=False, **policy

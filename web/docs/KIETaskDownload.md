@@ -1,4 +1,4 @@
-# Task: Download
+# Task: download
 
 Downloads what KIE made for a task after a run stopped: you cancelled it while
 KIE was running it, ComfyUI restarted, or it ran longer than the request

@@ -41,7 +41,15 @@ class PaidNode(io.ComfyNode):
     @classmethod
     @override
     async def fingerprint_inputs(cls, **_inputs: object) -> str:
-        """Add the API key's token to the cache key, so a new key runs the node again."""
+        """Add the API key's token to the cache key, so a new key runs the node again.
+
+        Args:
+            **_inputs: The inputs of the node, which the cache key leaves out.
+
+        Returns:
+            The token that changes with the API key.
+
+        """
         configuration = await asyncio.to_thread(CONFIGURATION.read_configuration)
         return configuration.generation
 
@@ -52,6 +60,13 @@ class PaidNode(io.ComfyNode):
 
         ComfyUI hands a validator every dynamic setting, whatever inputs it names, so this one takes every input.
         ComfyUI then skips its own range and choice checks, and KIE checks each value itself, free.
+
+        Args:
+            **inputs: Every input of the node by name, as the workflow sets it.
+
+        Returns:
+            True when every check passes, or the message of the refusal.
+
         """
         try:
             values = cls.read_values(inputs)
@@ -70,6 +85,13 @@ class PaidNode(io.ComfyNode):
 
         ComfyUI sets hidden on the class it runs. A pack that calls the node directly sets an empty hidden, so that call
         has no node ID and no progress bar.
+
+        Args:
+            **inputs: Every input of the node by name, the run number included.
+
+        Returns:
+            The outputs of the node.
+
         """
         inputs.pop(INPUT_NAMES['RUN_NUMBER'], None)
         node_id = cls.hidden.unique_id
@@ -77,7 +99,18 @@ class PaidNode(io.ComfyNode):
 
     @classmethod
     def read_values(cls, inputs: dict[str, object]) -> dict[str, object]:
-        """Take the one value of each input that holds one; a node with input lists receives every input as a list."""
+        """Take the one value of each input that holds one; a node with input lists receives every input as a list.
+
+        Args:
+            inputs: The inputs of the node by name, as ComfyUI passed them.
+
+        Returns:
+            The inputs by name, with one value in place of each list of one.
+
+        Raises:
+            KIEError: When an input that takes one value holds several.
+
+        """
         if not cls.list_inputs:
             return inputs
         values: dict[str, object] = {}

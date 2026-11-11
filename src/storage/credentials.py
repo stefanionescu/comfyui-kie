@@ -12,7 +12,18 @@ from ..config.messages.settings import KEY_EMPTY, KEY_REQUIRED, KEY_UNREADABLE, 
 
 
 def parse_credential(value: str) -> Credential:
-    """Refuse an empty or oversized key, or one with spaces; KIE decides whether a key is valid."""
+    """Refuse an empty or oversized key, or one with spaces; KIE decides whether a key is valid.
+
+    Args:
+        value: The key as typed or as stored.
+
+    Returns:
+        The key as a credential.
+
+    Raises:
+        KIEError: When the key is empty, too long, or holds whitespace.
+
+    """
     if not value or value != value.strip() or len(value) > MAX_CREDENTIAL_CHARACTERS:
         raise KIEError(ErrorCode.CONFIGURATION, KEY_EMPTY.format(maximum=MAX_CREDENTIAL_CHARACTERS))
     if any(character.isspace() for character in value):
@@ -21,7 +32,18 @@ def parse_credential(value: str) -> Credential:
 
 
 def read_credential(directory: Path) -> Credential:
-    """Read the key from the server's environment first, then from the private saved file."""
+    """Read the key from the server's environment first, then from the private saved file.
+
+    Args:
+        directory: The private state folder that holds the saved key file.
+
+    Returns:
+        The key of the environment, or else the saved key.
+
+    Raises:
+        KIEError: When the saved file cannot be read, or no key is set.
+
+    """
     if ENVIRONMENT_VARIABLES['KEY'] in os.environ:
         return parse_credential(os.environ[ENVIRONMENT_VARIABLES['KEY']])
     path = directory / FILE_NAMES['CREDENTIAL']
@@ -34,7 +56,15 @@ def read_credential(directory: Path) -> Credential:
 
 
 def read_credential_source(directory: Path) -> str:
-    """Report where the key comes from; this reads no key and returns none."""
+    """Report where the key comes from; this reads no key and returns none.
+
+    Args:
+        directory: The private state folder that holds the saved key file.
+
+    Returns:
+        The word environment, saved, or missing.
+
+    """
     if ENVIRONMENT_VARIABLES['KEY'] in os.environ:
         return 'environment'
     return 'saved' if (directory / FILE_NAMES['CREDENTIAL']).is_file() else 'missing'

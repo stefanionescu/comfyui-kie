@@ -1,4 +1,6 @@
-/** Local ComfyUI routes used by the browser interface. */
+/**
+Local ComfyUI routes used by the browser interface.
+*/
 export const browserRoutes = {
     settings: {
         status: '/kie/v1/status',

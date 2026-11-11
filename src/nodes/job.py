@@ -41,6 +41,13 @@ def _build_settings(kind: Kind) -> list[io.Input]:
     """Build the named settings: a line per text setting, a dropdown per on/off setting, and a choice per number.
 
     A number setting at default sends nothing, and custom shows its value.
+
+    Args:
+        kind: The kind of the node, which decides the settings it shows.
+
+    Returns:
+        The inputs of the settings, in the order the node shows them.
+
     """
     inputs: list[io.Input] = [io.String.Input(name, default='', tooltip=TOOLTIPS[name]) for name in TEXT_SETTINGS[kind]]
     inputs += [
@@ -60,7 +67,16 @@ def _build_settings(kind: Kind) -> list[io.Input]:
 
 
 def _read_settings(kind: Kind, values: dict[str, object]) -> dict[str, Json]:
-    """Read the named settings the workflow sets; an empty line, default, or no value from a caller sends nothing."""
+    """Read the named settings the workflow sets; an empty line, default, or no value from a caller sends nothing.
+
+    Args:
+        kind: The kind of the node, which decides the settings it has.
+        values: The inputs of the node by name.
+
+    Returns:
+        The settings to send, by KIE input name.
+
+    """
     settings: dict[str, Json] = {}
     for name in TEXT_SETTINGS[kind]:
         text = values.get(name)
@@ -91,7 +107,12 @@ class JobNode(PaidNode):
     @classmethod
     @override
     def define_schema(cls) -> io.Schema:
-        """Describe a job node: files, the model, its named settings, the run number, then the text boxes."""
+        """Describe a job node: files, the model, its named settings, the run number, then the text boxes.
+
+        Returns:
+            The schema of the node.
+
+        """
         lines = [
             io.String.Input(name, default=start, tooltip=TOOLTIPS[name]) for name, start in LINES[cls.kind].items()
         ]
@@ -124,7 +145,13 @@ class JobNode(PaidNode):
     @classmethod
     @override
     def check(cls, model: KIEModel, inputs: dict[str, object]) -> None:
-        """Check the text boxes, the named settings, and the arguments that the workflow sets, against the model."""
+        """Check the text boxes, the named settings, and the arguments that the workflow sets, against the model.
+
+        Args:
+            model: The model the node runs.
+            inputs: The inputs of the node by name; one fed by a link is missing.
+
+        """
         names = (*LINES[cls.kind], *TEXTS[cls.kind])
         texts = {name: value if isinstance(value := inputs.get(name), str) else None for name in names}
         arguments = inputs.get(INPUT_NAMES['ARGUMENTS'])
@@ -133,7 +160,16 @@ class JobNode(PaidNode):
     @classmethod
     @override
     async def send(cls, node_id: str | None, **inputs: object) -> io.NodeOutput:
-        """Send one task and fill the outputs; the task makes every check again, because a link skips them."""
+        """Send one task and fill the outputs; the task makes every check again, because a link skips them.
+
+        Args:
+            node_id: The ID of the node, or None for a direct call.
+            **inputs: Every saved input of the node by name, except the run number.
+
+        Returns:
+            The media of the task, its files, and its result.
+
+        """
         output_ids = tuple(output.id for output in cls.outputs if output.id is not None)
         files = cast('tuple[KIEFile, ...] | None', inputs.get(INPUT_NAMES['FILES']))
         request = TaskRequest(

@@ -111,7 +111,7 @@
   background: var(--primary-color, #2563eb);
   color: var(--primary-color-text, white);
 }
-.kie-dialog button:not(:disabled):hover {
+.kie-dialog :where(button):not(:disabled):hover {
   filter: brightness(1.15);
 }
 .kie-dialog [role=status]:empty {

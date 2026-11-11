@@ -1,4 +1,4 @@
-# File: Add
+# File: add
 
 Gives a KIE model a file: a public `https://` link, images, masks, audio, or
 video from ComfyUI, or the files of another KIE node. You name the input of the

@@ -31,7 +31,18 @@ _FIELD_NAME = re.compile(FIELD_NAME_PATTERN)
 
 
 def _read_field(values: Sequence[str]) -> str:
-    """Read the one input name that the files of the node go to, and refuse a name that no model input can have."""
+    """Read the one input name that the files of the node go to, and refuse a name that no model input can have.
+
+    Args:
+        values: The field input as the node received it, one value for each list item.
+
+    Returns:
+        The input name, stripped.
+
+    Raises:
+        KIEError: When the values differ, the name is empty, or the name has a form no model input has.
+
+    """
     names = {value.strip() for value in values}
     if len(names) > 1:
         raise KIEError(ErrorCode.INVALID_INPUT, SINGLE_VALUE.format(name='field'))
@@ -44,7 +55,19 @@ def _read_field(values: Sequence[str]) -> str:
 
 
 def _read_link(text: str, field: str) -> tuple[KIEFile, ...]:
-    """Read a typed link; blank text adds nothing, and only an https address with a host passes."""
+    """Read a typed link; blank text adds nothing, and only an https address with a host passes.
+
+    Args:
+        text: The text typed in the file input.
+        field: The model input the link goes to.
+
+    Returns:
+        One file that holds the link, or nothing for blank text.
+
+    Raises:
+        KIEError: When the link is too long, or is not an https address with a host.
+
+    """
     link = text.strip()
     if not link:
         return ()
@@ -57,7 +80,19 @@ def _read_link(text: str, field: str) -> tuple[KIEFile, ...]:
 
 
 def _read_media(value: object, field: str) -> tuple[KIEFile, ...]:
-    """Split connected media into one local file for each image or mask frame, each audio clip, or the one video."""
+    """Split connected media into one local file for each image or mask frame, each audio clip, or the one video.
+
+    Args:
+        value: The connected image or mask batch, audio, or video.
+        field: The model input the files go to.
+
+    Returns:
+        The local files, in the order of the batch.
+
+    Raises:
+        KIEError: When the value is none of these kinds of media.
+
+    """
     if isinstance(value, torch.Tensor):
         kind = 'image' if value.ndim == IMAGE_TENSOR['DIMENSIONS'] else 'mask'
         frames = value.unsqueeze(0) if value.ndim == MASK_TENSOR['FRAME_DIMENSIONS'] else value
@@ -76,7 +111,16 @@ def _read_media(value: object, field: str) -> tuple[KIEFile, ...]:
 
 
 def _read_file(value: object, field: str) -> tuple[KIEFile, ...]:
-    """Turn one connected or typed value into files for the input: a link, the files of a KIE node, or local media."""
+    """Turn one connected or typed value into files for the input: a link, the files of a KIE node, or local media.
+
+    Args:
+        value: One item of the file input.
+        field: The model input the files go to.
+
+    Returns:
+        The files the value holds, each named for the input.
+
+    """
     if isinstance(value, str):
         return _read_link(value, field)
     if isinstance(value, tuple):
@@ -91,7 +135,12 @@ class FileAdd(io.ComfyNode):
     @classmethod
     @override
     def define_schema(cls) -> io.Schema:
-        """List the earlier files, the input name, and the file: a typed link, or connected media or files."""
+        """List the earlier files, the input name, and the file: a typed link, or connected media or files.
+
+        Returns:
+            The schema of the node.
+
+        """
         file = io.String.Input(
             'file',
             default='',
@@ -131,6 +180,18 @@ class FileAdd(io.ComfyNode):
         """Put the new files after the ones received, each with the input name of this node, in the order of the chain.
 
         With input lists every input arrives as a list, so an image list from a KIE node arrives whole.
+
+        Args:
+            field: The input name, once for each list item.
+            file: The typed links or connected values to add.
+            files: The chains of earlier files, or None when nothing is connected.
+
+        Returns:
+            The earlier files followed by the new ones.
+
+        Raises:
+            KIEError: When the node adds no file.
+
         """
         name = _read_field(field)
         earlier = tuple(item for chain in files or () for item in chain)
